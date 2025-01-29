@@ -14,6 +14,7 @@ public class TeleOp extends LinearOpMode {
         runtime.reset();
         while (opModeIsActive()) {
             robot.teleOp();
+
             telemetry.update();
         }
     }

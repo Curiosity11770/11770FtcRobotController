@@ -9,7 +9,6 @@ import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Scoring;
 
 public class Robot {
-
     private LinearOpMode myOpMode = null;
 
     public Drivetrain drivetrain;
@@ -43,6 +42,15 @@ public class Robot {
         extension.teleOp();
         intake.teleOp();
         scoring.teleOp();
+
+        if (myOpMode.gamepad2.a){
+            scoring.scoringPosition = scoring.SCORING_DOWN;
+            extension.rightLinkPosition = extension.RIGHT_LINK_IN;
+            extension.leftLinkPosition = extension.LEFT_LINK_IN;
+            //intake.intake
+        } else if (myOpMode.gamepad2.b){
+
+        }
     }
 
     public void update(){

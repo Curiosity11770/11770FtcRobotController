@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Scoring {
@@ -10,16 +12,19 @@ public class Scoring {
     public Servo clawServo = null;
     public Servo scoringPivot = null;
 
-    public static final double CLAW_UP = 0.88;
-    public static final double CLAW_DOWN = 0.2;
-    public static final double CLAW_OPEN = 0.8;
-    public static final double CLAW_CLOSED = 0.32;
-    public static final double SCORING_UP = 0;
-    public static final double SCORING_DOWN = 0.45;
+    public static final double CLAW_UP = 0.82;
+    public static final double CLAW_DOWN = 0.142;
+    public static final double CLAW_OPEN = 0.59;
+    public static final double CLAW_CLOSED = 0.41;
+    public static final double SCORING_UP = 0.78;
+    public static final double SCORING_DOWN = 0.31;
 
     public double clawPosition;
     public double clawRotation;
     public double scoringPosition;
+
+    public double testPosition;
+    public AnalogInput scoringTest;
 
     public Scoring(LinearOpMode opmode) {
         myOpMode = opmode;
@@ -29,23 +34,26 @@ public class Scoring {
         scoringPivot = myOpMode.hardwareMap.get(Servo.class, "scoringPivot");
         clawWrist = myOpMode.hardwareMap.get(Servo.class, "clawWrist");
         clawServo = myOpMode.hardwareMap.get(Servo.class, "clawServo");
-        scoringPivot.setPosition(SCORING_DOWN);
+        scoringTest = myOpMode.hardwareMap.get(AnalogInput.class, "scoringTest");
+
+        testPosition = scoringTest.getVoltage() / 3.3 * 360;
+        //scoringPivot.setPower(0);
                 //analogInput.getVoltage() / 3.3 * 360;
-        clawWrist.setPosition(CLAW_UP);
+        clawWrist.setPosition(CLAW_DOWN);
         clawServo.setPosition(CLAW_CLOSED);
         clawPosition = CLAW_CLOSED;
-        clawRotation = CLAW_UP;
-        scoringPosition = SCORING_UP;
+        clawRotation = CLAW_DOWN;
+        scoringPosition = SCORING_DOWN;
     }
 
     public void teleOp() {
         clawWrist.setPosition(clawRotation);
         clawServo.setPosition(clawPosition);
-        scoringPivot.setPosition(scoringPosition);
+        //scoringPivot.setPosition(scoringPosition);
         //position = scoringPivot.getVoltage();
-        if (myOpMode.gamepad2.left_trigger > 0.7) {
+        if (myOpMode.gamepad2.left_bumper) {
             clawPosition = CLAW_OPEN;
-        } else if (myOpMode.gamepad2.right_trigger > 0.7) {
+        } else if (myOpMode.gamepad2.right_bumper) {
             clawPosition = CLAW_CLOSED;
         }
         if(myOpMode.gamepad2.x){
@@ -54,11 +62,19 @@ public class Scoring {
             clawRotation = CLAW_DOWN;
         }
         if (myOpMode.gamepad2.dpad_up){
-            scoringPosition = SCORING_UP;
+            scoringPivot.setPosition(SCORING_UP);
         }else if(myOpMode.gamepad2.dpad_down){
-            scoringPosition = SCORING_DOWN;
-        } else {
+            scoringPivot.setPosition(SCORING_DOWN);
+        } else if (myOpMode.gamepad2.dpad_right){
+            scoringPivot.setPosition(0);
+        }else if(myOpMode.gamepad2.dpad_left){
+            scoringPivot.setPosition(.98);
         }
+        /*if(testPosition >= 300){
+            scoringPivot.setPower(0);
+        }*/
+
+        myOpMode.telemetry.addData("Position", testPosition);
 
     }
 }

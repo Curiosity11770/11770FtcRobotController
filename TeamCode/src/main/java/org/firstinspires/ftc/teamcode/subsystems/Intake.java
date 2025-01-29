@@ -11,8 +11,8 @@ public class Intake {
     public Servo flipIntake = null;
 
     public static final double SPIN_SPEED = 0.7;
-    public static final double INTAKE_CLOSED = 0.7;
-    public static final double INTAKE_OPEN = 0;
+    public static final double INTAKE_CLOSED = 0.3;
+    public static final double INTAKE_OPEN = 0.49;
 
     public double flipPosition;
 
@@ -28,21 +28,20 @@ public class Intake {
         spinIntake.setPower(0);
         myOpMode.telemetry.addData("intake", flipIntake.getPosition());
         //flipIntake.setPosition(INTAKE_CLOSED);
-
-        flipPosition = INTAKE_CLOSED;
+        flipPosition = INTAKE_OPEN;
     }
 
     public void teleOp(){
         flipIntake.setPosition(flipPosition);
-        if(myOpMode.gamepad2.x) {
+        if(myOpMode.gamepad2.a) {
             flipPosition = INTAKE_OPEN;
-        } else if (myOpMode.gamepad2.x){
+        } else if (myOpMode.gamepad2.b){
             flipPosition = INTAKE_CLOSED;
         }
         if(myOpMode.gamepad2.left_trigger > 0.7) {
-            spinIntake.setPower(0.7);
+            spinIntake.setPower(1);
         } else if (myOpMode.gamepad2.right_trigger > 0.7){
-            spinIntake.setPower(-0.7);
+            spinIntake.setPower(-1);
         } else {
             spinIntake.setPower(0);
         }

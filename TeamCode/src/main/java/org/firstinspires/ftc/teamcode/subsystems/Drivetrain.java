@@ -38,16 +38,16 @@ public class Drivetrain {
 
     //Static Variables
 
-    public static double HEADING_KP = 0.02;
+    public static double HEADING_KP = 0.012;
     public static double HEADING_KI = 0.0;
     public static double HEADING_KD = 0.0;
-    public static double DRIVE_KP = 0.03;
+    public static double DRIVE_KP = 0.025;
     public static double DRIVE_KI = 0.0;
     public static double DRIVE_KD = 0.0;//0.0003;
     public static double DRIVE_MAX_ACC = 2000;
     public static double DRIVE_MAX_VEL = 3500;
     public static double DRIVE_MAX_OUT = 0.8;
-    public static double STRAFE_MULTIPLIER = 2.0;
+    public static double STRAFE_MULTIPLIER = 2.7;
 
     public MecanumDrive mecanumDrive = null;
 
