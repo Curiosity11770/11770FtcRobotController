@@ -117,7 +117,7 @@ public class SampleAuto extends LinearOpMode {
                     break;
                 case SAMPLE1:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task;
-                    robot.scoring.scoringPivot.setPosition(robot.scoring.SCORING_DOWN);
+                    robot.scoring.scoringPivot.setPosition(robot.scoring.TRANSFER_SCORING);
                     robot.scoring.clawServo.setPosition(robot.scoring.CLAW_CLOSED);
                     robot.scoring.clawWrist.setPosition(robot.scoring.CLAW_DOWN);
                     robot.extension.leftLink.setPower(-0.2);

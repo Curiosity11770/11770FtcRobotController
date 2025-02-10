@@ -176,7 +176,7 @@ public class SpecimenAuto2 extends LinearOpMode {
                 case BACK:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task
                     robot.lift.liftToPositionPIDClass(0);
-                    robot.scoring.scoringPivot.setPosition(robot.scoring.SCORING_UP);
+                    //robot.scoring.scoringPivot.setPosition(robot.scoring.SCORING_UP);
                     robot.scoring.clawServo.setPosition(robot.scoring.CLAW_CLOSED);
                     if(timer.seconds() > 1.5){
                         currentState = State.FORWARD;
@@ -236,7 +236,7 @@ public class SpecimenAuto2 extends LinearOpMode {
                 case BACK2:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task
                     robot.lift.liftToPositionPIDClass(0);
-                    robot.scoring.scoringPivot.setPosition(robot.scoring.SCORING_UP);
+                    //robot.scoring.scoringPivot.setPosition(robot.scoring.SCORING_UP);
                     robot.scoring.clawServo.setPosition(robot.scoring.CLAW_CLOSED);
                     if(timer.seconds() > 1.5){
                         currentState = State.FORWARD2;

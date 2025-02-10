@@ -44,7 +44,7 @@ public class Robot {
         scoring.teleOp();
 
         if (myOpMode.gamepad2.a){
-            scoring.scoringPosition = scoring.SCORING_DOWN;
+            //scoring.scoringPosition = scoring.SCORING_DOWN;
             extension.rightLinkPosition = extension.RIGHT_LINK_IN;
             extension.leftLinkPosition = extension.LEFT_LINK_IN;
             //intake.intake

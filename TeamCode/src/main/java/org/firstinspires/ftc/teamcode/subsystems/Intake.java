@@ -2,12 +2,13 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
 public class Intake {
     private LinearOpMode myOpMode = null;
-    public CRServo spinIntake = null;
+    public DcMotor spinIntake = null;
     public Servo flipIntake = null;
 
     public static final double SPIN_SPEED = 0.7;
@@ -22,7 +23,7 @@ public class Intake {
 
     public void init(){
 
-        spinIntake = myOpMode.hardwareMap.get(CRServo.class, "spinIntake");
+        spinIntake = myOpMode.hardwareMap.get(DcMotor.class, "spinIntake");
         flipIntake = myOpMode.hardwareMap.get(Servo.class, "flipIntake");
 
         spinIntake.setPower(0);
