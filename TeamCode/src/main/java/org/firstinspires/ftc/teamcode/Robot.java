@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
@@ -43,13 +44,39 @@ public class Robot {
         intake.teleOp();
         scoring.teleOp();
 
-        if (myOpMode.gamepad2.a){
-            //scoring.scoringPosition = scoring.SCORING_DOWN;
-            extension.rightLinkPosition = extension.RIGHT_LINK_IN;
-            extension.leftLinkPosition = extension.LEFT_LINK_IN;
-            //intake.intake
-        } else if (myOpMode.gamepad2.b){
 
+    }
+
+    public void driveToHuskyLens(){
+        double xTarget = 200;
+        double rightMostX = 0;
+        int rightMostIndex = 0;
+        PIDController strafeController;
+        strafeController = new PIDController(Drivetrain.DRIVE_KP, Drivetrain.DRIVE_KI, Drivetrain.DRIVE_KD, Drivetrain.DRIVE_MAX_OUT);
+        HuskyLens.Block[] blocks = drivetrain.huskylens.blocks();
+        myOpMode.telemetry.addData("Block count", blocks.length);
+        for (int i = 0; i < blocks.length; i++) {
+            myOpMode.telemetry.addData("Block", blocks[i].toString());
+            if(blocks[i].x > rightMostX){
+                rightMostX = blocks[i].x;
+                rightMostIndex = i;
+                extension.leftLinkPosition = (424.53-blocks[i].y)/380.74;
+            }
+
+        }
+        myOpMode.telemetry.addData("RightMostX", rightMostX);
+        if(rightMostX < xTarget){
+            double strafePower = strafeController.calculate(xTarget, rightMostX);
+            drivetrain.leftFrontDrive.setPower(-strafePower);
+            drivetrain.leftBackDrive.setPower(strafePower);
+            drivetrain.rightFrontDrive.setPower(strafePower);
+            drivetrain.rightBackDrive.setPower(-strafePower);
+            myOpMode.telemetry.addData("StrafePower", strafePower);
+        }else{
+            drivetrain.leftFrontDrive.setPower(0);
+            drivetrain.leftBackDrive.setPower(0);
+            drivetrain.rightFrontDrive.setPower(0);
+            drivetrain.rightBackDrive.setPower(0);
         }
     }
 

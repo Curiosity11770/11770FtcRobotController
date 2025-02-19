@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.SampleAuto;
+
 public class Scoring {
 
     private LinearOpMode myOpMode = null;
@@ -12,16 +14,18 @@ public class Scoring {
 
     public static final double CLAW_UP = 0.88;
     public static final double CLAW_DOWN = 0.2;
-    public static final double CLAW_OPEN = 0.8;
-    public static final double CLAW_CLOSED = 0.32;
-    public static final double CHAMBER_SCORING = 0;
-    public static final double TRANSFER_SCORING = 0.45;
-    public static final double WALL_SCORING = 0.6;
+    public static final double CLAW_OPEN = 0.43;
+    public static final double CLAW_CLOSED = 0.25;
+    public static final double CHAMBER_SCORING = 0.15;
+    public static final double TRANSFER_SCORING = 0.33;
+    public static final double WALL_SCORING = 0.62;
+    public static final double SAMPLE_SCORING = 0.83;
 
     public enum ScoringMode {
         SCORING_HIGH_CHAMBER,
         PICKUP_WALL,
-        TRANSFER
+        TRANSFER,
+        SAMPLE
 
     }
 
@@ -49,6 +53,8 @@ public class Scoring {
             scoringPivot.setPosition(CHAMBER_SCORING);
         } else if (scoringMode == ScoringMode.PICKUP_WALL){
             scoringPivot.setPosition(WALL_SCORING);
+        } else if (scoringMode == ScoringMode.SAMPLE){
+            scoringPivot.setPosition(SAMPLE_SCORING);
         }
 
     }
@@ -56,10 +62,12 @@ public class Scoring {
     public void teleOp() {
         update();
         //position = scoringPivot.getVoltage();
-        if (myOpMode.gamepad2.left_trigger > 0.7) {
+        if (myOpMode.gamepad2.left_bumper) {
             clawServo.setPosition(CLAW_OPEN);
-        } else if (myOpMode.gamepad2.right_trigger > 0.7) {
+        } else if (myOpMode.gamepad2.right_bumper) {
             clawServo.setPosition(CLAW_CLOSED);
+        } else if (myOpMode.gamepad2.dpad_left){
+            clawServo.setPosition(CLAW_OPEN);
         }
         if(myOpMode.gamepad2.x){
             clawWrist.setPosition(CLAW_UP);
@@ -67,11 +75,13 @@ public class Scoring {
             clawWrist.setPosition(CLAW_DOWN);;
         }
         if (myOpMode.gamepad2.dpad_up){
-            scoringMode = scoringMode.SCORING_HIGH_CHAMBER;
+            scoringMode = ScoringMode.SCORING_HIGH_CHAMBER;
         }else if(myOpMode.gamepad2.dpad_down){
-            scoringMode = scoringMode.PICKUP_WALL;
-        } else if (myOpMode.gamepad2.dpad_left){
-            scoringMode = scoringMode.TRANSFER;
+            scoringMode = ScoringMode.PICKUP_WALL;
+        } else if (myOpMode.gamepad2.dpad_left) {
+            scoringMode = ScoringMode.TRANSFER;
+        } else if (myOpMode.gamepad2.dpad_right){
+            scoringMode = ScoringMode.SAMPLE;
         }
 
     }

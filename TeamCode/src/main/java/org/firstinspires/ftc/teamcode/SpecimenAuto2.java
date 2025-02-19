@@ -95,10 +95,10 @@ public class SpecimenAuto2 extends LinearOpMode {
             switch (currentState){
                 case DRIVE_TO_CHAMBER:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task
-                    robot.intake.flipIntake.setPosition(robot.intake.INTAKE_CLOSED);
+                    robot.intake.flipIntake.setPosition(robot.intake.INTAKE_UP);
                     robot.scoring.scoringPivot.setPosition(0);
-                    robot.extension.leftLink.setPower(-0.06);
-                    robot.extension.rightLink.setPower(0.06);
+                    //robot.extension.leftLink.setPower(-0.06);
+                    //robot.extension.rightLink.setPower(0.06);
                     if(robot.drivetrain.targetReached || timer.seconds() > 0.8){
                         currentState = State.LIFT;
                         timer.reset();

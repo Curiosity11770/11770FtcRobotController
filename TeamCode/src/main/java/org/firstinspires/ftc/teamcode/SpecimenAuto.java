@@ -9,7 +9,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 //import org.firstinspires.ftc.teamcode.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Robot;
 
 
 @Autonomous(name="SpecimenAuto", group="Linear OpMode")
@@ -90,7 +89,7 @@ public class SpecimenAuto extends LinearOpMode {
             switch (currentState){
                 case DRIVE_TO_CHAMBER:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task
-                    robot.intake.flipIntake.setPosition(robot.intake.INTAKE_CLOSED);
+                    robot.intake.flipIntake.setPosition(robot.intake.INTAKE_UP);
                     robot.scoring.scoringPivot.setPosition(0);
                     if(robot.drivetrain.targetReached){
                         currentState = State.LIFT;

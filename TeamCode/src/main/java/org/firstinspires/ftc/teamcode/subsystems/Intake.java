@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -11,11 +10,18 @@ public class Intake {
     public DcMotor spinIntake = null;
     public Servo flipIntake = null;
 
-    public static final double SPIN_SPEED = 0.7;
-    public static final double INTAKE_CLOSED = 0.3;
-    public static final double INTAKE_OPEN = 0.49;
+    public static final double INTAKE_UP = 0.34;
+    public static final double INTAKE_DOWN = 0.64;
+    public static final double INTAKE_STOWED = 0;
 
     public double flipPosition;
+
+    public enum IntakeMode {
+        TRANSFER,
+        STOWED,
+        INTAKE
+    }
+    public IntakeMode intakeMode = IntakeMode.STOWED;
 
     public Intake(LinearOpMode opmode) {
         myOpMode = opmode;
@@ -28,23 +34,51 @@ public class Intake {
 
         spinIntake.setPower(0);
         myOpMode.telemetry.addData("intake", flipIntake.getPosition());
-        //flipIntake.setPosition(INTAKE_CLOSED);
-        flipPosition = INTAKE_OPEN;
+        flipPosition = INTAKE_STOWED;
+        flipIntake.setPosition(INTAKE_STOWED);
     }
 
     public void teleOp(){
-        flipIntake.setPosition(flipPosition);
-        if(myOpMode.gamepad2.a) {
-            flipPosition = INTAKE_OPEN;
-        } else if (myOpMode.gamepad2.b){
-            flipPosition = INTAKE_CLOSED;
+        update();
+
+        if(myOpMode.gamepad2.b){
+            intakeMode = IntakeMode.TRANSFER;
+        }else if(myOpMode.gamepad2.a){
+            intakeMode = IntakeMode.INTAKE;
+        } else if (myOpMode.gamepad2.dpad_left){
+            intakeMode = IntakeMode.TRANSFER;
+            spinIntake.setPower(1);
         }
+
+        /*
+        if(myOpMode.gamepad2.a) {
+            intakeMode = IntakeMode.INTAKE;
+        } else if (myOpMode.gamepad2.b){
+            intakeMode = IntakeMode.TRANSFER;
+        }
+        */
+
+
         if(myOpMode.gamepad2.left_trigger > 0.7) {
             spinIntake.setPower(1);
         } else if (myOpMode.gamepad2.right_trigger > 0.7){
             spinIntake.setPower(-1);
+        } else if (myOpMode.gamepad2.dpad_left) {
+            spinIntake.setPower(1);
         } else {
             spinIntake.setPower(0);
+        }
+    }
+
+    public void update(){
+        flipIntake.setPosition(flipPosition);
+        if (intakeMode == IntakeMode.INTAKE){
+            flipPosition = INTAKE_DOWN;
+        } else if (intakeMode == IntakeMode.TRANSFER){
+            spinIntake.setPower(0);
+            flipPosition = INTAKE_UP;
+        } else if(intakeMode == IntakeMode.STOWED){
+            flipPosition = INTAKE_UP;
         }
     }
 

@@ -26,6 +26,7 @@ public class Lift {
         MANUAL,
         HIGH_CHAMBER,
         HIGH_BASKET,
+        WALL_PICKUP,
         GROUND,
         LOW_BASKET,
         LOW_CHAMBER
@@ -77,6 +78,7 @@ public class Lift {
     }
 
     public void teleOp() {
+        update();
         //gamepad control specific to lift
         //if (Math.abs(myOpMode.gamepad2.right_stick_y) > 0.8) {
           //  liftMode = LiftMode.MANUAL;
@@ -101,24 +103,20 @@ public class Lift {
         myOpMode.telemetry.addData("enabled", leftHook.isPwmEnabled());
 
         if(myOpMode.gamepad2.dpad_up){
-           // liftToPositionPIDClass(100);
+           liftMode = LiftMode.HIGH_CHAMBER;
+        } else if (myOpMode.gamepad2.dpad_down){
+            liftMode = LiftMode.WALL_PICKUP;
+        } else if (myOpMode.gamepad2.dpad_left){
+            liftMode = LiftMode.GROUND;
         } else if (myOpMode.gamepad2.dpad_right){
-           // liftToPositionPIDClass(1300);
+            liftMode = LiftMode.HIGH_BASKET;
         }
 
         //code defining behavior of lift in each state
-            if (Math.abs(myOpMode.gamepad2.left_stick_y) > 0.1) {
-                liftMode = liftMode.MANUAL;
-                leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                //robot.liftLeft.setPower(-0.8);
-                //robot.liftRight.setPower(-0.8);
-                rightLift.setPower(-myOpMode.gamepad2.left_stick_y); //
-                leftLift.setPower(-myOpMode.gamepad2.left_stick_y); //
-            } else {
-                leftLift.setPower(0.07);
-                rightLift.setPower(0.07);
+            if (Math.abs(myOpMode.gamepad2.right_stick_y) > 0.1) {
+                liftMode = LiftMode.MANUAL;
             }
+        //if (touch)
 
         myOpMode.telemetry.addData("left_stick_y: ", -myOpMode.gamepad2.left_stick_y);
         myOpMode.telemetry.addData("Lift Mode ", liftMode);
@@ -129,14 +127,29 @@ public class Lift {
         leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         if (liftMode == LiftMode.HIGH_CHAMBER) {
-            liftToPositionPIDClass(1300);
+            liftToPositionPIDClass(1270);
         } else if (liftMode == LiftMode.HIGH_BASKET){
-            liftToPositionPIDClass(2600);
+            liftToPositionPIDClass(2000);
         } else if (liftMode == LiftMode.GROUND){
             liftToPositionPIDClass(0);
+        } else if (liftMode == LiftMode.WALL_PICKUP){
+            liftToPositionPIDClass(0);
+        } else if (liftMode == LiftMode.MANUAL){
+            if (Math.abs(myOpMode.gamepad2.right_stick_y) > 0.1) {
+                liftMode = LiftMode.MANUAL;
+                leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                //robot.liftLeft.setPower(-0.8);
+                //robot.liftRight.setPower(-0.8);
+                rightLift.setPower(-myOpMode.gamepad2.right_stick_y); //
+                leftLift.setPower(-myOpMode.gamepad2.right_stick_y); //
+            } else {
+                leftLift.setPower(0.07);
+                rightLift.setPower(0.07);
+            }
         }
-        myOpMode.telemetry.addData("lift", leftLift.getCurrentPosition());
-        myOpMode.telemetry.addData("lift", rightLift.getCurrentPosition());
+        myOpMode.telemetry.addData("liftLeft", leftLift.getCurrentPosition());
+        myOpMode.telemetry.addData("liftRight", rightLift.getCurrentPosition());
     }
 
     public void liftToPositionPIDClass(double targetPosition) {

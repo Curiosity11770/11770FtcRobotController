@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -21,6 +22,8 @@ public class Drivetrain {
 
     //private ElapsedTime timeout = null;
 
+    public HuskyLens huskylens;
+
     //drivetrain
     public DcMotor rightFrontDrive = null;
     public DcMotor leftFrontDrive = null;
@@ -38,7 +41,7 @@ public class Drivetrain {
 
     //Static Variables
 
-    public static double HEADING_KP = 0.012;
+    public static double HEADING_KP = 0.011;
     public static double HEADING_KI = 0.0;
     public static double HEADING_KD = 0.0;
     public static double DRIVE_KP = 0.025;
@@ -47,7 +50,7 @@ public class Drivetrain {
     public static double DRIVE_MAX_ACC = 2000;
     public static double DRIVE_MAX_VEL = 3500;
     public static double DRIVE_MAX_OUT = 0.8;
-    public static double STRAFE_MULTIPLIER = 2.7;
+    public static double STRAFE_MULTIPLIER = 2.0;
 
     public MecanumDrive mecanumDrive = null;
 
@@ -83,6 +86,9 @@ public class Drivetrain {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
+        huskylens = myOpMode.hardwareMap.get(HuskyLens.class, "huskyLens");
+        huskylens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
+
     }
     public void teleOp() {
         localizer.update();
@@ -103,12 +109,12 @@ public class Drivetrain {
         backLeftPower = (drive + turn + strafe) / denominator;
         backRightPower = (drive - turn - strafe) / denominator;
 
-        if (myOpMode.gamepad1.right_bumper) {
+        if (myOpMode.gamepad1.right_trigger > 0.3) {
             leftFrontDrive.setPower(frontLeftPower / 7);
-            rightBackDrive.setPower(frontRightPower / 7);
+            rightFrontDrive.setPower(frontRightPower / 7);
             leftBackDrive.setPower(backLeftPower / 7);
             rightBackDrive.setPower(backRightPower / 7);
-        } else if (myOpMode.gamepad1.left_bumper) {
+        } else if (myOpMode.gamepad1.left_trigger > 0.3) {
             leftFrontDrive.setPower(2 * frontLeftPower);
             rightFrontDrive.setPower(2 * frontRightPower);
             leftBackDrive.setPower(2 * backLeftPower);
