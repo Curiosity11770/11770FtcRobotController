@@ -9,6 +9,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 //import org.firstinspires.ftc.teamcode.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.Lift;
+import org.firstinspires.ftc.teamcode.subsystems.Scoring;
 
 
 @Autonomous(name="RegionalsSample", group="Linear OpMode")
@@ -29,11 +32,21 @@ public class RegionalsSample extends LinearOpMode {
         RUN,
         SAMPLE1,
         PICKUP,
-        TRANSFER,
-        GRAB,
         UP,
         GO2,
         SCORE2,
+        RUN2,
+        SAMPLE2,
+        PICKUP2,
+        UP2,
+        GO3,
+        SCORE3,
+        RUN3,
+        SAMPLE3,
+        PICKUP3,
+        UP3,
+        GO4,
+        SCORE4,
         IDLE
 
 
@@ -52,7 +65,7 @@ public class RegionalsSample extends LinearOpMode {
     Pose2D targetPose = new Pose2D(DistanceUnit.INCH, targetX,targetY, AngleUnit.DEGREES, targetHeading);
 
     @Override
-    public void runOpMode() {
+    public void  runOpMode() {
         //calling constructor
         robot = new Robot(this);
 
@@ -64,7 +77,7 @@ public class RegionalsSample extends LinearOpMode {
         //for Gobilda it looks like this
         robot.drivetrain.localizer.odo.setPosition(startPose);
         //for sparkfun it looks like this
-        // robot.drivetrain.localizer.myOtos.setPosition(startPose);
+        // robot.drivetrain.localizer.myOtos.s etPosition(startPose);
 
         //Set the drivetrain's first target
         robot.drivetrain.setTargetPose(targetPose);
@@ -80,11 +93,12 @@ public class RegionalsSample extends LinearOpMode {
             switch (currentState){
                 case DRIVE_TO_BASKET:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task
-                    robot.intake.intakeMode = robot.intake.intakeMode.TRANSFER;
-                    robot.scoring.scoringMode = robot.scoring.scoringMode.SAMPLE;
-                    robot.lift.liftMode = robot.lift.liftMode.HIGH_BASKET;
-                    if(robot.drivetrain.targetReached || timer.seconds() > 3.0){
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 1.2, 17.25, AngleUnit.DEGREES, -45));
+                    robot.intake.intakeMode = Intake.IntakeMode.TRANSFER;
+                    robot.scoring.scoringMode = Scoring.ScoringMode.SAMPLE;
+                    robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
+                    robot.lift.liftMode = Lift.LiftMode.HIGH_BASKET;
+                    if(robot.drivetrain.targetReached || timer.seconds() > 2.0){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 1.2, 17.25, AngleUnit.DEGREES, -65));
                         currentState = State.GO;
                         timer.reset();
                     }
@@ -99,31 +113,29 @@ public class RegionalsSample extends LinearOpMode {
                     break;
                 case SCORE:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task
-                    robot.scoring.clawServo.setPosition(robot.scoring.CLAW_OPEN);
-                    if(robot.drivetrain.targetReached || timer.seconds() > 0.75){
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 1.5, 9 , AngleUnit.DEGREES, 0));
+                    robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                    if(robot.drivetrain.targetReached || timer.seconds() > 0.5){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 10, 7, AngleUnit.DEGREES, 0));
                         currentState = State.RUN;
                         timer.reset();
                     }
                     break;
                 case RUN:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task;
-                    robot.intake.intakeMode = robot.intake.intakeMode.INTAKE;
-                    robot.lift.liftMode = robot.lift.liftMode.GROUND;
+                    robot.intake.intakeMode = Intake.IntakeMode.INTAKE;
                     robot.extension.leftLink.setPosition(0);
-                    if(robot.drivetrain.targetReached || timer.seconds() > 1){
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 1, 7, AngleUnit.DEGREES, 0));
+                    robot.extension.rightLink.setPosition(0);
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.5){
                         currentState = State.SAMPLE1;
                         timer.reset();
                     }
                     break;
                 case SAMPLE1:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task;
-                    robot.scoring.scoringMode = robot.scoring.scoringMode.TRANSFER;
-                    robot.scoring.clawServo.setPosition(robot.scoring.CLAW_OPEN);
-                    robot.extension.leftLink.setPosition(0.9);
+                    robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
                     robot.intake.spinIntake.setPower(1);
-                    robot.lift.liftMode = robot.lift.liftMode.GROUND;
+                    robot.lift.liftMode = Lift.LiftMode.GROUND;
+                    robot.scoring.scoringMode = Scoring.ScoringMode.TRANSFER;
                     if(timer.seconds() > 1.5){
                         currentState = State.PICKUP;
                         timer.reset();
@@ -131,41 +143,179 @@ public class RegionalsSample extends LinearOpMode {
                     break;
                 case PICKUP:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task;
+                    robot.scoring.scoringMode = Scoring.ScoringMode.TRANSFER;
+                    robot.intake.intakeMode = Intake.IntakeMode.TRANSFER;
                     robot.intake.spinIntake.setPower(1);
-                    robot.extension.leftLink.setPosition(0.9);
-                    robot.scoring.clawServo.setPosition(robot.scoring.CLAW_CLOSED);
-                    robot.lift.liftMode = robot.lift.liftMode.GROUND;
-                    if(timer.seconds() > 3.0){
-                        currentState = State.UP;
-                        timer.reset();
+                    robot.extension.leftLink.setPosition(0.87);
+                    robot.extension.rightLink.setPosition(0.87);
+                    if(timer.seconds() > 1.5){
+                        robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
+                        if (timer.seconds() > 2.0){
+                            currentState = State.UP;
+                            timer.reset();
+                        }
                     }
                     break;
                 case UP:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task;
                     //robot.scoring.scoringPivot.setMode
-                    robot.lift.liftMode = robot.lift.liftMode.HIGH_BASKET;
-                    if(robot.drivetrain.targetReached || timer.seconds() > 1.5){
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 1.2, 17.25, AngleUnit.DEGREES, -45));
+                    robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
+                    robot.lift.liftMode = Lift.LiftMode.HIGH_BASKET;
+                    robot.scoring.scoringMode = Scoring.ScoringMode.SAMPLE;
+                if(robot.drivetrain.targetReached || timer.seconds() > 2.0 ){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 1.2, 17.25, AngleUnit.DEGREES, -65));
                         currentState = State.GO2;
                         timer.reset();
                     }
                     break;
                 case GO2:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task;
-                    if(robot.drivetrain.targetReached || timer.seconds() > 1.5){
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.0){
                         currentState = State.SCORE2;
                         timer.reset();
                     }
                     break;
                 case SCORE2:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task
-                    robot.scoring.clawServo.setPosition(robot.scoring.CLAW_OPEN);
-                    if(timer.seconds() > 0.75){
+                    robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                    robot.intake.spinIntake.setPower(1);
+                    if(robot.drivetrain.targetReached || timer.seconds() > 0.5){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 11.5, 20.25, AngleUnit.DEGREES, 2));
+                        currentState = State.RUN2;
+                        timer.reset();
+                    }
+                    break;
+                case RUN2:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task;
+                    robot.intake.intakeMode = Intake.IntakeMode.INTAKE;
+                    robot.extension.leftLink.setPosition(0.415);
+                    robot.extension.rightLink.setPosition(0.415);
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.5){
+                        currentState = State.SAMPLE2;
+                        timer.reset();
+                    }
+                    break;
+                case SAMPLE2:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task;
+                    robot.scoring.scoringMode = Scoring.ScoringMode.TRANSFER;
+                    robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                    robot.intake.spinIntake.setPower(1);
+                    robot.lift.liftMode = Lift.LiftMode.GROUND;
+                    if(timer.seconds() > 1.5){
+                        currentState = State.PICKUP2;
+                        timer.reset();
+                    }
+                    break;
+                case PICKUP2:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task;
+                    robot.intake.intakeMode = Intake.IntakeMode.TRANSFER;
+                    robot.intake.spinIntake.setPower(1);
+                    robot.extension.leftLink.setPosition(0.87);
+                    robot.extension.rightLink.setPosition(0.87);
+                    robot.lift.liftMode = Lift.LiftMode.GROUND;
+                    if(timer.seconds() > 1.5){
+                        robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
+                        if (timer.seconds() > 2.0){
+                            currentState = State.UP2;
+                            timer.reset();
+                        }
+                    }
+                    break;
+                case UP2:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task;
+                    //robot.scoring.scoringPivot.setMode
+                    robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
+                    robot.lift.liftMode = Lift.LiftMode.HIGH_BASKET;
+                    robot.scoring.scoringMode = Scoring.ScoringMode.SAMPLE;
+                    if(robot.drivetrain.targetReached || timer.seconds() > 2.5){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 1.2, 17.25, AngleUnit.DEGREES, -65));
+                        currentState = State.GO3;
+                        timer.reset();
+                    }
+                    break;
+                case GO3:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task;
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.5){
+                        currentState = State.SCORE3;
+                        timer.reset();
+                    }
+                    break;
+                case SCORE3:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task
+                    robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                    robot.intake.spinIntake.setPower(1);
+                    if(timer.seconds() > 0.5){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 22, 7, AngleUnit.DEGREES, 55));
+                        currentState = State.RUN3;
+                        timer.reset();
+                    }
+                    break;
+                case RUN3:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task;
+                    robot.intake.intakeMode = Intake.IntakeMode.INTAKE;
+                    robot.extension.leftLink.setPosition(0.35);
+                    robot.extension.rightLink.setPosition(0.35);
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.0){
+                        currentState = State.SAMPLE3;
+                        timer.reset();
+                    }
+                    break;
+                case SAMPLE3:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task;
+                    robot.scoring.scoringMode = Scoring.ScoringMode.TRANSFER;
+                    robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                    robot.intake.spinIntake.setPower(1);
+                    robot.lift.liftMode = Lift.LiftMode.GROUND;
+                    if(timer.seconds() > 1.5){
+                        currentState = State.PICKUP3;
+                        timer.reset();
+                    }
+                    break;
+                case PICKUP3:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task;
+                    robot.intake.intakeMode = Intake.IntakeMode.TRANSFER;
+                    robot.intake.spinIntake.setPower(1);
+                    robot.extension.leftLink.setPosition(0.87);
+                    robot.extension.rightLink.setPosition(0.87);
+                    robot.lift.liftMode = Lift.LiftMode.GROUND;
+                    if(timer.seconds() > 1.5){
+                        robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
+                        if (timer.seconds() > 2.0){
+                            currentState = State.UP3;
+                            timer.reset();
+                        }
+                    }
+                    break;
+                case UP3:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task;
+                    //robot.scoring.scoringPivot.setMode
+                    robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
+                    robot.lift.liftMode = Lift.LiftMode.HIGH_BASKET;
+                    robot.scoring.scoringMode = Scoring.ScoringMode.SAMPLE;
+                    if(robot.drivetrain.targetReached || timer.seconds() > 2.0 ){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 1.2, 17.25, AngleUnit.DEGREES, -65));
+                        currentState = State.GO4;
+                        timer.reset();
+                    }
+                    break;
+                case GO4:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task;
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.5){
+                        currentState = State.SCORE4;
+                        timer.reset();
+                    }
+                    break;
+                case SCORE4:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task
+                    robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                    robot.intake.spinIntake.setPower(1);
+                    if(timer.seconds() > 2.0){
                         //robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 1.5, 7, AngleUnit.DEGREES, 0));
                         currentState = State.IDLE;
                         timer.reset();
                     }
                     break;
+
 
             }
             // Anything outside of the switch statement will run independent of the currentState

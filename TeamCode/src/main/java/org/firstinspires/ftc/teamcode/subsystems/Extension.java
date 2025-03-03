@@ -11,11 +11,11 @@ public class Extension {
     public Servo leftLink = null;
     public Servo rightLink = null;
 
-    public static final double LEFT_LINK_IN = 0.8;//used to be at 0
-    public static final double LEFT_LINK_OUT = 0.4;//used to be 0.4
+    public static final double LEFT_LINK_IN = 0.87;//used to be at 0
+    public static final double RIGHT_LINK_IN = 0.87;//used to be 0.4
 
     public double leftLinkPosition = LEFT_LINK_IN;
-    public double rightLinkPosition;
+    public double rightLinkPosition = RIGHT_LINK_IN;
 
     public enum ExtensionMode {
         MANUAL,
@@ -33,14 +33,14 @@ public class Extension {
         rightLink = myOpMode.hardwareMap.get(Servo.class, "rightLink");
 
         leftLinkPosition = LEFT_LINK_IN;
+        rightLinkPosition = RIGHT_LINK_IN;
         leftLink.setPosition(LEFT_LINK_IN);
-        rightLink.setPosition(LEFT_LINK_IN);
+        rightLink.setPosition(RIGHT_LINK_IN);
 
     }
 
     public void teleOp() {
         update();
-        leftLink.setPosition(leftLinkPosition);
         if(Math.abs(myOpMode.gamepad2.left_stick_y) > 0.1){
             extensionMode = ExtensionMode.MANUAL;
         } else if (myOpMode.gamepad2.dpad_left){
@@ -48,13 +48,29 @@ public class Extension {
         }
     }
     public void update() {
+        leftLink.setPosition(leftLinkPosition);
+        rightLink.setPosition(rightLinkPosition);
         if(extensionMode == ExtensionMode.MANUAL) {
             myOpMode.telemetry.addData("extension", leftLinkPosition);
-        }
-        if(Math.abs(myOpMode.gamepad2.left_stick_y) > 0.1){
-            leftLinkPosition = 1-(-myOpMode.gamepad2.left_stick_y*0.8);
+            myOpMode.telemetry.addData("extension", rightLinkPosition);
+            if (Math.abs(myOpMode.gamepad2.left_stick_y) > 0.1) {
+                leftLinkPosition += 0.01 * myOpMode.gamepad2.left_stick_y;
+                rightLinkPosition += 0.01 * myOpMode.gamepad2.left_stick_y;
+            }
+            if (leftLinkPosition > 0.87) {
+                leftLinkPosition = 0.87;
+            } else if (leftLinkPosition < 0) {
+                leftLinkPosition = 0;
+            }
+
+            if (rightLinkPosition > 0.87) {
+                rightLinkPosition = 0.87;
+            } else if (rightLinkPosition < 0) {
+                rightLinkPosition = 0;
+            }
         } else if (extensionMode == ExtensionMode.TRANSFER){
-            leftLinkPosition = 0.95;
+            leftLinkPosition = 0.87;
+            rightLinkPosition = 0.87;
         }
 
     }

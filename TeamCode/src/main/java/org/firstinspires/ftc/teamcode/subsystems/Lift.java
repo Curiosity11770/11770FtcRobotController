@@ -16,10 +16,10 @@ public class Lift {
     public ServoImplEx rightHook = null;
     public ServoImplEx  leftHook = null;
 
-    public static final double RIGHT_HOOK_UP = 0.03;
-    public static final double LEFT_HOOK_UP = 0.32;
-    public static final double RIGHT_HOOK_DOWN = 0.27;
-    public static final double LEFT_HOOK_DOWN  = 0.08;    //touch sensor
+    public static final double RIGHT_HOOK_UP = 0.08;
+    public static final double LEFT_HOOK_UP = 0.27;
+    public static final double RIGHT_HOOK_DOWN = 0.32;
+    public static final double LEFT_HOOK_DOWN  = 0.03;    //touch sensor
     //public TouchSensor touch = null;
 
     public enum LiftMode {
@@ -127,7 +127,7 @@ public class Lift {
         leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         if (liftMode == LiftMode.HIGH_CHAMBER) {
-            liftToPositionPIDClass(1270);
+            liftToPositionPIDClass(1500);
         } else if (liftMode == LiftMode.HIGH_BASKET){
             liftToPositionPIDClass(2000);
         } else if (liftMode == LiftMode.GROUND){

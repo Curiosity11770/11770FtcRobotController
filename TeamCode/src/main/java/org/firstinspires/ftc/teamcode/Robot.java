@@ -50,6 +50,7 @@ public class Robot {
     public void driveToHuskyLens(){
         double xTarget = 200;
         double rightMostX = 0;
+        double rightMostY = 0;
         int rightMostIndex = 0;
         PIDController strafeController;
         strafeController = new PIDController(Drivetrain.DRIVE_KP, Drivetrain.DRIVE_KI, Drivetrain.DRIVE_KD, Drivetrain.DRIVE_MAX_OUT);
@@ -57,13 +58,16 @@ public class Robot {
         myOpMode.telemetry.addData("Block count", blocks.length);
         for (int i = 0; i < blocks.length; i++) {
             myOpMode.telemetry.addData("Block", blocks[i].toString());
-            if(blocks[i].x > rightMostX){
-                rightMostX = blocks[i].x;
+
+            if(blocks[i].y > rightMostY){
+                rightMostY = blocks[i].y;
                 rightMostIndex = i;
-                extension.leftLinkPosition = (424.53-blocks[i].y)/380.74;
+                extension.leftLinkPosition = (98.21+blocks[i].y)/427.01;
+                extension.rightLinkPosition = (98.21+blocks[i].y)/427.01;
             }
 
         }
+        myOpMode.telemetry.addData("RightMostY", rightMostY);
         myOpMode.telemetry.addData("RightMostX", rightMostX);
         if(rightMostX < xTarget){
             double strafePower = strafeController.calculate(xTarget, rightMostX);

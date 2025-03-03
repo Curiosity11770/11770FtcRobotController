@@ -11,8 +11,10 @@ public class Intake {
     public Servo flipIntake = null;
 
     public static final double INTAKE_UP = 0.34;
-    public static final double INTAKE_DOWN = 0.64;
+    public static final double INTAKE_DOWN = 0.6;
     public static final double INTAKE_STOWED = 0;
+
+    public boolean transfer = false;
 
     public double flipPosition;
 
@@ -61,10 +63,15 @@ public class Intake {
 
         if(myOpMode.gamepad2.left_trigger > 0.7) {
             spinIntake.setPower(1);
+            transfer = false;
         } else if (myOpMode.gamepad2.right_trigger > 0.7){
             spinIntake.setPower(-1);
+            transfer = false;
         } else if (myOpMode.gamepad2.dpad_left) {
             spinIntake.setPower(1);
+            transfer = true;
+        /*} else if (transfer == true){
+            spinIntake.setPower(1);*/
         } else {
             spinIntake.setPower(0);
         }

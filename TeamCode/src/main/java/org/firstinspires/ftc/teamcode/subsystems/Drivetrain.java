@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -29,6 +30,8 @@ public class Drivetrain {
     public DcMotor leftFrontDrive = null;
     public DcMotor rightBackDrive = null;
     public DcMotor leftBackDrive = null;
+
+    public Servo sweeper;
 
     public PinPointLocalizer localizer;
 
@@ -85,7 +88,8 @@ public class Drivetrain {
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-
+        sweeper = myOpMode.hardwareMap.get(Servo.class, "sweeper");
+        sweeper.setPosition(0.7);
         huskylens = myOpMode.hardwareMap.get(HuskyLens.class, "huskyLens");
         huskylens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
 
@@ -109,22 +113,46 @@ public class Drivetrain {
         backLeftPower = (drive + turn + strafe) / denominator;
         backRightPower = (drive - turn - strafe) / denominator;
 
+        if(myOpMode.gamepad1.left_bumper){
+            sweeper.setPosition(0.1);
+        } else if (myOpMode.gamepad1.right_bumper){
+            sweeper.setPosition(0.7);
+        }
+
         if (myOpMode.gamepad1.right_trigger > 0.3) {
             leftFrontDrive.setPower(frontLeftPower / 7);
             rightFrontDrive.setPower(frontRightPower / 7);
             leftBackDrive.setPower(backLeftPower / 7);
             rightBackDrive.setPower(backRightPower / 7);
         } else if (myOpMode.gamepad1.left_trigger > 0.3) {
-            leftFrontDrive.setPower(2 * frontLeftPower);
-            rightFrontDrive.setPower(2 * frontRightPower);
-            leftBackDrive.setPower(2 * backLeftPower);
-            rightBackDrive.setPower(2 * backRightPower);
+            leftFrontDrive.setPower(2.5 * frontLeftPower);
+            rightFrontDrive.setPower(2.5 * frontRightPower);
+            leftBackDrive.setPower(2.5 * backLeftPower);
+            rightBackDrive.setPower(2.5 * backRightPower);
         } else {
             leftBackDrive.setPower(backLeftPower);
             leftFrontDrive.setPower(frontLeftPower);
             rightFrontDrive.setPower(frontRightPower);
             rightBackDrive.setPower(backRightPower);
         }
+        double xTarget = 200;
+        double rightMostX = 0;
+        double rightMostY = 0;
+        int rightMostIndex = 0;
+        PIDController strafeController;
+        strafeController = new PIDController(Drivetrain.DRIVE_KP, Drivetrain.DRIVE_KI, Drivetrain.DRIVE_KD, Drivetrain.DRIVE_MAX_OUT);
+        HuskyLens.Block[] blocks = huskylens.blocks();
+        myOpMode.telemetry.addData("Block count", blocks.length);
+        for (int i = 0; i < blocks.length; i++) {
+            myOpMode.telemetry.addData("Block", blocks[i].toString());
+
+            if(blocks[i].y > rightMostY){
+                rightMostY = blocks[i].y;
+                rightMostIndex = i;
+            }
+
+        }
+        myOpMode.telemetry.addData("RightMostY", rightMostY);
     }
 
     public void driveTime(double speed, double seconds) {
