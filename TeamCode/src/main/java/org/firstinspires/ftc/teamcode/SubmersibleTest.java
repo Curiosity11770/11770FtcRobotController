@@ -14,12 +14,18 @@ public class SubmersibleTest extends LinearOpMode{
         runtime.reset();
 
         waitForStart();
+        robot.timer.reset();
 
         runtime.reset();
-        robot.driveToHuskyLens();
 
-        while(runtime.seconds() < 2){
-            robot.driveToHuskyLens();
+        while (opModeIsActive() && !isStopRequested()){
+            if (runtime.seconds() < 3.0) {
+                robot.driveToHuskyLens();
+            }
+            if (runtime.seconds() > 3.0 && runtime.seconds() < 6.0) {
+                robot.submersibleIntake();
+            }
+            telemetry.update();
         }
     }
 

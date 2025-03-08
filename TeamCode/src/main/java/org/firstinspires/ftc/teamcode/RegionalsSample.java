@@ -47,6 +47,13 @@ public class RegionalsSample extends LinearOpMode {
         UP3,
         GO4,
         SCORE4,
+        SUBMERSIBLE,
+        ALIGN,
+        INTAKE,
+        TRANSFER,
+        UP5,
+        GO5,
+        SCORE5,
         IDLE
 
 
@@ -55,12 +62,13 @@ public class RegionalsSample extends LinearOpMode {
     // We define the current state we're on
     // Default to IDLE
     State currentState = State.DRIVE_TO_BASKET;
+    Boolean strafe  = false;
 
     // Define our start pose
     Pose2D startPose = new Pose2D(DistanceUnit.INCH, 0,0, AngleUnit.DEGREES,0);
     // Define our target
-    public static double targetX = 14;
-    public static double targetY = 8;
+    public static double targetX = 9;
+    public static double targetY = 1;
     public static double targetHeading = -45;
     Pose2D targetPose = new Pose2D(DistanceUnit.INCH, targetX,targetY, AngleUnit.DEGREES, targetHeading);
 
@@ -114,8 +122,8 @@ public class RegionalsSample extends LinearOpMode {
                 case SCORE:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task
                     robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
-                    if(robot.drivetrain.targetReached || timer.seconds() > 0.5){
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 10, 7, AngleUnit.DEGREES, 0));
+                    if(robot.drivetrain.targetReached || timer.seconds() > 0.2){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 12.5, 7, AngleUnit.DEGREES, 0));
                         currentState = State.RUN;
                         timer.reset();
                     }
@@ -123,20 +131,25 @@ public class RegionalsSample extends LinearOpMode {
                 case RUN:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task;
                     robot.intake.intakeMode = Intake.IntakeMode.INTAKE;
-                    robot.extension.leftLink.setPosition(0);
-                    robot.extension.rightLink.setPosition(0);
-                    if(robot.drivetrain.targetReached || timer.seconds() > 1.5){
+                    robot.extension.leftLink.setPosition(0.5);
+                    robot.extension.rightLink.setPosition(0.5);
+                    robot.extension.leftLinkPosition = 0.2;
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.0){
                         currentState = State.SAMPLE1;
                         timer.reset();
                     }
                     break;
                 case SAMPLE1:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task;
+                    double constant = 0.003;
+                    robot.extension.leftLink.setPosition(robot.extension.leftLinkPosition);
+                    robot.extension.rightLink.setPosition(robot.extension.leftLinkPosition);
+                    robot.extension.leftLinkPosition -= constant;
                     robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
                     robot.intake.spinIntake.setPower(1);
                     robot.lift.liftMode = Lift.LiftMode.GROUND;
                     robot.scoring.scoringMode = Scoring.ScoringMode.TRANSFER;
-                    if(timer.seconds() > 1.5){
+                    if(timer.seconds() > 0.5){
                         currentState = State.PICKUP;
                         timer.reset();
                     }
@@ -148,9 +161,9 @@ public class RegionalsSample extends LinearOpMode {
                     robot.intake.spinIntake.setPower(1);
                     robot.extension.leftLink.setPosition(0.87);
                     robot.extension.rightLink.setPosition(0.87);
-                    if(timer.seconds() > 1.5){
+                    if(timer.seconds() > 1.2){
                         robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
-                        if (timer.seconds() > 2.0){
+                        if (timer.seconds() > 1.3){
                             currentState = State.UP;
                             timer.reset();
                         }
@@ -162,7 +175,7 @@ public class RegionalsSample extends LinearOpMode {
                     robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
                     robot.lift.liftMode = Lift.LiftMode.HIGH_BASKET;
                     robot.scoring.scoringMode = Scoring.ScoringMode.SAMPLE;
-                if(robot.drivetrain.targetReached || timer.seconds() > 2.0 ){
+                if(robot.drivetrain.targetReached || timer.seconds() > 1.25){
                         robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 1.2, 17.25, AngleUnit.DEGREES, -65));
                         currentState = State.GO2;
                         timer.reset();
@@ -170,7 +183,7 @@ public class RegionalsSample extends LinearOpMode {
                     break;
                 case GO2:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task;
-                    if(robot.drivetrain.targetReached || timer.seconds() > 1.0){
+                    if(robot.drivetrain.targetReached || timer.seconds() > 0.5){
                         currentState = State.SCORE2;
                         timer.reset();
                     }
@@ -179,8 +192,8 @@ public class RegionalsSample extends LinearOpMode {
                     //put condition for switch at the beginning, condition can be based on time or completion of a task
                     robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
                     robot.intake.spinIntake.setPower(1);
-                    if(robot.drivetrain.targetReached || timer.seconds() > 0.5){
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 11.5, 20.25, AngleUnit.DEGREES, 2));
+                    if(robot.drivetrain.targetReached || timer.seconds() > 0.2){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 11.5, 20.5, AngleUnit.DEGREES, 2));
                         currentState = State.RUN2;
                         timer.reset();
                     }
@@ -188,20 +201,25 @@ public class RegionalsSample extends LinearOpMode {
                 case RUN2:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task;
                     robot.intake.intakeMode = Intake.IntakeMode.INTAKE;
-                    robot.extension.leftLink.setPosition(0.415);
-                    robot.extension.rightLink.setPosition(0.415);
-                    if(robot.drivetrain.targetReached || timer.seconds() > 1.5){
+                    robot.extension.leftLink.setPosition(0.5);
+                    robot.extension.rightLink.setPosition(0.5);
+                    robot.extension.leftLinkPosition = 0.2;
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.0){
                         currentState = State.SAMPLE2;
                         timer.reset();
                     }
                     break;
                 case SAMPLE2:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task;
+                    double constant2 = 0.003;
+                    robot.extension.leftLink.setPosition(robot.extension.leftLinkPosition);
+                    robot.extension.rightLink.setPosition(robot.extension.leftLinkPosition);
+                    robot.extension.leftLinkPosition -= constant2;
                     robot.scoring.scoringMode = Scoring.ScoringMode.TRANSFER;
                     robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
                     robot.intake.spinIntake.setPower(1);
                     robot.lift.liftMode = Lift.LiftMode.GROUND;
-                    if(timer.seconds() > 1.5){
+                    if(timer.seconds() > 0.75){
                         currentState = State.PICKUP2;
                         timer.reset();
                     }
@@ -213,9 +231,9 @@ public class RegionalsSample extends LinearOpMode {
                     robot.extension.leftLink.setPosition(0.87);
                     robot.extension.rightLink.setPosition(0.87);
                     robot.lift.liftMode = Lift.LiftMode.GROUND;
-                    if(timer.seconds() > 1.5){
+                    if(timer.seconds() > 1.0){
                         robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
-                        if (timer.seconds() > 2.0){
+                        if (timer.seconds() > 1.2 ){
                             currentState = State.UP2;
                             timer.reset();
                         }
@@ -227,7 +245,7 @@ public class RegionalsSample extends LinearOpMode {
                     robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
                     robot.lift.liftMode = Lift.LiftMode.HIGH_BASKET;
                     robot.scoring.scoringMode = Scoring.ScoringMode.SAMPLE;
-                    if(robot.drivetrain.targetReached || timer.seconds() > 2.5){
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.25){
                         robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 1.2, 17.25, AngleUnit.DEGREES, -65));
                         currentState = State.GO3;
                         timer.reset();
@@ -255,6 +273,7 @@ public class RegionalsSample extends LinearOpMode {
                     robot.intake.intakeMode = Intake.IntakeMode.INTAKE;
                     robot.extension.leftLink.setPosition(0.35);
                     robot.extension.rightLink.setPosition(0.35);
+                    robot.extension.leftLinkPosition = 0.35;
                     if(robot.drivetrain.targetReached || timer.seconds() > 1.0){
                         currentState = State.SAMPLE3;
                         timer.reset();
@@ -262,11 +281,15 @@ public class RegionalsSample extends LinearOpMode {
                     break;
                 case SAMPLE3:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task;
+                    double constant3 = 0.003;
+                    robot.extension.leftLink.setPosition(robot.extension.leftLinkPosition);
+                    robot.extension.rightLink.setPosition(robot.extension.leftLinkPosition);
+                    robot.extension.leftLinkPosition -= constant3;
                     robot.scoring.scoringMode = Scoring.ScoringMode.TRANSFER;
                     robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
                     robot.intake.spinIntake.setPower(1);
                     robot.lift.liftMode = Lift.LiftMode.GROUND;
-                    if(timer.seconds() > 1.5){
+                    if(timer.seconds() > 1.0){
                         currentState = State.PICKUP3;
                         timer.reset();
                     }
@@ -278,9 +301,9 @@ public class RegionalsSample extends LinearOpMode {
                     robot.extension.leftLink.setPosition(0.87);
                     robot.extension.rightLink.setPosition(0.87);
                     robot.lift.liftMode = Lift.LiftMode.GROUND;
-                    if(timer.seconds() > 1.5){
+                    if(timer.seconds() > 1.0){
                         robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
-                        if (timer.seconds() > 2.0){
+                        if (timer.seconds() > 1.2){
                             currentState = State.UP3;
                             timer.reset();
                         }
@@ -292,7 +315,7 @@ public class RegionalsSample extends LinearOpMode {
                     robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
                     robot.lift.liftMode = Lift.LiftMode.HIGH_BASKET;
                     robot.scoring.scoringMode = Scoring.ScoringMode.SAMPLE;
-                    if(robot.drivetrain.targetReached || timer.seconds() > 2.0 ){
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.25){
                         robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 1.2, 17.25, AngleUnit.DEGREES, -65));
                         currentState = State.GO4;
                         timer.reset();
@@ -300,7 +323,7 @@ public class RegionalsSample extends LinearOpMode {
                     break;
                 case GO4:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task;
-                    if(robot.drivetrain.targetReached || timer.seconds() > 1.5){
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.0){
                         currentState = State.SCORE4;
                         timer.reset();
                     }
@@ -308,19 +331,86 @@ public class RegionalsSample extends LinearOpMode {
                 case SCORE4:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task
                     robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
-                    robot.intake.spinIntake.setPower(1);
-                    if(timer.seconds() > 2.0){
+                    if(timer.seconds() > 0.2){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 64, -28, AngleUnit.DEGREES, -90));
+                        currentState = State.SUBMERSIBLE;
+                        timer.reset();
+                    }
+                    break;
+                case SUBMERSIBLE:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task
+                    robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                    if(timer.seconds() > 1.0){
+                        robot.lift.liftMode = Lift.LiftMode.GROUND;
+                        robot.scoring.scoringMode = Scoring.ScoringMode.TRANSFER;
+                    }
+                    if(timer.seconds() > 3.0){
                         //robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 1.5, 7, AngleUnit.DEGREES, 0));
+                        currentState = State.ALIGN;
+                        strafe = true;
+                        timer.reset();
+                    }
+                    break;
+                case ALIGN:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task
+                    while(timer.seconds() < 3.0) {
+                        robot.drivetrain.localizer.update();
+                        robot.driveToHuskyLens();
+                        telemetry.addData("while loop", currentState);
+                    }
+                    if(timer.seconds() > 3.0){
+                        //robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 1.5, 7, AngleUnit.DEGREES, 0));
+                        currentState = State.INTAKE;
+                        strafe = true;
+                        timer.reset();
+                    }
+                    break;
+                case INTAKE:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task
+                    while(timer.seconds() < 3.0){
+                        robot.drivetrain.localizer.update();
+                        robot.submersibleIntake();
+                        telemetry.addData("while loop", currentState);
+                        }
+                    if(timer.seconds() > 3.0 || robot.intake.colors.green > 0.01){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 1.2, 17.25, AngleUnit.DEGREES, 0));
+                        currentState = State.UP5;
+                        strafe = false;
+                        timer.reset();
+                    }
+                    break;
+                case UP5:
+                    if(timer.seconds() < 1.2) {
+                        robot.extension.leftLink.setPosition(0.87);
+                        robot.extension.rightLink.setPosition(0.87);
+                        robot.intake.intakeMode = Intake.IntakeMode.INTAKE;
+                    }else if(timer.seconds() < 1.3 && timer.seconds() > 1.2) {
+                        robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
+                    } else if (timer.seconds() > 1.3){
+                        robot.scoring.scoringMode = Scoring.ScoringMode.SAMPLE;
+                        robot.lift.liftMode = Lift.LiftMode.HIGH_BASKET;
+                    }
+
+                    if(timer.seconds() > 2.5){
+                        currentState = State.SCORE5;
+                        timer.reset();
+                    }
+                case SCORE5:
+                    robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                    if(timer.seconds() > 1.0){
                         currentState = State.IDLE;
                         timer.reset();
                     }
                     break;
 
 
+
             }
             // Anything outside of the switch statement will run independent of the currentState
             // We update robot continuously in the background, regardless of state
+            if (!strafe){
             robot.update();
+            }
             robot.lift.update();
             robot.scoring.update();
             robot.intake.update();

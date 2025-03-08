@@ -52,7 +52,7 @@ public class Drivetrain {
     public static double DRIVE_KD = 0.0;//0.0003;
     public static double DRIVE_MAX_ACC = 2000;
     public static double DRIVE_MAX_VEL = 3500;
-    public static double DRIVE_MAX_OUT = 0.8;
+    public static double DRIVE_MAX_OUT = 1;
     public static double STRAFE_MULTIPLIER = 2.0;
 
     public MecanumDrive mecanumDrive = null;

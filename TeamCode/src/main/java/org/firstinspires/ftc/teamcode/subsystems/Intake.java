@@ -1,8 +1,16 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 public class Intake {
@@ -18,6 +26,10 @@ public class Intake {
 
     public double flipPosition;
 
+    public NormalizedColorSensor colorSensor;
+    final float[] hsvValues = new float[3];
+    public NormalizedRGBA colors;
+
     public enum IntakeMode {
         TRANSFER,
         STOWED,
@@ -25,22 +37,58 @@ public class Intake {
     }
     public IntakeMode intakeMode = IntakeMode.STOWED;
 
+
     public Intake(LinearOpMode opmode) {
         myOpMode = opmode;
     }
 
     public void init(){
 
+
         spinIntake = myOpMode.hardwareMap.get(DcMotor.class, "spinIntake");
         flipIntake = myOpMode.hardwareMap.get(Servo.class, "flipIntake");
+
+        colorSensor = myOpMode.hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
+
+        if (colorSensor instanceof SwitchableLight) {
+            ((SwitchableLight)colorSensor).enableLight(true);
+        }
+
+
 
         spinIntake.setPower(0);
         myOpMode.telemetry.addData("intake", flipIntake.getPosition());
         flipPosition = INTAKE_STOWED;
         flipIntake.setPosition(INTAKE_STOWED);
+
+    }
+
+    public void sensorUpdate(){
+        colorSensor.setGain(2);
+        colors = colorSensor.getNormalizedColors();
+        Color.colorToHSV(colors.toColor(), hsvValues);
+
+        myOpMode.telemetry.addLine()
+                .addData("Red", "%.3f", colors.red)
+                .addData("Green", "%.3f", colors.green)
+                .addData("Blue", "%.3f", colors.blue);
+        myOpMode.telemetry.addLine()
+                .addData("Hue", "%.3f", hsvValues[0])
+                .addData("Saturation", "%.3f", hsvValues[1])
+                .addData("Value", "%.3f", hsvValues[2]);
+        myOpMode.telemetry.addData("Alpha", "%.3f", colors.alpha);
+        myOpMode.telemetry.addData("Gain", 2);
+        /* If this color sensor also has a distance sensor, display the measured distance.
+         * Note that the reported distance is only useful at very close range, and is impacted by
+         * ambient light and surface reflectivity. */
+        if (colorSensor instanceof DistanceSensor) {
+            myOpMode.telemetry.addData("Distance (cm)", "%.3f", ((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM));
+        }
     }
 
     public void teleOp(){
+
+        sensorUpdate();
         update();
 
         if(myOpMode.gamepad2.b){

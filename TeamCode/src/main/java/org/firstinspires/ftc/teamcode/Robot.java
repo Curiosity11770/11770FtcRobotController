@@ -2,12 +2,16 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Extension;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Scoring;
+
 
 public class Robot {
     private LinearOpMode myOpMode = null;
@@ -17,6 +21,12 @@ public class Robot {
     public Extension extension;
     public Lift lift;
     public Scoring scoring;
+
+    boolean isDriving = true;
+    public ElapsedTime timer = new ElapsedTime();
+    double leftMostY = 0;
+
+    double constant = 0.001;
 
     public Robot(LinearOpMode opmode){
         myOpMode = opmode;
@@ -48,40 +58,55 @@ public class Robot {
     }
 
     public void driveToHuskyLens(){
-        double xTarget = 200;
-        double rightMostX = 0;
-        double rightMostY = 0;
-        int rightMostIndex = 0;
-        PIDController strafeController;
-        strafeController = new PIDController(Drivetrain.DRIVE_KP, Drivetrain.DRIVE_KI, Drivetrain.DRIVE_KD, Drivetrain.DRIVE_MAX_OUT);
-        HuskyLens.Block[] blocks = drivetrain.huskylens.blocks();
-        myOpMode.telemetry.addData("Block count", blocks.length);
-        for (int i = 0; i < blocks.length; i++) {
-            myOpMode.telemetry.addData("Block", blocks[i].toString());
+            double xTarget = 70;
+            double leftMostX = 320;
+            int leftMostIndex = 0;
+            PIDController strafeController;
+            strafeController = new PIDController(0.025, Drivetrain.DRIVE_KI, Drivetrain.DRIVE_KD, 0.3);
+            HuskyLens.Block[] blocks = drivetrain.huskylens.blocks();
+            myOpMode.telemetry.addData("Block count", blocks.length);
+            for (int i = 0; i < blocks.length; i++) {
+                myOpMode.telemetry.addData("Block", blocks[i].toString());
 
-            if(blocks[i].y > rightMostY){
-                rightMostY = blocks[i].y;
-                rightMostIndex = i;
-                extension.leftLinkPosition = (98.21+blocks[i].y)/427.01;
-                extension.rightLinkPosition = (98.21+blocks[i].y)/427.01;
+                if (blocks[i].x < leftMostX) {
+                    leftMostX = blocks[i].x;
+                    leftMostIndex = i;
+                    leftMostY = blocks[leftMostIndex].y;
+                    extension.update();
+                }
+
             }
+            myOpMode.telemetry.addData("LeftMostY", leftMostY);
+            myOpMode.telemetry.addData("LeftMostX", leftMostX);
+            if (leftMostX > xTarget && isDriving) {
+                double strafePower = strafeController.calculate(xTarget, leftMostX);
+                drivetrain.leftFrontDrive.setPower(-strafePower);
+                drivetrain.leftBackDrive.setPower(strafePower);
+                drivetrain.rightFrontDrive.setPower(strafePower);
+                drivetrain.rightBackDrive.setPower(-strafePower);
+                myOpMode.telemetry.addData("StrafePower", strafePower);
+            } else {
+                drivetrain.leftFrontDrive.setPower(0);
+                drivetrain.leftBackDrive.setPower(0);
+                drivetrain.rightFrontDrive.setPower(0);
+                drivetrain.rightBackDrive.setPower(0);
+                extension.leftLinkPosition = ((98.21 + leftMostY) / 427.01) + 0.05;
+                extension.rightLinkPosition = ((98.21 + leftMostY) / 427.01) + 0.05;
+                isDriving = false;
+            }
+    }
 
-        }
-        myOpMode.telemetry.addData("RightMostY", rightMostY);
-        myOpMode.telemetry.addData("RightMostX", rightMostX);
-        if(rightMostX < xTarget){
-            double strafePower = strafeController.calculate(xTarget, rightMostX);
-            drivetrain.leftFrontDrive.setPower(-strafePower);
-            drivetrain.leftBackDrive.setPower(strafePower);
-            drivetrain.rightFrontDrive.setPower(strafePower);
-            drivetrain.rightBackDrive.setPower(-strafePower);
-            myOpMode.telemetry.addData("StrafePower", strafePower);
-        }else{
-            drivetrain.leftFrontDrive.setPower(0);
-            drivetrain.leftBackDrive.setPower(0);
-            drivetrain.rightFrontDrive.setPower(0);
-            drivetrain.rightBackDrive.setPower(0);
-        }
+    public void submersibleIntake(){
+            intake.intakeMode = Intake.IntakeMode.INTAKE;
+            intake.spinIntake.setPower(1);
+            intake.update();
+            intake.sensorUpdate();
+            extension.update();
+            constant += 0.002;
+            extension.leftLinkPosition = ((98.21 + leftMostY) / 427.01) - constant;
+            extension.rightLinkPosition = ((98.21 + leftMostY) / 427.01) - constant;
+            if (intake.colors.green >= 0.01){
+            }
     }
 
     public void update(){

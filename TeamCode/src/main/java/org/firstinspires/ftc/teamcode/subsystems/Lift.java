@@ -28,6 +28,7 @@ public class Lift {
         HIGH_BASKET,
         WALL_PICKUP,
         GROUND,
+        ASCENT,
         LOW_BASKET,
         LOW_CHAMBER
     }
@@ -110,6 +111,8 @@ public class Lift {
             liftMode = LiftMode.GROUND;
         } else if (myOpMode.gamepad2.dpad_right){
             liftMode = LiftMode.HIGH_BASKET;
+        } else if (myOpMode.gamepad1.dpad_left){
+            liftMode = LiftMode.ASCENT;
         }
 
         //code defining behavior of lift in each state
@@ -132,8 +135,13 @@ public class Lift {
             liftToPositionPIDClass(2000);
         } else if (liftMode == LiftMode.GROUND){
             liftToPositionPIDClass(0);
-        } else if (liftMode == LiftMode.WALL_PICKUP){
+        } else if (liftMode == LiftMode.WALL_PICKUP) {
             liftToPositionPIDClass(0);
+        } else if (liftMode == LiftMode.ASCENT) {
+            if (myOpMode.gamepad1.dpad_left) {
+                leftLift.setPower(-0.9);
+                rightLift.setPower(-0.9);
+            }
         } else if (liftMode == LiftMode.MANUAL){
             if (Math.abs(myOpMode.gamepad2.right_stick_y) > 0.1) {
                 liftMode = LiftMode.MANUAL;

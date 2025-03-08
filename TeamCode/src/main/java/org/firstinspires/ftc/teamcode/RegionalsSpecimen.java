@@ -55,8 +55,16 @@ public class RegionalsSpecimen extends LinearOpMode {
         DRIVE_SLOWLY3,
         FORWARD3,
         SLOW2,
+        SLOW3,
         PICKUP3,
         DRIVE_BACK3,
+        BACK3,
+        BACK4,
+        DRIVE_SLOWLY4,
+        FORWARD4,
+        SLOW4,
+        PICKUP4,
+        DRIVE_BACK4,
         IDLE
 
     }
@@ -68,7 +76,7 @@ public class RegionalsSpecimen extends LinearOpMode {
     // Define our start pose
     Pose2D startPose = new Pose2D(DistanceUnit.INCH, 0,0, AngleUnit.DEGREES,0);
     // Define our target
-    public static double targetX = 16;
+    public static double targetX = 14;
     public static double targetY = 10;
     public static double targetHeading = 0;
     Pose2D targetPose = new Pose2D(DistanceUnit.INCH, targetX,targetY, AngleUnit.DEGREES, targetHeading);
@@ -115,13 +123,13 @@ public class RegionalsSpecimen extends LinearOpMode {
                         robot.extension.rightLink.setPosition(0.87);
                     if(timer.seconds() > 0.4){
                         currentState = State.DRIVE_SLOWLY;
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 36, 10, AngleUnit.DEGREES, 0));
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 38, 10, AngleUnit.DEGREES, 0));
                         timer.reset();
                     }
                     break;
                 case DRIVE_SLOWLY:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task
-                    if(robot.drivetrain.targetReached || timer.seconds() > 1.5){
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.1){
                         currentState = State.OPEN;
                         robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 11, 5, AngleUnit.DEGREES, 0));
                         timer.reset();
@@ -130,7 +138,7 @@ public class RegionalsSpecimen extends LinearOpMode {
                 case OPEN:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task
                     robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
-                    if(robot.drivetrain.targetReached || timer.seconds() > 1.0){
+                    if(robot.drivetrain.targetReached || timer.seconds() > 0.5){
                         robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 4, 4, AngleUnit.DEGREES, 0));
                         currentState = State.PREP;
                         timer.reset();
@@ -139,7 +147,7 @@ public class RegionalsSpecimen extends LinearOpMode {
                 case PREP:
                     robot.scoring.scoringMode = Scoring.ScoringMode.PICKUP_WALL;
                     robot.lift.liftMode = Lift.LiftMode.WALL_PICKUP;
-                    if(robot.drivetrain.targetReached || timer.seconds() > 0.75){
+                    if(robot.drivetrain.targetReached || timer.seconds() > 0.6){
                         robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 4, -19, AngleUnit.DEGREES, 0));
                         currentState = State.GO    ;
                         timer.reset();
@@ -148,7 +156,7 @@ public class RegionalsSpecimen extends LinearOpMode {
                 case GO:
                     robot.scoring.scoringMode = Scoring.ScoringMode.PICKUP_WALL;
                     robot.lift.liftMode = Lift.LiftMode.WALL_PICKUP;
-                    if(robot.drivetrain.targetReached || timer.seconds() > 1.2){
+                    if(robot.drivetrain.targetReached || timer.seconds() > 0.75){
                         robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 50, -19, AngleUnit.DEGREES, 0));
                         currentState = State.STRAFE1;
                         timer.reset();
@@ -169,7 +177,7 @@ public class RegionalsSpecimen extends LinearOpMode {
                     }
                     break;
                 case BACK:
-                    if(robot.drivetrain.targetReached || timer.seconds() > 1.5){
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.2){
                         robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 50, -31, AngleUnit.DEGREES, 0));
                         currentState = State.STRAFE2;
                         timer.reset();
@@ -183,59 +191,63 @@ public class RegionalsSpecimen extends LinearOpMode {
                     }
                     break;
                 case UP2:
-                    if(robot.drivetrain.targetReached || timer.seconds() > 1.5){
+                    if(robot.drivetrain.targetReached || timer.seconds() > 0.5){
                         robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 12, -40, AngleUnit.DEGREES, 0));
                         currentState = State.BACK2;
                         timer.reset();
                     }
                     break;
                 case BACK2:
-                    if(robot.drivetrain.targetReached || timer.seconds() > 1.5){
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.25){
                         robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 50, -40, AngleUnit.DEGREES, 0));
                         currentState = State.STRAFE3;
                         timer.reset();
                     }
                     break;
                 case STRAFE3:
-                    if(robot.drivetrain.targetReached || timer.seconds() > 0.5){
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 50, -49, AngleUnit.DEGREES, 0));
+                    if(robot.drivetrain.targetReached || timer.seconds() > 0.35){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 50, -47.5, AngleUnit.DEGREES, 0));
                         currentState = State.UP3;
                         timer.reset();
                     }
                     break;
                 case UP3:
-                    if(robot.drivetrain.targetReached || timer.seconds() > 1.5){
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 12, -49, AngleUnit.DEGREES, 0));
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.0){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 12, -47.5, AngleUnit.DEGREES, 0));
                         currentState = State.STRAFE4;
                         timer.reset();
-                    }
-                    break;
+                        }
+                        break;
                 case STRAFE4:
-                    if(robot.drivetrain.targetReached || timer.seconds() > 1.0){
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 12, -30.5, AngleUnit.DEGREES, 0));
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.5){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 4, -30.5, AngleUnit.DEGREES, 0));
                         currentState = State.FORWARD;
                         timer.reset();
                     }
+                    break;
                 case FORWARD:
-                    //put condition for switch at the beginning, condition can be based on time or completion of a task
-                    //robot.scoring.clawServo.setPosition(0.8);
-                    //robot.lift.liftToPositionPIDClass(0);
-                    //robot.scoring.clawWrist.setPosition(0.5);
                     robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
-                    if(robot.drivetrain.targetReached || timer.seconds() > 1.0){ robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 12, -30.5, AngleUnit.DEGREES, 0));
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 0, -30.5, AngleUnit.DEGREES, 0));
+                    if(timer.seconds() > 1){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 0.2, -30.5, AngleUnit.DEGREES, 0));
                         currentState = State.SLOW;
                         timer.reset();
                     }
                     break;
                 case SLOW:
-                    if(timer.seconds() < 1.0) {
+                    if(timer.seconds() < 0.3) {
                         robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                        robot.scoring.scoringMode = Scoring.ScoringMode.PICKUP_WALL;
+                        robot.lift.liftMode = Lift.LiftMode.WALL_PICKUP;
                     }
-                    if(timer.seconds() > 1.1){
+                    if(timer.seconds() > 0.3){
                         robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
-                        currentState = State.PICKUP;
-                        timer.reset();
+                        if(timer.seconds() > 0.4){
+                            robot.lift.liftMode = Lift.LiftMode.HIGH_CHAMBER;
+                        }
+                        if(timer.seconds() > 0.6){
+                            currentState = State.PICKUP;
+                            timer.reset();
+                        }
                     }
                     break;
                 case PICKUP:
@@ -247,7 +259,7 @@ public class RegionalsSpecimen extends LinearOpMode {
                         robot.scoring.scoringMode = Scoring.ScoringMode.SCORING_HIGH_CHAMBER;
                         robot.lift.liftMode = Lift.LiftMode.HIGH_CHAMBER;
                         if(timer.seconds() > 0.2) {
-                            robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 11, 15, AngleUnit.DEGREES, 0));
+                            robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 14, 15, AngleUnit.DEGREES, 0));
                             currentState = State.DRIVE_BACK;
                             timer.reset();
                         }
@@ -263,34 +275,46 @@ public class RegionalsSpecimen extends LinearOpMode {
                     break;
                 case DRIVE_SLOWLY2:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task
-                    if(timer.seconds() > 1.0){
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 12, -30.5, AngleUnit.DEGREES, 0));
+                    if(timer.seconds() > 1.25){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 15, 15, AngleUnit.DEGREES, 0));
+                        currentState = State.BACK1;
+                        timer.reset();
+                    }
+                    break;
+                case BACK1:
+                    robot.lift.liftMode = Lift.LiftMode.HIGH_CHAMBER;
+                    robot.scoring.scoringMode = Scoring.ScoringMode.SCORING_HIGH_CHAMBER;
+                    robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                    if(timer.seconds() > 0.5){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 4, -30.5, AngleUnit.DEGREES, 0));
                         currentState = State.FORWARD2;
                         timer.reset();
                     }
                     break;
                 case FORWARD2:
-                    robot.lift.liftMode = Lift.LiftMode.HIGH_CHAMBER;
-                    robot.scoring.scoringMode = Scoring.ScoringMode.SCORING_HIGH_CHAMBER;
-                //put condition for switch at the beginning, condition can be based on time or completion of a task
-                //robot.scoring.clawServo.setPosition(0.8);
-                //robot.lift.liftToPositionPIDClass(0);
-                //robot.scoring.clawWrist.setPosition(0.5);
-                robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
-                if(robot.drivetrain.targetReached || timer.seconds() > 3.0){ robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 12, -30.5, AngleUnit.DEGREES, 0));
-                    robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 0, -30.5, AngleUnit.DEGREES, 0));
-                    currentState = State.SLOW2;
-                    timer.reset();
-                }
+                    robot.lift.liftMode = Lift.LiftMode.WALL_PICKUP;
+                    robot.scoring.scoringMode = Scoring.ScoringMode.PICKUP_WALL;
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.65) {
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 0.2, -30.5, AngleUnit.DEGREES, 0));
+                        currentState = State.SLOW2;
+                        timer.reset();
+                    }
                 break;
                 case SLOW2:
-                    if(timer.seconds() < 1.0) {
+                    if(timer.seconds() < 0.3) {
                         robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                        robot.scoring.scoringMode = Scoring.ScoringMode.PICKUP_WALL;
+                        robot.lift.liftMode = Lift.LiftMode.WALL_PICKUP;
                     }
-                    if(timer.seconds() > 1.1){
+                    if(timer.seconds() > 0.3){
                         robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
-                        currentState = State.PICKUP2;
-                        timer.reset();
+                        if(timer.seconds() > 0.4){
+                            robot.lift.liftMode = Lift.LiftMode.HIGH_CHAMBER;
+                        }
+                        if(timer.seconds() > 0.6){
+                            currentState = State.PICKUP2;
+                            timer.reset();
+                        }
                     }
                     break;
                 case PICKUP2:
@@ -302,30 +326,150 @@ public class RegionalsSpecimen extends LinearOpMode {
                         robot.scoring.scoringMode = Scoring.ScoringMode.SCORING_HIGH_CHAMBER;
                         robot.lift.liftMode = Lift.LiftMode.HIGH_CHAMBER;
                         if(timer.seconds() > 0.2) {
-                            robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 11, 15, AngleUnit.DEGREES, 0));
-                            currentState = State.DRIVE_BACK2;
+                            robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 14, 19, AngleUnit.DEGREES, 0));
+                            currentState = State.DRIVE_BACK3;
                             timer.reset();
                         }
                     }
                     break;
-                case DRIVE_BACK2:
+                case DRIVE_BACK3:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task
                     if(timer.seconds() > 1.0){
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 36, 15, AngleUnit.DEGREES, 0));
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 36, 19, AngleUnit.DEGREES, 0));
+                        currentState = State.BACK3;
+                        timer.reset();
+                    }
+                    break;
+                case BACK3:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task
+                    if(timer.seconds() > 1.2){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 15, 19, AngleUnit.DEGREES, 0));
                         currentState = State.DRIVE_SLOWLY3;
                         timer.reset();
                     }
                     break;
                 case DRIVE_SLOWLY3:
                     //put condition for switch at the beginning, condition can be based on time or completion of a task
-                    if(timer.seconds() > 1.0){
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 11, 15, AngleUnit.DEGREES, 0));
-                        currentState = State.IDLE;
+                    robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                    if(timer.seconds() > 0.5){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 4, -30.5, AngleUnit.DEGREES, 0));
+                        currentState = State.FORWARD3;
                         timer.reset();
                     }
                     break;
+                case FORWARD3:
+                    robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                    robot.lift.liftMode = Lift.LiftMode.WALL_PICKUP;
+                    robot.scoring.scoringMode = Scoring.ScoringMode.PICKUP_WALL;
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.65) {
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 0.3, -30.5, AngleUnit.DEGREES, 0));
+                        currentState = State.SLOW3;
+                        timer.reset();
+                    }
+                    break;
+                case SLOW3:
+                    if(timer.seconds() < 0.3) {
+                        robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                        robot.scoring.scoringMode = Scoring.ScoringMode.PICKUP_WALL;
+                        robot.lift.liftMode = Lift.LiftMode.WALL_PICKUP;
+                    }
+                    if(timer.seconds() > 0.3){
+                        robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
+                        if(timer.seconds() > 0.4){
+                            robot.lift.liftMode = Lift.LiftMode.HIGH_CHAMBER;
+                        }
+                        if(timer.seconds() > 0.6){
+                            currentState = State.PICKUP3;
+                            timer.reset();
+                        }
+                    }
+                    break;
+                case PICKUP3:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task
+                    robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
+                    robot.scoring.scoringMode = Scoring.ScoringMode.SCORING_HIGH_CHAMBER;
+                    robot.lift.liftMode = Lift.LiftMode.HIGH_CHAMBER;
+                    if(timer.seconds() > 0.2) {
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 14, 13, AngleUnit.DEGREES, 0));
+                        currentState = State.DRIVE_BACK2;
+                        timer.reset();
+                    }
+                    break;
+                case DRIVE_BACK2:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task
+                    if(timer.seconds() > 1.0){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 36, 13, AngleUnit.DEGREES, 0));
+                        currentState = State.BACK4;
+                        timer.reset();
+                    }
+                    break;
+                case BACK4:
 
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task
+                    if(timer.seconds() > 1.25){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 15, 13, AngleUnit.DEGREES, 0));
+                        currentState = State.DRIVE_SLOWLY4;
+                        timer.reset();
+                    }
+                    break;
+                case DRIVE_SLOWLY4:
+                    robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task
+                    if(timer.seconds() > 0.5){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 4, -30.5, AngleUnit.DEGREES, 0));
+                        currentState = State.FORWARD4;
+                        timer.reset();
+                    }
+                    break;
+                case FORWARD4:
+                    robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                    robot.lift.liftMode = Lift.LiftMode.WALL_PICKUP;
+                    robot.scoring.scoringMode = Scoring.ScoringMode.PICKUP_WALL;
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1.65) {
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 0.2, -30.5, AngleUnit.DEGREES, 0));
+                        currentState = State.SLOW4;
+                        timer.reset();
+                    }
+                    break;
+                case SLOW4:
+                    if(timer.seconds() < 0.3) {
+                        robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                        robot.scoring.scoringMode = Scoring.ScoringMode.PICKUP_WALL;
+                        robot.lift.liftMode = Lift.LiftMode.WALL_PICKUP;
+                    }
+                    if(timer.seconds() > 0.3){
+                        robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
+                        if(timer.seconds() > 0.4){
+                            robot.lift.liftMode = Lift.LiftMode.HIGH_CHAMBER;
+                        }
+                        if(timer.seconds() > 0.6){
+                            currentState = State.PICKUP2;
+                            timer.reset();
+                        }
+                    }
+                case PICKUP4:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task
+                    robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
+                    robot.scoring.scoringMode = Scoring.ScoringMode.SCORING_HIGH_CHAMBER;
+                    robot.lift.liftMode = Lift.LiftMode.HIGH_CHAMBER;
+                    if(timer.seconds() > 0.2) {
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 14, 7, AngleUnit.DEGREES, 0));
+                        currentState = State.DRIVE_BACK4;
+                        timer.reset();
+                    }
+                    break;
+                case DRIVE_BACK4:
+                    //put condition for switch at the beginning, condition can be based on time or completion of a task
+                    if(timer.seconds() > 1.0){
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 36, 7, AngleUnit.DEGREES, 0));
+                        if(timer.seconds() > 1.2) {
+                            robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                            currentState = State.IDLE;
+                            timer.reset();
+                        }
 
+                    }
+                    break;
             }
 
             // Anything outside of the switch statement will run independent of the currentState
