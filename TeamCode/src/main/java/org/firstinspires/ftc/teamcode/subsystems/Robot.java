@@ -1,22 +1,17 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
-import org.firstinspires.ftc.teamcode.subsystems.Extension;
-import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.Lift;
-import org.firstinspires.ftc.teamcode.subsystems.Scoring;
+import org.firstinspires.ftc.teamcode.motionProfile.ProfileDrivetrain;
+import org.firstinspires.ftc.teamcode.utility.PIDController;
 
 
 public class Robot {
     private LinearOpMode myOpMode = null;
 
-    public Drivetrain drivetrain;
+    public ProfileDrivetrain drivetrain;
     public Intake intake;
     public Extension extension;
     public Lift lift;
@@ -32,7 +27,7 @@ public class Robot {
         myOpMode = opmode;
     }
     public void init() {
-        drivetrain = new Drivetrain(myOpMode);
+        drivetrain = new ProfileDrivetrain(myOpMode);
         intake = new Intake(myOpMode);
         lift = new Lift(myOpMode);
         extension = new Extension (myOpMode);
@@ -48,13 +43,11 @@ public class Robot {
         myOpMode.telemetry.update();
     }
     public void teleOp() {
-        drivetrain.teleOp();
+        drivetrain.update();
         lift.teleOp();
         extension.teleOp();
         intake.teleOp();
         scoring.teleOp();
-
-
     }
 
     public void driveToHuskyLens(){

@@ -1,18 +1,16 @@
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.utility;
 
 import com.qualcomm.robotcore.util.Range;
 
 
 public class PIDController {
-//PID Control Class
-
+    //PID Control Class
     /*
 
      * Proportional Integral Derivative Controller
 
      */
-
     double Kp, Ki, Kd;
     double lastError = 0;
     double integralSum = 0;
@@ -24,7 +22,6 @@ public class PIDController {
     double currentFilterEstimate = 0;
     double a = 0.5;
     public boolean targetReached;
-
 
     public PIDController(double kpIn, double kiIn, double kdIn, double maxOutIn){
         Kp = kpIn;
@@ -70,7 +67,6 @@ public class PIDController {
     }
 
     public double calculate(double error){
-
         //check if target is reached
         targetReached = Math.abs(error) < errorMargin;
 
@@ -115,5 +111,13 @@ public class PIDController {
         integralSum = 0;
         previousFilterEstimate = 0;
         currentFilterEstimate = 0;
+    }
+
+    // Add a setter to allow updating gains
+    public void setGains(double Kp, double Ki, double Kd, double maxOutput) {
+        this.Kp = Kp;
+        this.Ki = Ki;
+        this.Kd = Kd;
+        this.maxOut = maxOutput;
     }
 }

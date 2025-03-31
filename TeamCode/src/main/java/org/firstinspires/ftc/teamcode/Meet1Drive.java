@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.subsystems.Robot;
+
 @Autonomous(name = "Meet1Drive", group = "Linear Opmode")
 public class Meet1Drive extends LinearOpMode{
     Robot robot = new Robot(this);
