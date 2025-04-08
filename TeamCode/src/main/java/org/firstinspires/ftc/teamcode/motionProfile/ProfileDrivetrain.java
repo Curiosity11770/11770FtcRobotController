@@ -66,7 +66,7 @@ public class ProfileDrivetrain {
     public static double DRIVE_MAX_OUT = 0.7;
 
     // Gains for the inner velocity loop.
-    public static double PROFILE_KP = 3;
+    public static double PROFILE_KP = 9;
     public static double PROFILE_KI = 0.0;
     public static double PROFILE_KD = 0.0;
 
@@ -76,21 +76,21 @@ public class ProfileDrivetrain {
     public static double VELOCITY_KD = 0.0;
 
     // Feedforward gain for acceleration.
-    public static double FEEDFORWARD_ACC = 0;
-    public static double FEEDFORWARD_VEL = 0.01;
+    public static double FEEDFORWARD_ACC = 0.003;
+    public static double FEEDFORWARD_VEL = 0.0175;
 
     // Maximum velocity and acceleration for the motion profile.
-    public static double DRIVE_MAX_ACC = 40;
-    public static double DRIVE_MAX_VEL = 40;
+    public static double DRIVE_MAX_ACC = 50;
+    public static double DRIVE_MAX_VEL = 50;
 
     // Other constants.
     public static double STRAFE_MULTIPLIER = 2;
 
     //used to adjust smoothing factor of low pass filter
-    public static double FILTER_CONSTANT = 0.3;
+    public static double FILTER_CONSTANT = 1;
 
-    public static double MAX_ACCEL_FILTER = 0.1;
-    public static double LOW_PASS_ALPHA = 0.5;
+    public static double MAX_ACCEL_FILTER = 10;
+    public static double LOW_PASS_ALPHA = 1;
 
     double prevMotorCmdX = 0;
     double prevMotorCmdY = 0;
@@ -431,6 +431,7 @@ public class ProfileDrivetrain {
             Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
             dashboardTelemetry.addData("instantX (from profile)", instantX);
+            dashboardTelemetry.addData("rawX (from profile)", rawVelX);
             dashboardTelemetry.addData("currentX (from pinpoint)", localizer.getX());
             dashboardTelemetry.addData("desiredXVel (from profile)", desiredVx);
             dashboardTelemetry.addData("velocityAdjX (positional error output)", velAdjX);
