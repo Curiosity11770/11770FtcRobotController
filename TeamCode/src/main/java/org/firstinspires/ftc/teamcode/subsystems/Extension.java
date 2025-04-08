@@ -51,11 +51,12 @@ public class Extension {
         leftLink.setPosition(leftLinkPosition);
         rightLink.setPosition(rightLinkPosition);
         if(extensionMode == ExtensionMode.MANUAL) {
-            myOpMode.telemetry.addData("extension", leftLinkPosition);
-            myOpMode.telemetry.addData("extension", rightLinkPosition);
+            myOpMode.telemetry.addData("extensionLeft", leftLinkPosition);
+            myOpMode.telemetry.addData("extensionRight", rightLinkPosition);
+            myOpMode.telemetry.addData("extensionSum", rightLinkPosition + leftLinkPosition);
             if (Math.abs(myOpMode.gamepad2.left_stick_y) > 0.1) {
-                leftLinkPosition += 0.01 * myOpMode.gamepad2.left_stick_y;
-                rightLinkPosition += 0.01 * myOpMode.gamepad2.left_stick_y;
+                leftLinkPosition += 0.05 * myOpMode.gamepad2.left_stick_y;
+                rightLinkPosition += 0.05 * myOpMode.gamepad2.left_stick_y;
             }
             if (leftLinkPosition > 0.87) {
                 leftLinkPosition = 0.87;
@@ -71,6 +72,7 @@ public class Extension {
         } else if (extensionMode == ExtensionMode.TRANSFER){
             leftLinkPosition = 0.87;
             rightLinkPosition = 0.87;
+
         }
 
     }
