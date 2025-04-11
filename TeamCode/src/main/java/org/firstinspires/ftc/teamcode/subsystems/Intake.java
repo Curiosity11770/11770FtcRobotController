@@ -18,7 +18,7 @@ public class Intake {
     public DcMotor spinIntake = null;
     public Servo flipIntake = null;
 
-    public static final double INTAKE_UP = 0.34;
+    public static final double INTAKE_UP = 0.29;
     public static final double INTAKE_DOWN = 0.6;
     public static final double INTAKE_STOWED = 0;
 

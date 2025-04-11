@@ -208,6 +208,39 @@ public class ProfileDrivetrain {
         // Create a new motion profile from current position to target.
         motionProfile = new MotionProfile(localizer.getX(), localizer.getY(), newX, newY, DRIVE_MAX_VEL, DRIVE_MAX_ACC);
     }
+    public void driveStraightTime(double motorPower, double time, ElapsedTime timer){
+        localizer.update();
+        if (time < timer.seconds()){
+            leftFrontDrive.setPower(motorPower);
+            rightFrontDrive.setPower(motorPower);
+            rightBackDrive.setPower(motorPower);
+            leftBackDrive.setPower(motorPower);
+        } else {
+            leftFrontDrive.setPower(0);
+            rightFrontDrive.setPower(0);
+            rightBackDrive.setPower(0);
+            leftBackDrive.setPower(0);
+        }
+    }
+
+
+    public void relativeDriveToTarget(double relativeXTarget, double relativeYTarget, double relativeDegreeTarget, double kpValue){
+        drivetrainMode = DrivetrainMode.AUTO;
+        xController = new PIDController(kpValue, DRIVE_KI, DRIVE_KD, DRIVE_MAX_OUT);
+        yController = new PIDController(kpValue, DRIVE_KI, DRIVE_KD, DRIVE_MAX_OUT);
+
+        double cosTheta = Math.cos(Math.toRadians(localizer.getHeading()));
+        double sinTheta = Math.sin(Math.toRadians(localizer.getHeading()));
+
+        double newX = localizer.getX() + relativeXTarget * cosTheta - relativeYTarget * sinTheta;
+        double newY = localizer.getY() + relativeXTarget * sinTheta + relativeYTarget * cosTheta;
+        double newTheta = localizer.getHeading() + relativeDegreeTarget;
+
+        targetPose = new Pose2D(DistanceUnit.INCH, newX, newY, AngleUnit.DEGREES, newTheta);
+        targetReached = false;
+        // Create a new motion profile from current position to target.
+        //motionProfile = new MotionProfile(localizer.getX(), localizer.getY(), newX, newY, DRIVE_MAX_VEL, DRIVE_MAX_ACC);
+    }
 
     public double angleWrap(double degrees) {
         while (degrees > 180) {

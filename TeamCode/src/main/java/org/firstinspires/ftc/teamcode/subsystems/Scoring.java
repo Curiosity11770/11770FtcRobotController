@@ -13,12 +13,12 @@ public class Scoring {
     public Servo clawServo = null;
     public Servo scoringPivot = null;
 
-    public static final double CLAW_UP = 0.88;
-    public static final double CLAW_DOWN = 0.2;
+    public static final double CLAW_UP = 0.87;
+    public static final double CLAW_DOWN = 0.19;
     public static final double CLAW_OPEN = 0.4;
-    public static final double CLAW_CLOSED = 0.20;
-    public static final double CHAMBER_SCORING = 0.18;
-    public static final double TRANSFER_SCORING = 0.33;
+    public static final double CLAW_CLOSED = 0.17;
+    public static final double CHAMBER_SCORING = 0.19;
+    public static final double TRANSFER_SCORING = 0.325;
     public static final double WALL_SCORING = 0.62;
     public static final double SAMPLE_SCORING = 0.83;
     public double clawServoPosition;
@@ -48,7 +48,7 @@ public class Scoring {
 
         scoringPivot.setPosition(TRANSFER_SCORING);
 
-        clawServoPosition = CLAW_OPEN;
+        clawServoPosition = CLAW_CLOSED;
         clawWristPosition = CLAW_UP;
     }
 

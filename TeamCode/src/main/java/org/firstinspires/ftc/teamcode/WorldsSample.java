@@ -8,7 +8,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.Scoring;
 
 @Config
 @Autonomous(name="WorldsSample", group="Linear OpMode")
@@ -27,6 +30,7 @@ public class WorldsSample extends LinearOpMode {
         DELIVER_SAMPLE,
         DRIVE_TO_FLOOR_SAMPLE,
         RETRIEVE_FLOOR_SAMPLE,
+        TRANSFER,
         DRIVE_TO_SUBMERSIBLE,
         RETRIEVE_SUBMERSIBLE_SAMPLE,
         DRIVE_TO_BASKET_FROM_SUBMERSIBLE,
@@ -35,13 +39,13 @@ public class WorldsSample extends LinearOpMode {
     }
 
     //Constants so these can be tuned in the dashboard
-    public static double basketX = 8;
-    public static double basketY = 10;
+    public static double basketX = 12;
+    public static double basketY = 12.3;
     public static double basketHeading = -45;
 
-    public static double floorSampleX = 24;
-    public static double floorSampleY = 9;
-    public static double floorSampleHeading = 0;
+    public static double floorSampleX = 11;
+    public static double floorSampleY = 20;
+    public static double floorSampleHeading = -20;
 
     public static double submersibleX = 48;
     public static double submersibleY = -12;
@@ -90,31 +94,67 @@ public class WorldsSample extends LinearOpMode {
         while (opModeIsActive() && !isStopRequested()) {
             switch (currentState){
                 case DRIVE_TO_BASKET:
+                    robot.intake.spinIntake.setPower(0);
                     robot.drivetrain.profiledDriveToTarget(basketX, basketY,basketHeading);
+                    robot.lift.liftMode = Lift.LiftMode.HIGH_BASKET;
+                    robot.scoring.scoringMode = Scoring.ScoringMode.SAMPLE;
                     //put condition for switch at the end, condition can be based on time or completion of a task
-                    if(robot.drivetrain.targetReached || timer.seconds() > 1.5){
+                    if(timer.seconds() > 1.5){
                         switchState(State.DELIVER_SAMPLE);
                     }
                     break;
                 case DELIVER_SAMPLE:
-                    robot.drivetrain.profiledDriveToTarget(basketX, basketY,basketHeading);
-                    if(timer.seconds() > 1.5 && samplesScored < 3){
+                    robot.drivetrain.relativeDriveToTarget(-6, 0, 0, 0.1);
+                    if (timer.seconds() > 1) {
+                        robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                    }
+                    if(timer.seconds() > 1.2 && samplesScored < 3){
                         switchState(State.DRIVE_TO_FLOOR_SAMPLE);
                         samplesScored++;
-                    }else if(timer.seconds() >1.5){
+                    }else if(timer.seconds() >1.2){
                         switchState(State.DRIVE_TO_SUBMERSIBLE);
                         samplesScored++;
                     }
                     break;
                 case DRIVE_TO_FLOOR_SAMPLE:
+                    if(timer.seconds() > 0.8) {
+                        robot.lift.liftMode = Lift.LiftMode.GROUND;
+                        robot.scoring.scoringMode = Scoring.ScoringMode.TRANSFER;
+                    }
+                    robot.extension.leftLink.setPosition(0.55);
+                    robot.extension.rightLink.setPosition(0.55);
+                    robot.intake.intakeMode = Intake.IntakeMode.INTAKE;
+                    robot.intake.spinIntake.setPower(1);
                     telemetry.addData("expression", floorSampleY+samplesScored*6.0);
-                    robot.drivetrain.profiledDriveToTarget(floorSampleX, floorSampleY + (samplesScored-1)*6.0,floorSampleHeading+(samplesScored-1)*15.0);
-                    if(timer.seconds() > 1.5){
+                    if(samplesScored == 1) {
+                        robot.drivetrain.profiledDriveToTarget(floorSampleX, floorSampleY,floorSampleHeading+(samplesScored-1)*20.0);
+
+                    } else if (samplesScored == 2){
+                        robot.drivetrain.profiledDriveToTarget(floorSampleX, floorSampleY,2);
+                    } else if (samplesScored == 3) {
+                        robot.drivetrain.profiledDriveToTarget(floorSampleX, 19,floorSampleHeading+(samplesScored-1)*21);
+
+                    }
+                     if(timer.seconds() > 1.5){
                         switchState(State.RETRIEVE_FLOOR_SAMPLE);
                     }
                     break;
                 case RETRIEVE_FLOOR_SAMPLE:
-                    if(timer.seconds() > 1.5){
+                    robot.drivetrain.relativeDriveToTarget(12, 0, 0, 0.03);
+                    if(timer.seconds() > 1.5 || robot.intake.colors.green > 0.01){
+                        switchState(State.TRANSFER);
+                    }
+                    break;
+                case TRANSFER:
+                    robot.extension.leftLink.setPosition(0.87);
+                    robot.extension.rightLink.setPosition(0.87);
+                    robot.intake.spinIntake.setPower(1);
+                    robot.intake.intakeMode = Intake.IntakeMode.TRANSFER;
+                    robot.drivetrain.profiledDriveToTarget(basketX, basketY,basketHeading);
+                    if(timer.seconds() > 0.8){
+                        robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
+                    }
+                    if(timer.seconds() > 1.0){
                         switchState(State.DRIVE_TO_BASKET);
                     }
                     break;
@@ -159,6 +199,10 @@ public class WorldsSample extends LinearOpMode {
             // Anything outside of the switch statement will run independent of the currentState
             // We update robot continuously in the background, regardless of state
             robot.update();
+            robot.lift.update();
+            robot.scoring.update();
+            robot.intake.update();
+            robot.intake.sensorUpdate();
 
             telemetry.addData("state", currentState);
             telemetry.addData("timer", timer.seconds());

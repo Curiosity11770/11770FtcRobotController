@@ -11,8 +11,8 @@ public class Extension {
     public Servo leftLink = null;
     public Servo rightLink = null;
 
-    public static final double LEFT_LINK_IN = 0.87;//used to be at 0
-    public static final double RIGHT_LINK_IN = 0.87;//used to be 0.4
+    public static final double LEFT_LINK_IN = 0.89;//used to be at 0
+    public static final double RIGHT_LINK_IN = 0.89;//used to be 0.4
 
     public double leftLinkPosition = LEFT_LINK_IN;
     public double rightLinkPosition = RIGHT_LINK_IN;
@@ -58,20 +58,20 @@ public class Extension {
                 leftLinkPosition += 0.05 * myOpMode.gamepad2.left_stick_y;
                 rightLinkPosition += 0.05 * myOpMode.gamepad2.left_stick_y;
             }
-            if (leftLinkPosition > 0.87) {
-                leftLinkPosition = 0.87;
+            if (leftLinkPosition > 0.89) {
+                leftLinkPosition = 0.89;
             } else if (leftLinkPosition < 0) {
                 leftLinkPosition = 0;
             }
 
-            if (rightLinkPosition > 0.87) {
-                rightLinkPosition = 0.87;
+            if (rightLinkPosition > 0.89) {
+                rightLinkPosition = 0.89;
             } else if (rightLinkPosition < 0) {
                 rightLinkPosition = 0;
             }
         } else if (extensionMode == ExtensionMode.TRANSFER){
-            leftLinkPosition = 0.87;
-            rightLinkPosition = 0.87;
+            leftLinkPosition = 0.89;
+            rightLinkPosition = 0.89;
 
         }
 
