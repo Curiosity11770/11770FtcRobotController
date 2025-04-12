@@ -107,7 +107,7 @@ public class MotionProfile {
      */
     public boolean profileComplete() {
         timeElapsed = (System.currentTimeMillis() - startTime) / 1000.0;
-        return timeElapsed >= totalTime+0.2;
+        return timeElapsed >= totalTime+0.05;
     }
 
     /**

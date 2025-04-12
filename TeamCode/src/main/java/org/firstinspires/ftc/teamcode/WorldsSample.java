@@ -47,7 +47,7 @@ public class WorldsSample extends LinearOpMode {
     public static double floorSampleY = 20;
     public static double floorSampleHeading = -20;
 
-    public static double submersibleX = 48;
+    public static double submersibleX = 65;
     public static double submersibleY = -12;
     public static double submersibleHeading = -90;
 
@@ -117,22 +117,17 @@ public class WorldsSample extends LinearOpMode {
                     }
                     break;
                 case DRIVE_TO_FLOOR_SAMPLE:
-                    if(timer.seconds() > 0.8) {
-                        robot.lift.liftMode = Lift.LiftMode.GROUND;
-                        robot.scoring.scoringMode = Scoring.ScoringMode.TRANSFER;
-                    }
                     robot.extension.leftLink.setPosition(0.55);
                     robot.extension.rightLink.setPosition(0.55);
                     robot.intake.intakeMode = Intake.IntakeMode.INTAKE;
                     robot.intake.spinIntake.setPower(1);
                     telemetry.addData("expression", floorSampleY+samplesScored*6.0);
                     if(samplesScored == 1) {
-                        robot.drivetrain.profiledDriveToTarget(floorSampleX, floorSampleY,floorSampleHeading+(samplesScored-1)*20.0);
-
+                        robot.drivetrain.profiledDriveToTarget(floorSampleX, floorSampleY,floorSampleHeading+(samplesScored-1)*22.0);
                     } else if (samplesScored == 2){
-                        robot.drivetrain.profiledDriveToTarget(floorSampleX, floorSampleY,2);
+                            robot.drivetrain.profiledDriveToTarget(floorSampleX-2, floorSampleY-1,0.4);
                     } else if (samplesScored == 3) {
-                        robot.drivetrain.profiledDriveToTarget(floorSampleX, 19,floorSampleHeading+(samplesScored-1)*21);
+                        robot.drivetrain.profiledDriveToTarget(floorSampleX+4, 10.5,floorSampleHeading+(samplesScored-1)*30);
 
                     }
                      if(timer.seconds() > 1.5){
@@ -140,6 +135,8 @@ public class WorldsSample extends LinearOpMode {
                     }
                     break;
                 case RETRIEVE_FLOOR_SAMPLE:
+                        robot.lift.liftMode = Lift.LiftMode.GROUND;
+                        robot.scoring.scoringMode = Scoring.ScoringMode.TRANSFER;
                     robot.drivetrain.relativeDriveToTarget(12, 0, 0, 0.03);
                     if(timer.seconds() > 1.5 || robot.intake.colors.green > 0.01){
                         switchState(State.TRANSFER);
@@ -162,6 +159,8 @@ public class WorldsSample extends LinearOpMode {
                     if(timer.seconds() <1.6 ){
                         robot.drivetrain.profiledDriveToTarget(submersibleX, submersibleY+12,submersibleHeading);
                     }else{
+                        robot.lift.liftMode = Lift.LiftMode.GROUND;
+                        robot.scoring.scoringMode = Scoring.ScoringMode.TRANSFER;
                         robot.drivetrain.profiledDriveToTarget(submersibleX, submersibleY,submersibleHeading);
                     }
 
@@ -181,6 +180,16 @@ public class WorldsSample extends LinearOpMode {
                     }
                     break;
                 case DRIVE_TO_BASKET_FROM_SUBMERSIBLE:
+                    robot.extension.leftLink.setPosition(0.87);
+                    robot.extension.rightLink.setPosition(0.87);
+                    robot.intake.spinIntake.setPower(1);
+                    robot.intake.intakeMode = Intake.IntakeMode.TRANSFER;
+                    if(timer.seconds() > 1.5){
+                        robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
+                    } else if (timer.seconds() > 1.7) {
+                        robot.lift.liftMode = Lift.LiftMode.HIGH_BASKET;
+                        robot.scoring.scoringMode = Scoring.ScoringMode.SAMPLE;
+                    }
                     robot.drivetrain.profiledDriveToTarget(basketX, basketY,basketHeading);
                     //put condition for switch at the end, condition can be based on time or completion of a task
                     if(robot.drivetrain.targetReached || timer.seconds() > 3){
