@@ -18,7 +18,7 @@ public class Intake {
     public DcMotor spinIntake = null;
     public Servo flipIntake = null;
 
-    public static final double INTAKE_UP = 0.29;
+    public static final double INTAKE_UP = 0.26;
     public static final double INTAKE_DOWN = 0.6;
     public static final double INTAKE_STOWED = 0;
 
@@ -27,7 +27,7 @@ public class Intake {
     public double flipPosition;
 
     public NormalizedColorSensor colorSensor;
-    final float[] hsvValues = new float[3];
+    public final float[] hsvValues = new float[3];
     public NormalizedRGBA colors;
 
     public enum IntakeMode {

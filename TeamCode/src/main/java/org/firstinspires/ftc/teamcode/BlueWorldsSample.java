@@ -14,13 +14,15 @@ import org.firstinspires.ftc.teamcode.subsystems.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.Scoring;
 
 @Config
-@Autonomous(name="WorldsSample", group="Linear OpMode")
-public class WorldsSample extends LinearOpMode {
+@Autonomous(name="BlueWorldsSample", group="Linear OpMode")
+public class BlueWorldsSample extends LinearOpMode {
 
     Robot robot;
 
     ElapsedTime timer = new ElapsedTime();
     ElapsedTime totalTime = new ElapsedTime();
+    Boolean strafe  = false;
+
 
     // This enum defines our "state"
     // This is essentially just defines the possible steps our program will take
@@ -47,7 +49,7 @@ public class WorldsSample extends LinearOpMode {
     public static double floorSampleY = 20;
     public static double floorSampleHeading = -20;
 
-    public static double submersibleX = 65;
+    public static double submersibleX = 55;
     public static double submersibleY = -12;
     public static double submersibleHeading = -90;
 
@@ -104,39 +106,39 @@ public class WorldsSample extends LinearOpMode {
                     }
                     break;
                 case DELIVER_SAMPLE:
-                    robot.drivetrain.relativeDriveToTarget(-6, 0, 0, 0.1);
-                    if (timer.seconds() > 1) {
+                    robot.drivetrain.relativeDriveToTarget(-6, 0, 0, 0.35);
+                    if (timer.seconds() > 0.8) {
                         robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
                     }
-                    if(timer.seconds() > 1.2 && samplesScored < 3){
+                    if(timer.seconds() > 1.0 && samplesScored < 3){
                         switchState(State.DRIVE_TO_FLOOR_SAMPLE);
                         samplesScored++;
-                    }else if(timer.seconds() >1.2){
+                    }else if(timer.seconds() >1.0){
                         switchState(State.DRIVE_TO_SUBMERSIBLE);
                         samplesScored++;
                     }
                     break;
                 case DRIVE_TO_FLOOR_SAMPLE:
-                    robot.extension.leftLink.setPosition(0.55);
-                    robot.extension.rightLink.setPosition(0.55);
+                    robot.extension.leftLink.setPosition(0.5);
+                    robot.extension.rightLink.setPosition(0.5);
                     robot.intake.intakeMode = Intake.IntakeMode.INTAKE;
                     robot.intake.spinIntake.setPower(1);
                     telemetry.addData("expression", floorSampleY+samplesScored*6.0);
                     if(samplesScored == 1) {
                         robot.drivetrain.profiledDriveToTarget(floorSampleX, floorSampleY,floorSampleHeading+(samplesScored-1)*22.0);
                     } else if (samplesScored == 2){
-                            robot.drivetrain.profiledDriveToTarget(floorSampleX-2, floorSampleY-1,0.4);
+                        robot.drivetrain.profiledDriveToTarget(floorSampleX-2, floorSampleY-1,0.4);
                     } else if (samplesScored == 3) {
                         robot.drivetrain.profiledDriveToTarget(floorSampleX+4, 10.5,floorSampleHeading+(samplesScored-1)*30);
 
                     }
-                     if(timer.seconds() > 1.5){
+                    if(timer.seconds() > 1.5){
                         switchState(State.RETRIEVE_FLOOR_SAMPLE);
                     }
                     break;
                 case RETRIEVE_FLOOR_SAMPLE:
-                        robot.lift.liftMode = Lift.LiftMode.GROUND;
-                        robot.scoring.scoringMode = Scoring.ScoringMode.TRANSFER;
+                    robot.lift.liftMode = Lift.LiftMode.GROUND;
+                    robot.scoring.scoringMode = Scoring.ScoringMode.TRANSFER;
                     robot.drivetrain.relativeDriveToTarget(12, 0, 0, 0.03);
                     if(timer.seconds() > 1.5 || robot.intake.colors.green > 0.01){
                         switchState(State.TRANSFER);
@@ -166,16 +168,21 @@ public class WorldsSample extends LinearOpMode {
 
                     if(timer.seconds() > 2.5){
                         switchState(State.RETRIEVE_SUBMERSIBLE_SAMPLE);
+                        strafe = true;
                     }
                     break;
                 case RETRIEVE_SUBMERSIBLE_SAMPLE:
-                    if(timer.seconds() < 2.0) {
+                    if (timer.seconds() < 1.5 || robot.isDriving) {
                         robot.driveToHuskyLens();
                     }
-                    if(timer.seconds() > 2.0){
+                    if (timer.seconds() > 2.0 || !robot.isDriving) {
                         robot.submersibleIntake();
-                        if(timer.seconds() > 3.0) {
+                        if(timer.seconds () > 2.1 || robot.extension.leftLink.getPosition() > 0.8) {
+                            robot.intake.intakeMode = Intake.IntakeMode.INTAKE;
+                        }
+                        if(timer.seconds() > 3.0 || robot.intake.colors.green > 0.01 || robot.intake.hsvValues[0] > 100) {
                             switchState(State.DRIVE_TO_BASKET_FROM_SUBMERSIBLE);
+                            strafe = false;
                         }
                     }
                     break;
@@ -185,8 +192,9 @@ public class WorldsSample extends LinearOpMode {
                     robot.intake.spinIntake.setPower(1);
                     robot.intake.intakeMode = Intake.IntakeMode.TRANSFER;
                     if(timer.seconds() > 1.5){
-                        robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
-                    } else if (timer.seconds() > 1.7) {
+                        robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
+                    }
+                    if (timer.seconds() > 1.7) {
                         robot.lift.liftMode = Lift.LiftMode.HIGH_BASKET;
                         robot.scoring.scoringMode = Scoring.ScoringMode.SAMPLE;
                     }
@@ -207,7 +215,9 @@ public class WorldsSample extends LinearOpMode {
 
             // Anything outside of the switch statement will run independent of the currentState
             // We update robot continuously in the background, regardless of state
-            robot.update();
+            if (!strafe){
+                robot.update();
+            }
             robot.lift.update();
             robot.scoring.update();
             robot.intake.update();
@@ -227,3 +237,4 @@ public class WorldsSample extends LinearOpMode {
     }
 
 }
+

@@ -102,6 +102,7 @@ public class ProfileDrivetrain {
         MANUAL,
         AUTO,
         PROFILE,
+        BACKUP,
         IDLE,
     }
     public DrivetrainMode drivetrainMode = DrivetrainMode.MANUAL;
@@ -208,6 +209,22 @@ public class ProfileDrivetrain {
         // Create a new motion profile from current position to target.
         motionProfile = new MotionProfile(localizer.getX(), localizer.getY(), newX, newY, DRIVE_MAX_VEL, DRIVE_MAX_ACC);
     }
+
+    public void driveTime(double speed, double seconds, ElapsedTime timer) {
+        drivetrainMode = DrivetrainMode.BACKUP;
+        if(timer.seconds() < seconds) {
+            leftBackDrive.setPower(speed);
+            leftFrontDrive.setPower(speed);
+            rightFrontDrive.setPower(speed);
+            rightBackDrive.setPower(speed);
+        } else {
+            leftBackDrive.setPower(0);
+            leftFrontDrive.setPower(0);
+            rightFrontDrive.setPower(0);
+            rightBackDrive.setPower(0);
+        }
+    }
+
     public void driveStraightTime(double motorPower, double time, ElapsedTime timer){
         localizer.update();
         if (time < timer.seconds()){
@@ -227,7 +244,7 @@ public class ProfileDrivetrain {
     public void relativeDriveToTarget(double relativeXTarget, double relativeYTarget, double relativeDegreeTarget, double kpValue){
         drivetrainMode = DrivetrainMode.AUTO;
         xController = new PIDController(kpValue, DRIVE_KI, DRIVE_KD, DRIVE_MAX_OUT);
-        yController = new PIDController(kpValue, DRIVE_KI, DRIVE_KD, DRIVE_MAX_OUT);
+        yController = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD, DRIVE_MAX_OUT);
 
         double cosTheta = Math.cos(Math.toRadians(localizer.getHeading()));
         double sinTheta = Math.sin(Math.toRadians(localizer.getHeading()));
@@ -527,6 +544,8 @@ public class ProfileDrivetrain {
             myOpMode.telemetry.addData("targetReached", targetReached);
             myOpMode.telemetry.addData("xPower", xPower);
             myOpMode.telemetry.addData("xPowerRotated", xPower_rotated);
+        } else if (drivetrainMode == DrivetrainMode.BACKUP){
+
         }
 
 

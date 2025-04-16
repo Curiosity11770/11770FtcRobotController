@@ -129,7 +129,7 @@ public class Lift {
         leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         if (liftMode == LiftMode.HIGH_CHAMBER) {
-            liftToPositionPIDClass(1450);
+            liftToPositionPIDClass(1550);
         } else if (liftMode == LiftMode.HIGH_BASKET){
             liftToPositionPIDClass(2000);
         } else if (liftMode == LiftMode.GROUND){

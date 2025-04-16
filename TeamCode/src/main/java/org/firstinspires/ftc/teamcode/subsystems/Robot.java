@@ -17,7 +17,7 @@ public class Robot {
     public Lift lift;
     public Scoring scoring;
 
-    boolean isDriving = true;
+    public boolean isDriving = true;
     public ElapsedTime timer = new ElapsedTime();
     double leftMostY = 0;
 
@@ -90,14 +90,13 @@ public class Robot {
     }
 
     public void submersibleIntake(){
-            intake.intakeMode = Intake.IntakeMode.INTAKE;
             intake.spinIntake.setPower(1);
             intake.update();
             intake.sensorUpdate();
             extension.update();
-            constant += 0.002;
-            extension.leftLinkPosition = ((98.21 + leftMostY) / 427.01) - constant;
-            extension.rightLinkPosition = ((98.21 + leftMostY) / 427.01) - constant;
+            constant += 0.004;
+            extension.leftLinkPosition = ((98.21 + leftMostY) / 427.01) - constant - 0.05;
+            extension.rightLinkPosition = ((98.21 + leftMostY) / 427.01) - constant - 0.05;
             if (intake.colors.green >= 0.01){
             }
     }
