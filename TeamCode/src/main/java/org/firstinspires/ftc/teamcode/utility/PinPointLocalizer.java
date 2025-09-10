@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.utility.GoBildaPinpointDriver;
 
 import java.util.Locale;
 
@@ -61,8 +62,8 @@ public class PinPointLocalizer {
         odo.resetPosAndIMU();
 
         myOpMode.telemetry.addData("Status", "Initialized");
-        myOpMode.telemetry.addData("X offset", odo.getXOffset());
-        myOpMode.telemetry.addData("Y offset", odo.getYOffset());
+        myOpMode.telemetry.addData("X offset", odo.getXOffset(DistanceUnit.INCH));
+        myOpMode.telemetry.addData("Y offset", odo.getYOffset(DistanceUnit.INCH));
         myOpMode.telemetry.addData("Device Version Number:", odo.getDeviceVersion());
         myOpMode.telemetry.addData("Device SCalar", odo.getYawScalar());
     }

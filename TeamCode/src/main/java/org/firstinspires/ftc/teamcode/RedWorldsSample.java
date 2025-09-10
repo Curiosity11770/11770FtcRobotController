@@ -49,8 +49,8 @@ public class RedWorldsSample extends LinearOpMode {
     public static double floorSampleY = 20;
     public static double floorSampleHeading = -20;
 
-    public static double submersibleX = 55;
-    public static double submersibleY = -12;
+    public static double submersibleX = 51.5;
+    public static double submersibleY = -16;
     public static double submersibleHeading = -90;
 
     public static double parkingX = 48;
@@ -106,11 +106,11 @@ public class RedWorldsSample extends LinearOpMode {
                     }
                     break;
                 case DELIVER_SAMPLE:
-                    robot.drivetrain.driveTime(-0.3, 0.6, timer);
-                   if (timer.seconds() > 0.6) {
+                    robot.drivetrain.driveTime(-0.4, 0.5, timer);
+                    if (timer.seconds() > 0.5) {
                         robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
                     }
-                    if (timer.seconds() > 0.7 && samplesScored < 3) {
+                    if (timer.seconds() > 0.6 && samplesScored < 3) {
                         switchState(State.DRIVE_TO_FLOOR_SAMPLE);
                         samplesScored++;
                     } else if (timer.seconds() > 0.7) {
@@ -150,16 +150,16 @@ public class RedWorldsSample extends LinearOpMode {
                     robot.intake.spinIntake.setPower(1);
                     robot.intake.intakeMode = Intake.IntakeMode.TRANSFER;
                     robot.drivetrain.profiledDriveToTarget(basketX, basketY, basketHeading);
-                    if (timer.seconds() > 0.8) {
+                    if (timer.seconds() > 1.0) {
                         robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
                     }
-                    if (timer.seconds() > 1.0) {
+                    if (timer.seconds() > 1.2) {
                         switchState(State.DRIVE_TO_BASKET);
                     }
                     break;
                 case DRIVE_TO_SUBMERSIBLE:
                     if (timer.seconds() < 1.6) {
-                        robot.drivetrain.profiledDriveToTarget(submersibleX, submersibleY + 12, submersibleHeading);
+                        robot.drivetrain.profiledDriveToTarget(submersibleX, submersibleY + 27, submersibleHeading);
                     } else {
                         robot.lift.liftMode = Lift.LiftMode.GROUND;
                         robot.scoring.scoringMode = Scoring.ScoringMode.TRANSFER;
@@ -172,35 +172,39 @@ public class RedWorldsSample extends LinearOpMode {
                     }
                     break;
                 case RETRIEVE_SUBMERSIBLE_SAMPLE:
+                    robot.scoring.scoringMode = Scoring.ScoringMode.SCORING_HIGH_CHAMBER;
                     if (timer.seconds() < 1.5 || robot.isDriving) {
                         robot.driveToHuskyLens();
                     }
                     if (timer.seconds() > 2.0 || !robot.isDriving) {
                         robot.submersibleIntake();
-                        if(timer.seconds () > 2.1 || robot.extension.leftLink.getPosition() > 0.8) {
+                        if(timer.seconds () > 2.3 || robot.extension.leftLink.getPosition() < 0.75) {
                             robot.intake.intakeMode = Intake.IntakeMode.INTAKE;
                         }
-                        if (timer.seconds() > 3.0 || robot.intake.colors.green > 0.01 || (robot.intake.hsvValues[0] > 0 && robot.intake.hsvValues[0] < 60)) {
+                        if (timer.seconds() > 4.0 || robot.intake.colors.green > 0.01) {
                             switchState(State.DRIVE_TO_BASKET_FROM_SUBMERSIBLE);
                             strafe = false;
+                        } else if (robot.intake.hsvValues[0] > 100){
+                            robot.intake.spinIntake.setPower(-1);
                         }
                     }
                     break;
                 case DRIVE_TO_BASKET_FROM_SUBMERSIBLE:
+                    robot.scoring.scoringMode = Scoring.ScoringMode.TRANSFER;
                     robot.extension.leftLink.setPosition(0.89);
                     robot.extension.rightLink.setPosition(0.89);
                     robot.intake.spinIntake.setPower(1);
                     robot.intake.intakeMode = Intake.IntakeMode.TRANSFER;
-                    if (timer.seconds() > 1.5) {
+                    if (timer.seconds() > 1.7) {
                         robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
                     }
-                    if (timer.seconds() > 1.7) {
+                    if (timer.seconds() > 2.0) {
                         robot.lift.liftMode = Lift.LiftMode.HIGH_BASKET;
                         robot.scoring.scoringMode = Scoring.ScoringMode.SAMPLE;
                     }
-                    robot.drivetrain.profiledDriveToTarget(basketX, basketY, basketHeading);
+                    robot.drivetrain.profiledDriveToTarget(basketX-1, basketY, basketHeading);
                     //put condition for switch at the end, condition can be based on time or completion of a task
-                    if (robot.drivetrain.targetReached) {
+                    if (timer.seconds() > 2.7) {
                         switchState(State.DELIVER_SAMPLE);
                     }
                     break;

@@ -40,11 +40,12 @@ public class WorldsSpecimen extends LinearOpMode {
     public static double floorY = -27;
     public static double floorHeading = 0;
 
-    public static double chamberX = 36;
-    public static double chamberY = 5;
+    public static double chamberX = 39;
+    public static double chamberY = 20;
     public static double chamberHeading = 0;
 
-    public static double pickupX = 4;
+    public static double pickupX = 4
+            ;
     public static double pickupY = -36;
     public static double pickupHeading = 0;
 
@@ -92,24 +93,31 @@ public class WorldsSpecimen extends LinearOpMode {
         while (opModeIsActive() && !isStopRequested()) {
             switch (currentState) {
                 case DRIVE_TO_CHAMBER:
-                    if(timer.seconds() > 0.3 && specsScored == 0) {
+                    if(timer.seconds() > 0.1 && specsScored == 0) {
                         robot.scoring.scoringMode = Scoring.ScoringMode.SCORING_HIGH_CHAMBER;
                     }
                     robot.lift.liftMode = Lift.LiftMode.HIGH_CHAMBER;
-                    if(timer.seconds() > 0.6 && specsScored == 0){
-                        robot.drivetrain.profiledDriveToTarget(chamberX, chamberY+specsScored*3,chamberHeading);
+                    if(timer.seconds() > 0.5 && specsScored == 0){
+                        robot.drivetrain.profiledDriveToTarget(chamberX, chamberY,chamberHeading);
                     }
                     if(specsScored > 0){
-                        robot.drivetrain.profiledDriveToTarget(chamberX, chamberY+specsScored*3,chamberHeading);
+                        robot.drivetrain.profiledDriveToTarget(chamberX, chamberY-specsScored*3 ,chamberHeading);
 
                     }
-                    if (robot.drivetrain.targetReached) {
+                    if (specsScored == 0) {
+                        if (robot.drivetrain.targetReached) {
+                            switchState(State.DELIVER);
+                        }
+                    }
+                    if (specsScored > 0) {
+                        if (robot.drivetrain.targetReached || timer.seconds() >  robot.drivetrain.motionProfile.totalTime - 0.4) {
                         switchState(State.DELIVER);
                     }
-                    break;
+                }
+                break;
                 case DELIVER:
                     robot.scoring.clawServoPosition = Scoring.CLAW_OPEN;
-                    robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 10, chamberY, AngleUnit.DEGREES, 0));
+                    robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 10, chamberY-specsScored*3, AngleUnit.DEGREES, 0));
                     if((robot.drivetrain.targetReached || timer.seconds() > 0.5) && specsScored == 0){
                         switchState(State.STRAFE);
                         specsScored++;
@@ -128,15 +136,15 @@ public class WorldsSpecimen extends LinearOpMode {
                     }
                     break;
                 case DRIVE_TO_FLOOR_SAMPLE:
-                     if(timer.seconds() < 1.08 && samplesPushed > 0){ //1.3
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 53, -24-(samplesPushed*8), AngleUnit.DEGREES, 0));
+                     if(timer.seconds() < 0.7 && samplesPushed > 0){ //1.3
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 48, -24-(samplesPushed*8), AngleUnit.DEGREES, 0));
                         //53
                     }else if(timer.seconds() < 1.45){ //1.6
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 53, -29-(samplesPushed*8), AngleUnit.DEGREES, 0));
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 48, -29-(samplesPushed*8), AngleUnit.DEGREES, 0));
                     }else if(timer.seconds() < 1.75){ //1.9
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 53, -39-(samplesPushed*8), AngleUnit.DEGREES, 0));
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 48, -39-(samplesPushed*8)-6, AngleUnit.DEGREES, 0));
                     }else if(timer.seconds() < 2.83){ //3.1
-                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 9, -39-(samplesPushed*8), AngleUnit.DEGREES, 0));
+                        robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 7, -39-(samplesPushed*8)-6, AngleUnit.DEGREES, 0));
                     }else if(samplesPushed < 2){
                         timer.reset();
                         samplesPushed++;
@@ -155,11 +163,11 @@ public class WorldsSpecimen extends LinearOpMode {
                     }
                     break;
                 case PICKUP:
-                    robot.drivetrain.relativeDriveToTarget(-2, 0, 0, 0.08);
-                   if(timer.seconds() > 0.05){
+                    robot.drivetrain.driveTime(-0.1, 0.5, timer);
+                    if(timer.seconds() > 0.5){
                        robot.scoring.clawServoPosition = Scoring.CLAW_CLOSED;
                    }
-                    if(timer.seconds() > 0.15) {
+                    if(timer.seconds() > 0.6) {
                         switchState(State.DRIVE);
                         timer.reset();
                     }
@@ -169,8 +177,8 @@ public class WorldsSpecimen extends LinearOpMode {
                     if(timer.seconds() > 0.5) {
                         robot.scoring.scoringMode = Scoring.ScoringMode.SCORING_HIGH_CHAMBER;
                     }
-                    robot.drivetrain.profiledDriveToTarget(10, chamberY+specsScored*3,chamberHeading);
-                    if(robot.drivetrain.targetReached) {
+                    robot.drivetrain.setTargetPose(new Pose2D(DistanceUnit.INCH, 10, chamberY+specsScored*3, AngleUnit.DEGREES, chamberHeading));
+                    if(robot.drivetrain.targetReached || timer.seconds() > 1) {
                         switchState(State.DRIVE_TO_CHAMBER);
                         timer.reset();
                     }

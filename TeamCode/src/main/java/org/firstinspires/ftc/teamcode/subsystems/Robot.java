@@ -87,10 +87,12 @@ public class Robot {
                 extension.rightLinkPosition = ((98.21 + leftMostY) / 427.01) + 0.05;
                 isDriving = false;
             }
+            timer.reset();
     }
 
     public void submersibleIntake(){
             intake.spinIntake.setPower(1);
+            drivetrain.driveTime(0.3, 2.0, timer);
             intake.update();
             intake.sensorUpdate();
             extension.update();

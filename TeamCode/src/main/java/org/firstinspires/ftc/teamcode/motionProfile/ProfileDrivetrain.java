@@ -51,7 +51,7 @@ public class ProfileDrivetrain {
     LowPassFilter velocityFilterX = new LowPassFilter(0.3);
     LowPassFilter velocityFilterY = new LowPassFilter(0.3);
 
-    MotionProfile motionProfile;
+    public MotionProfile motionProfile;
 
     Pose2D targetPose;
     public boolean targetReached = false;
@@ -290,7 +290,7 @@ public class ProfileDrivetrain {
             //sweeper
             if(myOpMode.gamepad1.left_bumper){
                 sweeper.setPosition(0.1);
-            } else if (myOpMode.gamepad1.right_bumper){
+            } else {
                 sweeper.setPosition(0.7);
             }
 
