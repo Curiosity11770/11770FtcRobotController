@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
@@ -12,7 +14,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
+@Configurable
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(19.05)
@@ -20,11 +22,12 @@ public class Constants {
             .lateralZeroPowerAcceleration(-68.79)
             .useSecondaryTranslationalPIDF(true)
             .useSecondaryHeadingPIDF(true)
-            .useSecondaryDrivePIDF(true)
             .translationalPIDFCoefficients(new PIDFCoefficients(0.15, 0, 0.01, 0))
             .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.1,0,0.01,0))
-            .headingPIDFCoefficients(new PIDFCoefficients(0.4, 0, 0.01, 0))
-            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(0.15,0,0.01,0));
+            .headingPIDFCoefficients(new PIDFCoefficients(1, 0, 0.01, 0))
+            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(0.4,0,0.01,0))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.025,0.0,0.0,0.6,0.01))
+            .centripetalScaling(0.005);
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
 

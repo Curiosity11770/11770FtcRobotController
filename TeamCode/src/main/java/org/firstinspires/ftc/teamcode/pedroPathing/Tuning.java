@@ -893,12 +893,14 @@ class DriveTuner extends OpMode {
                 .setGlobalDeceleration()
                 .addPath(new BezierLine(new Pose(0,0), new Pose(DISTANCE,0)))
                 .setConstantHeadingInterpolation(0)
+                .setGlobalDeceleration(0.2)
                 .build();
 
         backwards = follower.pathBuilder()
                 .setGlobalDeceleration()
                 .addPath(new BezierLine(new Pose(DISTANCE,0), new Pose(0,0)))
                 .setConstantHeadingInterpolation(0)
+                .setGlobalDeceleration(0.2)
                 .build();
 
         follower.followPath(forwards);
