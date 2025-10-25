@@ -66,11 +66,11 @@ public class Power {
         leftBase.setPower(outLeft);
         rightBase.setPower(outRight);
 
-        myOpMode.telemetry.addData("lift", leftBase.getCurrentPosition());
-        myOpMode.telemetry.addData("lift", rightBase.getCurrentPosition());
+        myOpMode.telemetry.addData("base", leftBase.getCurrentPosition());
+        myOpMode.telemetry.addData("base", rightBase.getCurrentPosition());
 
-        myOpMode.telemetry.addData("LiftLeftPower: ", outLeft);
-        myOpMode.telemetry.addData("LiftRightPower: ", outRight);
+        myOpMode.telemetry.addData("base: ", outLeft);
+        myOpMode.telemetry.addData("base: ", outRight);
     }
 
 
