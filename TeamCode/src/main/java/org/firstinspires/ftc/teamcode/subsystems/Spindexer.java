@@ -73,7 +73,7 @@ public class Spindexer {
 
 
     }
-    public void teleOp(){
+    public void teleOp() {
         colorSensorOne.setGain(2);
         colorsOne = colorSensorOne.getNormalizedColors();
         Color.colorToHSV(colorsOne.toColor(), hsvValuesOne);
@@ -86,10 +86,15 @@ public class Spindexer {
         colorsThree = colorSensorThree.getNormalizedColors();
         Color.colorToHSV(colorsThree.toColor(), hsvValuesThree);
 
-        if (myOpMode.gamepad2.dpad_left){
-            spindexerServo.setPower(0.7);
+        if (myOpMode.gamepad2.a) {
+            spindexerServo.setPower(0.2);
+        } else if (myOpMode.gamepad2.b) {
+            spindexerServo.setPower(-0.2);
+        } else if (myOpMode.gamepad2.x){
+            spindexerServo.setPower(0.1);
         } else {
             spindexerServo.setPower(0);
+
         }
 
 

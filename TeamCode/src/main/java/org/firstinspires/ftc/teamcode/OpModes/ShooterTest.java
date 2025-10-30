@@ -14,7 +14,7 @@ public class ShooterTest extends LinearOpMode {
 
     private double velocity = 500; // starting velocity (ticks per second)
     private final double VELOCITY_INCREMENT = 100; // how much to change per button press
-    private final double MAX_VELOCITY = 3000; // limit to avoid over-speeding
+    private final double MAX_VELOCITY = 7000; // limit to avoid over-speeding
     private final double MIN_VELOCITY = 0;
 
     private boolean aPressedLast = false;

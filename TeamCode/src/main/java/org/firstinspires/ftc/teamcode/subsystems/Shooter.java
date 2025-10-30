@@ -28,8 +28,8 @@ public class Shooter {
     public int TICKS_PER_REVOLUTION = 28;
     public int REVOLUTIONS_PER_MINUTE = 6000;
 
-    public double LINKAGE_UP = 0.8;
-    public double LINKAGE_DOWN = 0;
+    public double LINKAGE_UP = 0.5;
+    public double LINKAGE_DOWN = 0.1;
 
     public  double TRANSFER_SPEED = 0.8;
 
@@ -45,7 +45,7 @@ public class Shooter {
         transferServo = myOpMode.hardwareMap.get(CRServoImplEx.class, "transferServo");
         timer.reset();
 
-        linkageShooting.setPosition(LINKAGE_UP);
+        linkageShooting.setPosition(LINKAGE_DOWN);
 
     }
 
@@ -58,11 +58,9 @@ public class Shooter {
         double measuredRPM = shootingMotor.getVelocity()/TICKS_PER_REVOLUTION*60;
 
         if(myOpMode.gamepad2.right_bumper){
-            shootingMotor.setVelocity(TICKS_PER_SECOND);
+            shootingMotor.setVelocity(0);
         }else if(myOpMode.gamepad2.left_bumper){
             shootingMotor.setVelocity(-TICKS_PER_SECOND);
-        } else {
-            shootingMotor.setPower(0);
         }
 
         if (myOpMode.gamepad2.dpad_up) {
@@ -73,7 +71,7 @@ public class Shooter {
 
         if(myOpMode.gamepad2.dpad_right){
             transferServo.setPower(TRANSFER_SPEED);
-        } else {
+        } else if (myOpMode.gamepad2.dpad_left) {
             transferServo.setPower(0);
         }
 
