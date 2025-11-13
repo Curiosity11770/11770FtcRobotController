@@ -35,11 +35,24 @@ public class Spindexer {
 
     PIDController spindexerPID;
 
+    //Spindexer Constants
     public static final double SPINDEXER_KP = 0.005;
     public static final double SPINDEXER_KI = 0;
     public static final double SPINDEXER_KD = 0.0;
 
+    public static final double[] LOAD_POSITIONS = {1,2,3};
+
     public final static int LOWER_THRESHOLD = 0;
+
+    public enum SpindexerMode {
+        MANUAL,
+        INTAKE
+    }
+
+    public SpindexerMode spindexerMode = SpindexerMode.INTAKE;
+    public int spindexerTargetIndex = 0;
+    public double spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+
 
     ElapsedTime timer = new ElapsedTime();
 
@@ -71,7 +84,6 @@ public class Spindexer {
 
         timer.reset();
 
-
     }
     public void teleOp() {
         colorSensorOne.setGain(2);
@@ -86,18 +98,28 @@ public class Spindexer {
         colorsThree = colorSensorThree.getNormalizedColors();
         Color.colorToHSV(colorsThree.toColor(), hsvValuesThree);
 
-        if (myOpMode.gamepad2.a) {
-            spindexerServo.setPower(0.2);
-        } else if (myOpMode.gamepad2.b) {
-            spindexerServo.setPower(-0.2);
-        } else if (myOpMode.gamepad2.x){
-            spindexerServo.setPower(0.1);
-        } else {
-            spindexerServo.setPower(0);
+        if (spindexerMode == SpindexerMode.MANUAL) {
+            if (myOpMode.gamepad2.a) {
+                spindexerServo.setPower(0.2);
+            } else if (myOpMode.gamepad2.b) {
+                spindexerServo.setPower(-0.2);
+            } else if (myOpMode.gamepad2.x) {
+                spindexerServo.setPower(0.1);
+            } else {
+                spindexerServo.setPower(0);
+            }
+        }else if(spindexerMode == SpindexerMode.INTAKE){
+            spindexerToPositionPIDClass(spindexerTargetPosition);
 
+            //if color sensor detects artifact
+                spindexerTargetIndex = (spindexerTargetIndex + 1) % 3;
+                spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
         }
 
-
+        myOpMode.telemetry.addData("Spindexer Mode: ", spindexerMode);
+        myOpMode.telemetry.addData("Target Index: ", spindexerTargetIndex);
+        myOpMode.telemetry.addData("Target Position: ", spindexerTargetPosition);
+        //add telemetry for color value
     }
 
     public Action spindexerAction(double power) {
