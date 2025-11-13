@@ -36,11 +36,13 @@ public class Spindexer {
     PIDController spindexerPID;
 
     //Spindexer Constants
-    public static final double SPINDEXER_KP = 0.005;
+
+    public static final double[] LOAD_POSITIONS = {1,2,3};
+
+    public static final double SPINDEXER_KP = 0.3;
     public static final double SPINDEXER_KI = 0;
     public static final double SPINDEXER_KD = 0.0;
 
-    public static final double[] LOAD_POSITIONS = {1,2,3};
 
     public final static int LOWER_THRESHOLD = 0;
 
@@ -62,7 +64,7 @@ public class Spindexer {
 
     public void init (){
         spindexerServo = myOpMode.hardwareMap.get(CRServoImplEx.class, "spindexerServo");
-        spindexerEncoder = myOpMode.hardwareMap.get(AnalogInput.class, "spindexerEncoder");
+        spindexerEncoder = myOpMode.hardwareMap.get(AnalogInput.class, "analogInput");
 
         colorSensorOne = myOpMode.hardwareMap.get(NormalizedColorSensor.class, "colorSensorOne");
         colorSensorTwo = myOpMode.hardwareMap.get(NormalizedColorSensor.class, "colorSensorTwo");
@@ -90,6 +92,16 @@ public class Spindexer {
         colorsOne = colorSensorOne.getNormalizedColors();
         Color.colorToHSV(colorsOne.toColor(), hsvValuesOne);
 
+        myOpMode.telemetry.addLine()
+                .addData("Red", "%.3f", colorsOne.red)
+                .addData("Green", "%.3f", colorsOne.green)
+                .addData("Blue", "%.3f", colorsOne.blue);
+        myOpMode.telemetry.addLine()
+                .addData("Hue", "%.3f", hsvValuesOne[0])
+                .addData("Saturation", "%.3f", hsvValuesOne[1])
+                .addData("Value", "%.3f", hsvValuesOne[2]);
+        myOpMode.telemetry.addData("Alpha", "%.3f", colorsOne.alpha);
+
         colorSensorTwo.setGain(2);
         colorsTwo = colorSensorTwo.getNormalizedColors();
         Color.colorToHSV(colorsTwo.toColor(), hsvValuesTwo);
@@ -108,17 +120,21 @@ public class Spindexer {
             } else {
                 spindexerServo.setPower(0);
             }
-        }else if(spindexerMode == SpindexerMode.INTAKE){
+        }else if(spindexerMode == SpindexerMode.INTAKE) {
             spindexerToPositionPIDClass(spindexerTargetPosition);
 
             //if color sensor detects artifact
+            if (hsvValuesOne[0] > 60) {
+                //advance desired position
                 spindexerTargetIndex = (spindexerTargetIndex + 1) % 3;
                 spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+            }
         }
 
         myOpMode.telemetry.addData("Spindexer Mode: ", spindexerMode);
         myOpMode.telemetry.addData("Target Index: ", spindexerTargetIndex);
         myOpMode.telemetry.addData("Target Position: ", spindexerTargetPosition);
+        myOpMode.telemetry.addData("Current Position", spindexerEncoder.getVoltage());
         //add telemetry for color value
     }
 
@@ -148,6 +164,7 @@ public class Spindexer {
         spindexerServo.setPower(output);
 
         myOpMode.telemetry.addData("spindexer", spindexerEncoder.getVoltage());
+        myOpMode.telemetry.addData("output", output);
     }
 
 }
