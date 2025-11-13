@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.samples;
+package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -12,12 +12,12 @@ import com.qualcomm.robotcore.hardware.CRServoImplEx;
 // The sample code is designed to read a voltage, which you can use to control other aspects of the robot.
 
 @TeleOp(name="AnalogTest", group="Linear OpMode")
-@Disabled
 public class AnalogTest extends LinearOpMode {
 
     private AnalogInput analogInput;
 
     private CRServo servo;
+
 
     @Override
     public void runOpMode() {

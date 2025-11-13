@@ -33,7 +33,7 @@ public class Power {
         leftBase = myOpMode.hardwareMap.get(DcMotor.class, "leftBase");
 
         leftBase.setDirection(DcMotor.Direction.REVERSE);
-        rightBase.setDirection(DcMotor.Direction.FORWARD);
+        rightBase.setDirection(DcMotor.Direction.REVERSE);
 
         // brake and encoders
         rightBase.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -48,9 +48,9 @@ public class Power {
     }
 
     public void teleOp(){
-        if(myOpMode.gamepad2.dpad_up){
-            baseToPositionPIDClass(2000);
-        } else {
+        if(myOpMode.gamepad1.dpad_up){
+            baseToPositionPIDClass(25000);
+        } else if (myOpMode.gamepad1.dpad_down){
             baseToPositionPIDClass(0);
         }
     }
