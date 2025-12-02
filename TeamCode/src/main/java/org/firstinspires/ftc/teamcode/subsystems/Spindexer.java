@@ -133,6 +133,7 @@ public class Spindexer {
         if(myOpMode.gamepad2.x){
             spindexerMode = SpindexerMode.CONTINUOUS;
         } else if (myOpMode.gamepad2.dpad_left){
+            spindexerTargetIndex = 0;
             spindexerMode = SpindexerMode.AUTO_INTAKE;
         } else if (myOpMode.gamepad2.dpad_right){
             spindexerMode = SpindexerMode.MANUAL_INTAKE;
@@ -163,7 +164,7 @@ public class Spindexer {
             } else if (hsvValuesOne[0] > 100){
                 COLOR_STATUS[spindexerTargetIndex] = ColorMode.GREEN;
             } else {
-                COLOR_STATUS[spindexerTargetIndex] = ColorMode.GREEN;
+                COLOR_STATUS[spindexerTargetIndex] = ColorMode.EMPTY;
             }
         } else if(spindexerMode == SpindexerMode.MANUAL_INTAKE) {
             spindexerToPositionPIDClass(spindexerTargetPosition);
@@ -213,7 +214,7 @@ public class Spindexer {
     public void spindexerToPositionPIDClass(double targetPosition) {
         double output = spindexerPID.calculate(targetPosition, spindexerEncoder.getVoltage());
 
-        spindexerServo.setPower(output);
+        spindexerServo.setPower(-output);
 
         myOpMode.telemetry.addData("spindexer", spindexerEncoder.getVoltage());
         myOpMode.telemetry.addData("output", output);
