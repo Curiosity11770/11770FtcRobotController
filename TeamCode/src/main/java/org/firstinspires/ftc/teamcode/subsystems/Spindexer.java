@@ -57,6 +57,8 @@ public class Spindexer {
 
     public final static int LOWER_THRESHOLD = 0;
 
+    public boolean isTriggered = false;
+
     public enum SpindexerMode {
         CONTINUOUS,
         AUTO_INTAKE,
@@ -134,6 +136,8 @@ public class Spindexer {
             spindexerMode = SpindexerMode.CONTINUOUS;
         } else if (myOpMode.gamepad2.dpad_left){
             spindexerTargetIndex = 0;
+            spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+            isTriggered = false;
             spindexerMode = SpindexerMode.AUTO_INTAKE;
         } else if (myOpMode.gamepad2.dpad_right){
             spindexerMode = SpindexerMode.MANUAL_INTAKE;
@@ -153,17 +157,22 @@ public class Spindexer {
             spindexerToPositionPIDClass(spindexerTargetPosition);
 
             //if color sensor detects artifact
-            if (hsvValuesOne[0] > 60 && spindexerTargetIndex < 2) {
+            if (hsvValuesOne[0] > 60 && !isTriggered && spindexerTargetIndex < 2) {
                 //advance desired position
                 spindexerTargetIndex = (spindexerTargetIndex + 1) % 3;
                 spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+                isTriggered = true;
+            }
+
+            if(Math.abs(spindexerTargetPosition- spindexerEncoder.getVoltage()) < 0.2){
+                isTriggered = false;
             }
 
             if (hsvValuesOne[0] > 200){
                 COLOR_STATUS[spindexerTargetIndex] = ColorMode.PURPLE;
             } else if (hsvValuesOne[0] > 100){
                 COLOR_STATUS[spindexerTargetIndex] = ColorMode.GREEN;
-            } else {
+            } else if (hsvValuesOne[0] < 20){
                 COLOR_STATUS[spindexerTargetIndex] = ColorMode.EMPTY;
             }
         } else if(spindexerMode == SpindexerMode.MANUAL_INTAKE) {
