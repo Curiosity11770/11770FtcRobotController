@@ -70,14 +70,14 @@ public class Robot {
 
         dash.sendTelemetryPacket(packet);
 
-        if (myOpMode.gamepad2.y){
+       /* if (myOpMode.gamepad2.y){
             runningActions.add(new SequentialAction(
                     shooter.shooterAction(shooter.TICKS_PER_SECOND),
                     spindexer.spindexerAction(0.6),
                     shooter.transferAction(shooter.TRANSFER_SPEED),
                     shooter.linkageAction(shooter.LINKAGE_UP)
                     ));
-        }
+        }*/
     }
 
 }

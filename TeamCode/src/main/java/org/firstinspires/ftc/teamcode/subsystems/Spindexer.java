@@ -8,10 +8,10 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -22,6 +22,9 @@ public class Spindexer {
 
     public CRServoImplEx spindexerServo = null;
     public AnalogInput spindexerEncoder;
+    public Servo rgb0 = null;
+    public Servo rgb1 = null;
+    public Servo rgb2 = null;
 
     public NormalizedColorSensor colorSensorOne;
     public final float[] hsvValuesOne = new float[3];
@@ -37,7 +40,15 @@ public class Spindexer {
 
     //Spindexer Constants
 
-    public static final double[] LOAD_POSITIONS = {1,2,3};
+    public enum ColorMode {
+        PURPLE,
+        EMPTY,
+        GREEN
+    }
+
+    public static final double[] LOAD_POSITIONS = {0.1,1.1,2.2};
+    public static final ColorMode[] COLOR_STATUS = {ColorMode.EMPTY,ColorMode.EMPTY,ColorMode.EMPTY};
+
 
     public static final double SPINDEXER_KP = 0.3;
     public static final double SPINDEXER_KI = 0;
@@ -47,11 +58,12 @@ public class Spindexer {
     public final static int LOWER_THRESHOLD = 0;
 
     public enum SpindexerMode {
-        MANUAL,
-        INTAKE
+        CONTINUOUS,
+        AUTO_INTAKE,
+        MANUAL_INTAKE
     }
 
-    public SpindexerMode spindexerMode = SpindexerMode.INTAKE;
+    public SpindexerMode spindexerMode = SpindexerMode.CONTINUOUS;
     public int spindexerTargetIndex = 0;
     public double spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
 
@@ -65,6 +77,10 @@ public class Spindexer {
     public void init (){
         spindexerServo = myOpMode.hardwareMap.get(CRServoImplEx.class, "spindexerServo");
         spindexerEncoder = myOpMode.hardwareMap.get(AnalogInput.class, "analogInput");
+
+        rgb0 = myOpMode.hardwareMap.get(Servo.class, "rgb0");
+        rgb1 = myOpMode.hardwareMap.get(Servo.class, "rgb1");
+        rgb2 = myOpMode.hardwareMap.get(Servo.class, "rgb2");
 
         colorSensorOne = myOpMode.hardwareMap.get(NormalizedColorSensor.class, "colorSensorOne");
         colorSensorTwo = myOpMode.hardwareMap.get(NormalizedColorSensor.class, "colorSensorTwo");
@@ -110,7 +126,19 @@ public class Spindexer {
         colorsThree = colorSensorThree.getNormalizedColors();
         Color.colorToHSV(colorsThree.toColor(), hsvValuesThree);
 
-        if (spindexerMode == SpindexerMode.MANUAL) {
+        colorChanger(rgb0, 0);
+        colorChanger(rgb1, 1);
+        colorChanger(rgb2, 2);
+
+        if(myOpMode.gamepad2.x){
+            spindexerMode = SpindexerMode.CONTINUOUS;
+        } else if (myOpMode.gamepad2.dpad_left){
+            spindexerMode = SpindexerMode.AUTO_INTAKE;
+        } else if (myOpMode.gamepad2.dpad_right){
+            spindexerMode = SpindexerMode.MANUAL_INTAKE;
+        }
+
+        if (spindexerMode == SpindexerMode.CONTINUOUS) {
             if (myOpMode.gamepad2.a) {
                 spindexerServo.setPower(0.2);
             } else if (myOpMode.gamepad2.b) {
@@ -120,12 +148,26 @@ public class Spindexer {
             } else {
                 spindexerServo.setPower(0);
             }
-        }else if(spindexerMode == SpindexerMode.INTAKE) {
+        }else if(spindexerMode == SpindexerMode.AUTO_INTAKE) {
             spindexerToPositionPIDClass(spindexerTargetPosition);
 
             //if color sensor detects artifact
-            if (hsvValuesOne[0] > 60) {
+            if (hsvValuesOne[0] > 60 && spindexerTargetIndex < 2) {
                 //advance desired position
+                spindexerTargetIndex = (spindexerTargetIndex + 1) % 3;
+                spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+            }
+
+            if (hsvValuesOne[0] > 200){
+                COLOR_STATUS[spindexerTargetIndex] = ColorMode.PURPLE;
+            } else if (hsvValuesOne[0] > 100){
+                COLOR_STATUS[spindexerTargetIndex] = ColorMode.GREEN;
+            } else {
+                COLOR_STATUS[spindexerTargetIndex] = ColorMode.GREEN;
+            }
+        } else if(spindexerMode == SpindexerMode.MANUAL_INTAKE) {
+            spindexerToPositionPIDClass(spindexerTargetPosition);
+            if (myOpMode.gamepad2.dpad_right) {
                 spindexerTargetIndex = (spindexerTargetIndex + 1) % 3;
                 spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
             }
@@ -156,6 +198,16 @@ public class Spindexer {
 
     public void update(){
 
+    }
+
+    public void colorChanger(Servo servo, int position){
+        if (COLOR_STATUS[position] == ColorMode.PURPLE) {
+            servo.setPosition(0.722);
+        } else if (COLOR_STATUS[position] == ColorMode.GREEN){
+            servo.setPosition(0.500);
+        } else {
+            servo.setPosition(0.99);
+        }
     }
 
     public void spindexerToPositionPIDClass(double targetPosition) {

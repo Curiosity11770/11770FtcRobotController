@@ -65,13 +65,9 @@ public class Shooter {
 
         if (myOpMode.gamepad2.dpad_up) {
             linkageShooting.setPosition(LINKAGE_UP);
+            transferServo.setPower(TRANSFER_SPEED);
         } else if (myOpMode.gamepad2.dpad_down){
             linkageShooting.setPosition(LINKAGE_DOWN);
-        }
-
-        if(myOpMode.gamepad2.dpad_right){
-            transferServo.setPower(TRANSFER_SPEED);
-        } else if (myOpMode.gamepad2.dpad_left) {
             transferServo.setPower(0);
         }
 
