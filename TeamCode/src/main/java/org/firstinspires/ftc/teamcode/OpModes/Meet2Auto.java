@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
@@ -44,21 +46,22 @@ public class Meet2Auto extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
-        /*
+
         Actions.runBlocking(new SequentialAction(
                 new ParallelAction(
-                    pedroDriveOnPathChain(myPaths.Drivebacktolook)/*,
+                    pedroDriveOnPathChain(myPaths.DRIVE),
                     shooter.shooterAction(shooter.REVOLUTIONS_PER_MINUTE/60*shooter.TICKS_PER_REVOLUTION, 0.1),
                     shooter.transferAction(0.7, 0.1)),
-                pedroDriveOnPathChain(myPaths.ShootPath1),
+
+        Actions.runBlocking(pedroDriveOnPathChain(myPaths.ShootPath1),
                 new ParallelAction(
                     shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
                     spindexer.spindexerAction(0.1, 7))
         ));
 
-         */
-        Actions.runBlocking(pedroDriveOnPathChain(myPaths.Drivebacktolook));
-        Actions.runBlocking(pedroDriveOnPathChain(myPaths.ShootPath1));
+
+        //Actions.runBlocking(pedroDriveOnPathChain(myPaths.DRIVEBACKTOLOOK));
+        //Actions.runBlocking(pedroDriveOnPathChain(myPaths.SHOOTPATH1));
 
     }
 
@@ -71,7 +74,7 @@ public class Meet2Auto extends LinearOpMode {
                 if (!initialized) {
                     initialized = true;
                     pathTimer.reset();
-                    follower.followPath(targetPathChain, true);
+                    follower.followPath(targetPathChain, false);
                 }
 
 
@@ -104,44 +107,45 @@ public class Meet2Auto extends LinearOpMode {
 
     public static class Paths {
 
-        public PathChain Drivebacktolook;
-        public PathChain ShootPath1;
-        public PathChain FaceBall1;
+        public PathChain DRIVEBACKTOLOOK;
+        public PathChain SHOOTPATH1;
+        public PathChain FACEBALL1;
         public PathChain DRIVEINTOBALLS1;
         public PathChain SHOOTPATH2;
-        public PathChain FaceBall2;
+        public PathChain FACEBALL2;
         public PathChain DRIVEINTOBALLS2;
         public PathChain SHOOTPATH3;
 
         public Paths(Follower follower) {
-            Drivebacktolook = follower
+            DRIVEBACKTOLOOK = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(32.357, 135.602), new Pose(56.000, 89.000))
+                            new BezierLine(new Pose(32.095, 135.590), new Pose(52.863, 100.749))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90))
+                    .setConstantHeadingInterpolation(Math.toRadians(90))
+                    .setReversed(true)
                     .build();
 
-            ShootPath1 = follower
+            SHOOTPATH1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(56.000, 89.000), new Pose(56.000, 89.000))
+                            new BezierLine(new Pose(52.863, 100.749), new Pose(48.400, 95.256))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(130))
+                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(138))
                     .build();
 
-            FaceBall1 = follower
+            FACEBALL1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(56.000, 89.000), new Pose(56.000, 84.000))
+                            new BezierLine(new Pose(48.400, 95.256), new Pose(48.572, 83.928))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(130), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(138), Math.toRadians(180))
                     .build();
 
             DRIVEINTOBALLS1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(56.000, 84.000), new Pose(14.000, 84.000))
+                            new BezierLine(new Pose(48.572, 83.928), new Pose(14.000, 84.000))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
@@ -149,23 +153,23 @@ public class Meet2Auto extends LinearOpMode {
             SHOOTPATH2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(14.000, 84.000), new Pose(56.000, 89.000))
+                            new BezierLine(new Pose(14.000, 84.000), new Pose(49.774, 93.712))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(130))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(138))
                     .build();
 
-            FaceBall2 = follower
+            FACEBALL2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(56.000, 89.000), new Pose(56.000, 60.000))
+                            new BezierLine(new Pose(49.774, 93.712), new Pose(49.602, 60.072))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(130), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(138), Math.toRadians(180))
                     .build();
 
             DRIVEINTOBALLS2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(56.000, 60.000), new Pose(14.000, 60.000))
+                            new BezierLine(new Pose(49.602, 60.072), new Pose(14.000, 60.000))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
@@ -173,9 +177,9 @@ public class Meet2Auto extends LinearOpMode {
             SHOOTPATH3 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(14.000, 60.000), new Pose(56.000, 89.000))
+                            new BezierLine(new Pose(14.000, 60.000), new Pose(50.975, 92.510))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(130))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(138))
                     .build();
         }
     }
