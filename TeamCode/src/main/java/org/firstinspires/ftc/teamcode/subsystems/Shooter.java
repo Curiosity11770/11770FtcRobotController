@@ -26,7 +26,7 @@ public class Shooter {
 
     public int TICKS_PER_SECOND = 0;
     public int TICKS_PER_REVOLUTION = 28;
-    public int REVOLUTIONS_PER_MINUTE = 6000;
+    public int REVOLUTIONS_PER_MINUTE = 3500;
 
     public double LINKAGE_UP = 0.5;
     public double LINKAGE_DOWN = 0.1;
@@ -73,51 +73,54 @@ public class Shooter {
 
     }
 
-    public Action shooterAction(int velocity) {
+    public Action shooterAction(int velocity, double time) {
+        ElapsedTime actionTimer = new ElapsedTime();
+        actionTimer.reset();
         return new Action() {
             private boolean initialized = false;
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    timer.reset();
-                    shootingMotor.setVelocity(velocity);
+                    actionTimer.reset();
+                    shootingMotor.setVelocity(-velocity);
                     initialized = true;
                 }
-                return shootingMotor.getVelocity() > LOWER_THRESHOLD_MOTOR;
+                return actionTimer.seconds() < time;
             }
         };
     }
 
-    public Action linkageAction(double power) {
-        timer.reset();
+    public Action linkageAction(double power, double time) {
+        ElapsedTime actionTimer = new ElapsedTime();
+        actionTimer.reset();
         return new Action() {
             private boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    timer.reset();
+                    actionTimer.reset();
                     linkageShooting.setPosition(LINKAGE_UP);
                     initialized = true;
                 }
-                return timer.seconds() > 0.5;
+                return actionTimer.seconds() < time;
             }
         };
     }
 
-    public Action transferAction(double power) {
-        timer.reset();
-
+    public Action transferAction(double power, double time) {
+        ElapsedTime actionTimer = new ElapsedTime();
+        actionTimer.reset();
         return new Action() {
             private boolean initialized = false;
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    timer.reset();
+                    actionTimer.reset();
                     transferServo.setPower(power);
                     initialized = true;
                 }
-                return transferServo.getPower() > LOWER_THRESHOLD_TRANSFER;
+                return actionTimer.seconds()  < time;
             }
         };
     }

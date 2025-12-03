@@ -190,18 +190,20 @@ public class Spindexer {
         //add telemetry for color value
     }
 
-    public Action spindexerAction(double power) {
+    public Action spindexerAction(double power, double time) {
+        ElapsedTime actionTimer = new ElapsedTime();
+        actionTimer.reset();
         return new Action() {
             private boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    timer.reset();
+                    actionTimer.reset();
                     spindexerServo.setPower(power);
                     initialized = true;
                 }
-                return spindexerServo.getPower() > LOWER_THRESHOLD;
+                return actionTimer.seconds() < time;
             }
         };
     }

@@ -20,9 +20,9 @@ public class Constants {
             .mass(11.325)
             .forwardZeroPowerAcceleration(-38.102)
             .lateralZeroPowerAcceleration(-78.55)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.13, 0, 0, 0))
-            .headingPIDFCoefficients(new PIDFCoefficients(1.5, 0, 0.01, 0))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.1, 0, 0.01, 0.6, 0))
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.06, 0, 0, 0))
+            .headingPIDFCoefficients(new PIDFCoefficients(1, 0, 0.01, 0))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.025, 0, 0, 0.6, 0.01))
             .centripetalScaling(0.00001);
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
@@ -43,7 +43,7 @@ public class Constants {
 
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(5)
+            .forwardPodY(-5)
             .strafePodX(-8)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName("odo")
