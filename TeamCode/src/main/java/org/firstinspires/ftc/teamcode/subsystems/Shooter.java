@@ -108,6 +108,25 @@ public class Shooter {
         };
     }
 
+    public Action linkageOff(double time) {
+        ElapsedTime actionTimer = new ElapsedTime();
+        actionTimer.reset();
+        return new Action() {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    actionTimer.reset();
+                    linkageShooting.setPosition(LINKAGE_DOWN);
+                    transferServo.setPower(0);
+                    initialized = true;
+                }
+                return actionTimer.seconds() < time;
+            }
+        };
+    }
+
     public Action transferAction(double power, double time) {
         ElapsedTime actionTimer = new ElapsedTime();
         actionTimer.reset();
@@ -124,6 +143,8 @@ public class Shooter {
             }
         };
     }
+
+
     public void update(){
 
     }

@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Spindexer;
 
@@ -30,6 +31,7 @@ public class Meet2Auto extends LinearOpMode {
     private Paths myPaths;
     private Shooter shooter = new Shooter(this);
     private Spindexer spindexer = new Spindexer(this);
+    private Intake intake = new Intake(this);
 
     @Override
 
@@ -40,6 +42,7 @@ public class Meet2Auto extends LinearOpMode {
         follower.setStartingPose(startPose);
         shooter.init();
         spindexer.init();
+        intake.init();
 
         myPaths = new Paths(follower);
 
@@ -47,25 +50,47 @@ public class Meet2Auto extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        Actions.runBlocking(new SequentialAction(
-                new ParallelAction(
-                    pedroDriveOnPathChain(myPaths.DRIVE),
+        //Drive back to scan obelisk
+        Actions.runBlocking(new ParallelAction(
+                    pedroDriveOnPathChain(myPaths.DRIVEBACKTOLOOK, 1, true),
                     shooter.shooterAction(shooter.REVOLUTIONS_PER_MINUTE/60*shooter.TICKS_PER_REVOLUTION, 0.1),
-                    shooter.transferAction(0.7, 0.1)),
+                    shooter.transferAction(0.7, 0.1)
+        ));
 
-        Actions.runBlocking(pedroDriveOnPathChain(myPaths.ShootPath1),
+        //Align with goal and launch artifacts
+        Actions.runBlocking(new SequentialAction(
+                pedroDriveOnPathChain(myPaths.SHOOTPATH1, 1, true),
                 new ParallelAction(
                     shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
                     spindexer.spindexerAction(0.1, 7))
         ));
 
+        Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL1, 1, true));
 
+        Actions.runBlocking(new SequentialAction(
+              intake.intakeOn(0.2),
+                shooter.linkageOff(0.1),
+                new ParallelAction(
+                       pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.3, true),
+                       spindexer.autoIntake()
+               )
+        ));
+
+        Actions.runBlocking(new SequentialAction(
+                pedroDriveOnPathChain(myPaths.SHOOTPATH2, 1, true),
+                shooter.transferAction(.7,0.1),
+                new ParallelAction(
+                        shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
+                        spindexer.spindexerAction(0.1, 7))
+        ));
+
+        
         //Actions.runBlocking(pedroDriveOnPathChain(myPaths.DRIVEBACKTOLOOK));
         //Actions.runBlocking(pedroDriveOnPathChain(myPaths.SHOOTPATH1));
 
     }
 
-    private Action pedroDriveOnPathChain(PathChain targetPathChain) {
+    private Action pedroDriveOnPathChain(PathChain targetPathChain, double maxPower, boolean holdPos) {
         return new Action() {
             private boolean initialized = false;
             ElapsedTime pathTimer = new ElapsedTime();
@@ -74,7 +99,7 @@ public class Meet2Auto extends LinearOpMode {
                 if (!initialized) {
                     initialized = true;
                     pathTimer.reset();
-                    follower.followPath(targetPathChain, false);
+                    follower.followPath(targetPathChain, maxPower,holdPos);
                 }
 
 
@@ -123,7 +148,6 @@ public class Meet2Auto extends LinearOpMode {
                             new BezierLine(new Pose(32.095, 135.590), new Pose(52.863, 100.749))
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(90))
-                    .setReversed(true)
                     .build();
 
             SHOOTPATH1 = follower
