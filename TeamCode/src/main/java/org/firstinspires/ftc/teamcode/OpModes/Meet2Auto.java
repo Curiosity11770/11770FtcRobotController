@@ -84,7 +84,26 @@ public class Meet2Auto extends LinearOpMode {
                         spindexer.spindexerAction(0.1, 7))
         ));
 
-        
+        Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL2, 1, true));
+
+        Actions.runBlocking(new SequentialAction(
+                intake.intakeOn(0.2),
+                shooter.linkageOff(0.1),
+                new ParallelAction(
+                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS2, 0.3, true),
+                        spindexer.autoIntake()
+                )
+        ));
+
+        Actions.runBlocking(new SequentialAction(
+                pedroDriveOnPathChain(myPaths.SHOOTPATH3, 1, true),
+                shooter.transferAction(.7,0.1),
+                new ParallelAction(
+                        shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
+                        spindexer.spindexerAction(0.1, 7))
+        ));
+
+
         //Actions.runBlocking(pedroDriveOnPathChain(myPaths.DRIVEBACKTOLOOK));
         //Actions.runBlocking(pedroDriveOnPathChain(myPaths.SHOOTPATH1));
 
@@ -153,7 +172,7 @@ public class Meet2Auto extends LinearOpMode {
             SHOOTPATH1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(52.863, 100.749), new Pose(48.400, 95.256))
+                            new BezierLine(new Pose(52.863, 100.749), new Pose(48.400, 97))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(138))
                     .build();
@@ -179,7 +198,7 @@ public class Meet2Auto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(14.000, 84.000), new Pose(49.774, 93.712))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(138))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
                     .build();
 
             FACEBALL2 = follower
@@ -193,7 +212,7 @@ public class Meet2Auto extends LinearOpMode {
             DRIVEINTOBALLS2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(49.602, 60.072), new Pose(14.000, 60.000))
+                            new BezierLine(new Pose(49.602, 60.072), new Pose(12.000, 60.000))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
@@ -203,7 +222,7 @@ public class Meet2Auto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(14.000, 60.000), new Pose(50.975, 92.510))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(138))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
                     .build();
         }
     }
