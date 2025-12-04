@@ -255,9 +255,9 @@ public class Spindexer {
                 spindexerToPositionPIDClass(spindexerTargetPosition);
 
                 //if color sensor detects artifact
-                if (hsvValuesOne[0] > 60 && !isTriggered) {
+                if (hsvValuesOne[0] > 60 && !isTriggered && spindexerTargetIndex < 2) {
                     //advance desired position
-                    spindexerTargetIndex = (spindexerTargetIndex + 1);
+                    spindexerTargetIndex = (spindexerTargetIndex + 1) % 3;
                     spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
                     isTriggered = true;
                 }
@@ -280,11 +280,7 @@ public class Spindexer {
                 myOpMode.telemetry.addData("Current Position", spindexerEncoder.getVoltage());
                 myOpMode.telemetry.update();
 
-                if(spindexerTargetIndex > 2 || actionTimer.seconds() > 10){
-                    return false;
-                }else{
-                    return true;
-                }
+                return actionTimer.seconds() < 5;
             }
         };
     }
