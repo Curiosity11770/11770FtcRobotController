@@ -198,7 +198,7 @@ public class Meet2Auto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(14.000, 84.000), new Pose(49.774, 93.712))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(145))
                     .build();
 
             FACEBALL2 = follower
@@ -222,7 +222,7 @@ public class Meet2Auto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(14.000, 60.000), new Pose(50.975, 92.510))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(145))
                     .build();
         }
     }
