@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import static java.lang.Thread.sleep;
+
 import android.graphics.Color;
 
 import androidx.annotation.NonNull;
@@ -9,6 +11,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServoImplEx;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -128,9 +131,13 @@ public class Spindexer {
         colorsThree = colorSensorThree.getNormalizedColors();
         Color.colorToHSV(colorsThree.toColor(), hsvValuesThree);
 
-        colorChanger(rgb0, 0);
-        colorChanger(rgb1, 1);
-        colorChanger(rgb2, 2);
+        //colorChanger(rgb0, 0);
+        //colorChanger(rgb1, 1);
+        //colorChanger(rgb2, 2);
+
+        colorUpdate(hsvValuesOne, rgb0);
+        colorUpdate(hsvValuesTwo, rgb1);
+        colorUpdate(hsvValuesThree, rgb2);
 
         if(myOpMode.gamepad2.x){
             spindexerMode = SpindexerMode.CONTINUOUS;
@@ -230,6 +237,15 @@ public class Spindexer {
                 colorsOne = colorSensorOne.getNormalizedColors();
                 Color.colorToHSV(colorsOne.toColor(), hsvValuesOne);
 
+                colorSensorTwo.setGain(2);
+                colorsTwo= colorSensorTwo.getNormalizedColors();
+                Color.colorToHSV(colorsTwo.toColor(), hsvValuesTwo);
+
+                colorSensorThree.setGain(2);
+                colorsThree = colorSensorThree.getNormalizedColors();
+                Color.colorToHSV(colorsThree.toColor(), hsvValuesThree);
+
+
                 myOpMode.telemetry.addLine()
                         .addData("Red", "%.3f", colorsOne.red)
                         .addData("Green", "%.3f", colorsOne.green)
@@ -239,6 +255,26 @@ public class Spindexer {
                         .addData("Saturation", "%.3f", hsvValuesOne[1])
                         .addData("Value", "%.3f", hsvValuesOne[2]);
                 myOpMode.telemetry.addData("Alpha", "%.3f", colorsOne.alpha);
+
+                myOpMode.telemetry.addLine()
+                        .addData("Red", "%.3f", colorsTwo.red)
+                        .addData("Green", "%.3f", colorsTwo.green)
+                        .addData("Blue", "%.3f", colorsTwo.blue);
+                myOpMode.telemetry.addLine()
+                        .addData("Hue", "%.3f", hsvValuesTwo[0])
+                        .addData("Saturation", "%.3f", hsvValuesTwo[1])
+                        .addData("Value", "%.3f", hsvValuesTwo[2]);
+                myOpMode.telemetry.addData("Alpha", "%.3f", colorsTwo.alpha);
+
+                myOpMode.telemetry.addLine()
+                        .addData("Red", "%.3f", colorsThree.red)
+                        .addData("Green", "%.3f", colorsThree.green)
+                        .addData("Blue", "%.3f", colorsThree.blue);
+                myOpMode.telemetry.addLine()
+                        .addData("Hue", "%.3f", hsvValuesThree[0])
+                        .addData("Saturation", "%.3f", hsvValuesThree[1])
+                        .addData("Value", "%.3f", hsvValuesThree[2]);
+                myOpMode.telemetry.addData("Alpha", "%.3f", colorsThree.alpha);
 
                 colorSensorTwo.setGain(2);
                 colorsTwo = colorSensorTwo.getNormalizedColors();
@@ -257,6 +293,7 @@ public class Spindexer {
                 //if color sensor detects artifact
                 if (hsvValuesOne[0] > 60 && !isTriggered && spindexerTargetIndex < 2) {
                     //advance desired position
+
                     spindexerTargetIndex = (spindexerTargetIndex + 1) % 3;
                     spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
                     isTriggered = true;
@@ -280,7 +317,7 @@ public class Spindexer {
                 myOpMode.telemetry.addData("Current Position", spindexerEncoder.getVoltage());
                 myOpMode.telemetry.update();
 
-                return actionTimer.seconds() < 5;
+                return actionTimer.seconds() < 4;
             }
         };
     }
@@ -289,13 +326,25 @@ public class Spindexer {
 
     }
 
+    public void colorUpdate(float [] hsvValues, Servo servo){
+        if (hsvValues[0] > 200){
+            servo.setPosition(0.722);
+        } else if (hsvValues[0] > 100) {
+            servo.setPosition(0.500);
+        } else if (hsvValues[0] < 20){
+            servo.setPosition(0);
+        }
+
+    }
+
+
     public void colorChanger(Servo servo, int position){
         if (COLOR_STATUS[position] == ColorMode.PURPLE) {
             servo.setPosition(0.722);
         } else if (COLOR_STATUS[position] == ColorMode.GREEN){
             servo.setPosition(0.500);
         } else {
-            servo.setPosition(0.99);
+            servo.setPosition(0);
         }
     }
 
