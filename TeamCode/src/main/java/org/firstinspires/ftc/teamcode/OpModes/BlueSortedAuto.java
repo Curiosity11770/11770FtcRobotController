@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -14,6 +15,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -23,14 +25,16 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Spindexer;
 
-@Autonomous(name="BlueMeet2Auto", group="Linear OpMode")
+@Autonomous(name="BlueSortedAuto", group="Linear OpMode")
 @Config
-public class BlueMeet2Auto extends LinearOpMode {
+public class BlueSortedAuto extends LinearOpMode {
     private Follower follower;
     private Paths myPaths;
     private Shooter shooter = new Shooter(this);
     private Spindexer spindexer = new Spindexer(this);
     private Intake intake = new Intake(this);
+
+    int id = 21;
 
     @Override
 
@@ -52,31 +56,98 @@ public class BlueMeet2Auto extends LinearOpMode {
         spindexer.colorUpdate(spindexer.hsvValuesTwo, spindexer.rgb1);
         spindexer.colorUpdate(spindexer.hsvValuesThree,spindexer.rgb2);
 
+        if (spindexer.hsvValuesOne[0] > 200){
+            spindexer.COLOR_STATUS[spindexer.spindexerTargetIndex] = Spindexer.ColorMode.PURPLE;
+        } else if (spindexer.hsvValuesOne[0] > 100){
+            spindexer.COLOR_STATUS[spindexer.spindexerTargetIndex] = Spindexer.ColorMode.GREEN;
+        } else if (spindexer.hsvValuesOne[0] < 20){
+            spindexer.COLOR_STATUS[spindexer.spindexerTargetIndex] = Spindexer.ColorMode.EMPTY;
+        }
+
+
         //Drive back to scan obelisk
         Actions.runBlocking(new ParallelAction(
-                    pedroDriveOnPathChain(myPaths.DRIVEBACKTOLOOK, 1, true),
-                    shooter.shooterAction(shooter.REVOLUTIONS_PER_MINUTE/60*shooter.TICKS_PER_REVOLUTION, 0.1),
-                    shooter.transferAction(0.7, 0.1)
+                pedroDriveOnPathChain(myPaths.DRIVEBACKTOLOOK, 1, true),
+                shooter.shooterAction(shooter.REVOLUTIONS_PER_MINUTE/60*shooter.TICKS_PER_REVOLUTION, 0.1),
+                shooter.transferAction(0.7, 0.1)
         ));
+        for(LLResultTypes.FiducialResult fiducial : shooter.fiducials){
+            id = fiducial.getFiducialId();
+            telemetry.addData("isWorking", id);
+        }
 
+        if (id == 21){
+
+            if(spindexer.hsvValuesThree[0] > 100 && spindexer.hsvValuesThree[0] < 200){
+
+            } else if (spindexer.hsvValuesTwo[0] > 100 && spindexer.hsvValuesTwo[0] < 200){
+                spindexer.spindexerTargetIndex = 1;
+                spindexer.spindexerTargetPosition = spindexer.LOAD_POSITIONS[spindexer.spindexerTargetIndex];
+                spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition);
+
+                // Actions.runBlocking(new InstantAction(spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition)));
+            }  else {
+                spindexer.spindexerTargetIndex = 0;
+                spindexer.spindexerTargetPosition = spindexer.LOAD_POSITIONS[spindexer.spindexerTargetIndex];
+                spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition);
+
+                // Actions.runBlocking(new InstantAction(spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition)));
+            }
+
+        }  else if (id == 22){
+
+            if(spindexer.hsvValuesTwo[0] > 100 && spindexer.hsvValuesTwo[0] < 200){
+
+            } else if (spindexer.hsvValuesOne[0] > 100 && spindexer.hsvValuesOne[0] < 200){
+                spindexer.spindexerTargetIndex = 0;
+                spindexer.spindexerTargetPosition = spindexer.LOAD_POSITIONS[spindexer.spindexerTargetIndex];
+                spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition);
+
+                // Actions.runBlocking(new InstantAction(spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition)));
+            } else {
+                spindexer.spindexerTargetIndex = 2;
+                spindexer.spindexerTargetPosition = spindexer.LOAD_POSITIONS[spindexer.spindexerTargetIndex];
+                spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition);
+
+                // Actions.runBlocking(new InstantAction(spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition)));
+            }
+
+        } else if (id == 23) {
+
+            if (spindexer.hsvValuesOne[0] > 100 && spindexer.hsvValuesOne[0] < 200) {
+
+            } else if (spindexer.hsvValuesThree[0] > 100 && spindexer.hsvValuesOne[0] < 200){
+                spindexer.spindexerTargetIndex = 0;
+                spindexer.spindexerTargetPosition = spindexer.LOAD_POSITIONS[spindexer.spindexerTargetIndex];
+                spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition);
+
+                // Actions.runBlocking(new InstantAction(spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition)));
+            } else {
+                spindexer.spindexerTargetIndex = 0;
+                spindexer.spindexerTargetPosition = spindexer.LOAD_POSITIONS[spindexer.spindexerTargetIndex];
+                spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition);
+
+                // Actions.runBlocking(new InstantAction(spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition)));
+            }
+        }
         //Align with goal and launch artifacts
         Actions.runBlocking(new SequentialAction(
                 pedroDriveOnPathChain(myPaths.SHOOTPATH1, 0.7, true),
                 shooter.transferAction(.7,0.1),
                 new ParallelAction(
-                    shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                    spindexer.spindexerAction(0.1, 3.5))
+                        shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
+                        spindexer.spindexerAction(0.1, 3.5))
         ));
 
         Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL1, 0.7, true));
 
         Actions.runBlocking(new SequentialAction(
-              intake.intakeOn(0.5),
+                intake.intakeOn(2),
                 shooter.linkageOff(0.1),
                 new ParallelAction(
-                       pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.3, true),
-                       spindexer.autoIntake()
-               )
+                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.3, true),
+                        spindexer.autoIntake()
+                )
         ));
 
         Actions.runBlocking(new SequentialAction(
@@ -90,7 +161,7 @@ public class BlueMeet2Auto extends LinearOpMode {
         Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL2, 0.7, true));
 
         Actions.runBlocking(new SequentialAction(
-                intake.intakeOn(0.5),
+                intake.intakeOn(2),
                 shooter.linkageOff(0.1),
                 new ParallelAction(
                         pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS2, 0.3, true),
@@ -137,6 +208,7 @@ public class BlueMeet2Auto extends LinearOpMode {
                 telemetry.addData("path completion",follower.getPathCompletion());
                 telemetry.addData("following pathchain",follower.getFollowingPathChain());
                 telemetry.addData("parametric end",follower.atParametricEnd());
+                telemetry.addData("id",id);
 
                 //telemetry.addData("path", targetPathChain);
 
@@ -152,7 +224,6 @@ public class BlueMeet2Auto extends LinearOpMode {
     }
 
     public static class Paths {
-
         public PathChain DRIVEBACKTOLOOK;
         public PathChain SHOOTPATH1;
         public PathChain FACEBALL1;
@@ -164,12 +235,13 @@ public class BlueMeet2Auto extends LinearOpMode {
         public PathChain STRAFEPATH;
 
         public Paths(Follower follower) {
+
             DRIVEBACKTOLOOK = follower
                     .pathBuilder()
                     .addPath(
                             new BezierLine(new Pose(32.095, 135.590), new Pose(52.863, 100.749))
                     )
-                    .setConstantHeadingInterpolation(Math.toRadians(90))
+                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(60))
                     .build();
 
             SHOOTPATH1 = follower
@@ -177,7 +249,7 @@ public class BlueMeet2Auto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(52.863, 100.749), new Pose(48.400, 97))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(143))
+                    .setLinearHeadingInterpolation(Math.toRadians(60), Math.toRadians(143))
                     .build();
 
             FACEBALL1 = follower

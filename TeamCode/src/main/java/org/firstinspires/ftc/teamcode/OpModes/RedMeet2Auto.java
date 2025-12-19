@@ -234,7 +234,7 @@ public class RedMeet2Auto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(92.025, 92.510), new Pose(107, 82.510))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(42), Math.toRadians(42))
+                    .setLinearHeadingInterpolation(Math.toRadians(42), Math.toRadians(90))
                     .build();
         }
     }

@@ -49,10 +49,20 @@ public class Power {
 
     public void teleOp(){
         if(myOpMode.gamepad1.dpad_up){
-            baseToPositionPIDClass(25000);
+            //baseToPositionPIDClass(11400);
+            leftBase.setPower(1);
+            rightBase.setPower(1);
         } else if (myOpMode.gamepad1.dpad_down){
-            baseToPositionPIDClass(0);
+            //baseToPositionPIDClass(0);
+            leftBase.setPower(-1);
+            rightBase.setPower(-1);
+        } else {
+            leftBase.setPower(0);
+            rightBase.setPower(0);
         }
+
+        myOpMode.telemetry.addData("base", leftBase.getCurrentPosition());
+        myOpMode.telemetry.addData("base", rightBase.getCurrentPosition());
     }
 
     public void update(){

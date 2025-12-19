@@ -3,6 +3,10 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.hardware.limelightvision.LLFieldMap;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,11 +16,14 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import java.util.List;
+
 public class Shooter {
     private LinearOpMode myOpMode = null;
     public DcMotorEx shootingMotor = null;
     public Servo linkageShooting = null;
     public CRServoImplEx transferServo = null;
+    public Limelight3A limelight = null;
 
     public final static double LOWER_THRESHOLD_MOTOR = 1000;
     public final static double LOWER_THRESHOLD_TRANSFER = 0.5;
@@ -35,6 +42,10 @@ public class Shooter {
 
     ElapsedTime timer = new ElapsedTime();
 
+    LLResult result;
+
+    public List<LLResultTypes.FiducialResult> fiducials;
+
     public Shooter (LinearOpMode opmode) {
         myOpMode = opmode;
     }
@@ -43,7 +54,16 @@ public class Shooter {
         shootingMotor = myOpMode.hardwareMap.get(DcMotorEx.class, "shooterMotor");
         linkageShooting  = myOpMode.hardwareMap.get(Servo.class, "linkageServo");
         transferServo = myOpMode.hardwareMap.get(CRServoImplEx.class, "transferServo");
+
+        limelight = myOpMode.hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.start();
         timer.reset();
+        limelight.pipelineSwitch(1);
+        limelight.getLatestResult();
+
+        result = limelight.getLatestResult();
+
+        fiducials = result.getFiducialResults();
 
         linkageShooting.setPosition(LINKAGE_DOWN);
 

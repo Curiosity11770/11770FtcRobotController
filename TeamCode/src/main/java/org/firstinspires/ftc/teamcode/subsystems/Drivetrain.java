@@ -1,8 +1,14 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
+import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.teamcode.OpModes.FieldOrientedTeleop;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 public class Drivetrain {
     public DcMotor rightFrontDrive = null;
@@ -11,6 +17,18 @@ public class Drivetrain {
     public DcMotor leftBackDrive = null;
 
     private LinearOpMode myOpMode = null;
+
+    private Follower follower;
+
+    private double slowModeMultiplier = 0.5;
+
+
+    enum DriveMode{
+        ROBOT_CENTRIC,
+        RED_FIELD_CENTRIC,
+        BLUE_FIELD_CENTRIC
+    }
+    DriveMode driveMode = DriveMode.ROBOT_CENTRIC;
 
     public Drivetrain(LinearOpMode opmode) {
         myOpMode = opmode;
@@ -32,43 +50,58 @@ public class Drivetrain {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
+        follower = Constants.createFollower(myOpMode.hardwareMap);
+        follower.update();
+        myOpMode.telemetry.addData("Status", "Waiting for Start");
+        myOpMode.telemetry.update();
+        follower.startTeleopDrive(true);
+
     }
 
     public void teleOp(){
-        double frontLeftPower;
-        double frontRightPower;
-        double backLeftPower;
-        double backRightPower;
 
-        double drive = -myOpMode.gamepad1.left_stick_y;
-        double turn = myOpMode.gamepad1.right_stick_x;
-        double strafe = -myOpMode.gamepad1.left_stick_x;
+        follower.update();
 
-        double denominator = Math.max(Math.abs(drive) + Math.abs(strafe) + Math.abs(turn), 2);
+        if (myOpMode.gamepad1.x) {
+            driveMode = DriveMode.ROBOT_CENTRIC;
+        } else if (myOpMode.gamepad1.b) {
+            driveMode = DriveMode.BLUE_FIELD_CENTRIC;
+        } else if (myOpMode.gamepad1.y) {
+            driveMode = DriveMode.RED_FIELD_CENTRIC;
 
-        frontLeftPower = (drive + turn - strafe) / denominator;
-        frontRightPower = (drive - turn + strafe) / denominator;
-        backLeftPower = (drive + turn + strafe) / denominator;
-        backRightPower = (drive - turn - strafe) / denominator;
-
-
-        if (myOpMode.gamepad1.right_trigger > 0.3) {
-            leftFrontDrive.setPower(frontLeftPower / 7);
-            rightFrontDrive.setPower(frontRightPower / 7);
-            leftBackDrive.setPower(backLeftPower / 7);
-            rightBackDrive.setPower(backRightPower / 7);
-        } else if (myOpMode.gamepad1.left_trigger > 0.3) {
-            leftFrontDrive.setPower(3 * frontLeftPower);
-            rightFrontDrive.setPower(3 * frontRightPower);
-            leftBackDrive.setPower(3 * backLeftPower);
-            rightBackDrive.setPower(3 * backRightPower);
-        } else {
-            leftBackDrive.setPower(backLeftPower);
-            leftFrontDrive.setPower(frontLeftPower);
-            rightFrontDrive.setPower(frontRightPower);
-            rightBackDrive.setPower(backRightPower);
         }
 
+        if (driveMode == DriveMode.ROBOT_CENTRIC) {
+            follower.setTeleOpDrive(
+                    -myOpMode.gamepad1.left_stick_y*slowModeMultiplier,
+                    -myOpMode.gamepad1.left_stick_x*slowModeMultiplier,
+                    -myOpMode.gamepad1.right_stick_x*slowModeMultiplier
+            );
+        } else if (driveMode == DriveMode.RED_FIELD_CENTRIC) {
+            follower.setTeleOpDrive(
+                    -myOpMode.gamepad1.left_stick_y*slowModeMultiplier,
+                    -myOpMode.gamepad1.left_stick_x*slowModeMultiplier,
+                    -myOpMode.gamepad1.right_stick_x*slowModeMultiplier,
+                    false
+            );
+        } else if (driveMode == DriveMode.BLUE_FIELD_CENTRIC) {
+            follower.setTeleOpDrive(
+                    myOpMode.gamepad1.left_stick_y*slowModeMultiplier,
+                    -myOpMode.gamepad1.left_stick_x*slowModeMultiplier,
+                    -myOpMode.gamepad1.right_stick_x*slowModeMultiplier,
+                    false
+            );
+        }
+
+        if (myOpMode.gamepad1.left_bumper) {
+            slowModeMultiplier = 0.25;
+        } else if (myOpMode.gamepad1.right_bumper) {
+            slowModeMultiplier = 0.75;
+        } else {
+            slowModeMultiplier = 0.5;
+        }
+
+        myOpMode.telemetry.addData("Drive Mode: ", driveMode);
 
     }
 
