@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServoImplEx;
@@ -50,7 +51,12 @@ public class Spindexer {
     }
 
     public static final double[] LOAD_POSITIONS = {0.1,1.1,2.2};
-    public static final ColorMode[] COLOR_STATUS = {ColorMode.EMPTY,ColorMode.EMPTY,ColorMode.EMPTY};
+
+    public ColorMode[] COLOR_STATUS = {ColorMode.EMPTY,ColorMode.EMPTY,ColorMode.EMPTY};
+
+    public ColorMode[] MOTIF_ORDER = {ColorMode.GREEN,ColorMode.PURPLE,ColorMode.PURPLE};
+
+    public final double[] FIRING_ORDER = {0, 1, 2};
 
 
     public static final double SPINDEXER_KP = 0.3;
@@ -215,6 +221,78 @@ public class Spindexer {
         };
     }
 
+    public Action setFiringOrder() {
+        ElapsedTime actionTimer = new ElapsedTime();
+        actionTimer.reset();
+        return new Action() {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    actionTimer.reset();
+                    initialized = true;
+                }
+                // 0,1,2
+                if (COLOR_STATUS[0] == MOTIF_ORDER[0] &&
+                        COLOR_STATUS[1] == MOTIF_ORDER[1] &&
+                        COLOR_STATUS[2] == MOTIF_ORDER[2]) {
+
+                    FIRING_ORDER[0] = 0;
+                    FIRING_ORDER[1] = 1;
+                    FIRING_ORDER[2] = 2;
+                } else if (COLOR_STATUS[1] == MOTIF_ORDER[0] &&
+                        COLOR_STATUS[2] == MOTIF_ORDER[1] &&
+                        COLOR_STATUS[0] == MOTIF_ORDER[2]) {
+
+                    FIRING_ORDER[0] = 1;
+                    FIRING_ORDER[1] = 2;
+                    FIRING_ORDER[2] = 0;
+                }
+// 2,0,1
+                else if (COLOR_STATUS[2] == MOTIF_ORDER[0] &&
+                        COLOR_STATUS[0] == MOTIF_ORDER[1] &&
+                        COLOR_STATUS[1] == MOTIF_ORDER[2]) {
+
+                    FIRING_ORDER[0] = 2;
+                    FIRING_ORDER[1] = 0;
+                    FIRING_ORDER[2] = 1;
+                }
+
+                return actionTimer.seconds() < 0.1;
+            }
+        };
+    }
+
+    public Action shootingMotif() {
+        ElapsedTime actionTimer = new ElapsedTime();
+        actionTimer.reset();
+        return new Action() {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    actionTimer.reset();
+                    initialized = true;
+                }
+                spindexerToPositionPIDClass(spindexerTargetPosition);
+
+                if (FIRING_ORDER[0] == 0){
+                    spindexerTargetIndex = 1;
+                    spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+                } else if (FIRING_ORDER[1] == 1){
+                    spindexerTargetIndex = 2;
+
+                }  else if (FIRING_ORDER[2] == 2){
+                    spindexerTargetIndex = 0;
+
+                }
+                return actionTimer.seconds() < 2;
+            }
+        };
+    }
+
     public Action autoIntake() {
         ElapsedTime actionTimer = new ElapsedTime();
         actionTimer.reset();
@@ -321,6 +399,8 @@ public class Spindexer {
             }
         };
     }
+
+
 
     public void update(){
 

@@ -42,7 +42,7 @@ public class Shooter {
 
     ElapsedTime timer = new ElapsedTime();
 
-    LLResult result;
+    public LLResult result;
 
     public List<LLResultTypes.FiducialResult> fiducials;
 

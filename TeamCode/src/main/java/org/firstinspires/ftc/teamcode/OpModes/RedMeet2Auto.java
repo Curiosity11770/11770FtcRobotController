@@ -178,7 +178,7 @@ public class RedMeet2Auto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(91.1436, 100.749), new Pose(95, 97))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(40))
+                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(46))
                     .build();
 
             FACEBALL1 = follower
@@ -186,7 +186,7 @@ public class RedMeet2Auto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(95, 95.25), new Pose(95, 85.928))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(40), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(46), Math.toRadians(0))
                     .build();
 
             DRIVEINTOBALLS1 = follower
@@ -202,7 +202,7 @@ public class RedMeet2Auto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(126.572, 84.000), new Pose(94, 93.712))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(43))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(46))
                     .build();
 
             FACEBALL2 = follower
@@ -210,7 +210,7 @@ public class RedMeet2Auto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(94, 93.712), new Pose(94, 60.072))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(43), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(46), Math.toRadians(0))
                     .build();
 
             DRIVEINTOBALLS2 = follower
@@ -226,7 +226,7 @@ public class RedMeet2Auto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(129, 60.000), new Pose(92.025, 92.510))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(42))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(46))
                     .build();
 
             STRAFEPATH = follower
@@ -234,7 +234,7 @@ public class RedMeet2Auto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(92.025, 92.510), new Pose(107, 82.510))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(42), Math.toRadians(90))
+                    .setLinearHeadingInterpolation(Math.toRadians(46), Math.toRadians(90))
                     .build();
         }
     }

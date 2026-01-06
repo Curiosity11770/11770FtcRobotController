@@ -11,7 +11,7 @@ import java.util.List;
 public class Robot {
     private LinearOpMode myOpMode = null;
 
-    Drivetrain drivetrain;
+    public Drivetrain drivetrain;
 
     Intake intake;
 

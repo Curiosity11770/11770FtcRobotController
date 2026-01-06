@@ -49,6 +49,7 @@ public class BlueSortedAuto extends LinearOpMode {
 
         myPaths = new Paths(follower);
 
+        spindexer.COLOR_STATUS = new Spindexer.ColorMode[]{Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE};
         waitForStart();
 
         if (isStopRequested()) return;
@@ -71,50 +72,20 @@ public class BlueSortedAuto extends LinearOpMode {
                 shooter.shooterAction(shooter.REVOLUTIONS_PER_MINUTE/60*shooter.TICKS_PER_REVOLUTION, 0.1),
                 shooter.transferAction(0.7, 0.1)
         ));
-        for(LLResultTypes.FiducialResult fiducial : shooter.fiducials){
-            id = fiducial.getFiducialId();
-            telemetry.addData("isWorking", id);
-        }
+
+        Actions.runBlocking(scanAprilTags());
+
 
         if (id == 21){
-
-            if(spindexer.hsvValuesThree[0] > 100 && spindexer.hsvValuesThree[0] < 200){
-
-            } else if (spindexer.hsvValuesTwo[0] > 100 && spindexer.hsvValuesTwo[0] < 200){
-                spindexer.spindexerTargetIndex = 1;
-                spindexer.spindexerTargetPosition = spindexer.LOAD_POSITIONS[spindexer.spindexerTargetIndex];
-                spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition);
-
-                // Actions.runBlocking(new InstantAction(spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition)));
-            }  else {
-                spindexer.spindexerTargetIndex = 0;
-                spindexer.spindexerTargetPosition = spindexer.LOAD_POSITIONS[spindexer.spindexerTargetIndex];
-                spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition);
-
-                // Actions.runBlocking(new InstantAction(spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition)));
-            }
+            spindexer.MOTIF_ORDER = new Spindexer.ColorMode[]{Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.PURPLE};
 
         }  else if (id == 22){
 
-            if(spindexer.hsvValuesTwo[0] > 100 && spindexer.hsvValuesTwo[0] < 200){
-
-            } else if (spindexer.hsvValuesOne[0] > 100 && spindexer.hsvValuesOne[0] < 200){
-                spindexer.spindexerTargetIndex = 0;
-                spindexer.spindexerTargetPosition = spindexer.LOAD_POSITIONS[spindexer.spindexerTargetIndex];
-                spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition);
-
-                // Actions.runBlocking(new InstantAction(spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition)));
-            } else {
-                spindexer.spindexerTargetIndex = 2;
-                spindexer.spindexerTargetPosition = spindexer.LOAD_POSITIONS[spindexer.spindexerTargetIndex];
-                spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition);
-
-                // Actions.runBlocking(new InstantAction(spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition)));
-            }
-
+            spindexer.MOTIF_ORDER = new Spindexer.ColorMode[]{Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE};
         } else if (id == 23) {
 
-            if (spindexer.hsvValuesOne[0] > 100 && spindexer.hsvValuesOne[0] < 200) {
+            spindexer.MOTIF_ORDER = new Spindexer.ColorMode[]{Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN};
+            /*if (spindexer.hsvValuesOne[0] > 100 && spindexer.hsvValuesOne[0] < 200) {
 
             } else if (spindexer.hsvValuesThree[0] > 100 && spindexer.hsvValuesOne[0] < 200){
                 spindexer.spindexerTargetIndex = 0;
@@ -128,10 +99,10 @@ public class BlueSortedAuto extends LinearOpMode {
                 spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition);
 
                 // Actions.runBlocking(new InstantAction(spindexer.spindexerToPositionPIDClass(spindexer.spindexerTargetPosition)));
-            }
+            }*/
         }
         //Align with goal and launch artifacts
-        Actions.runBlocking(new SequentialAction(
+        Actions.runBlocking(new SequentialAction(spindexer.setFiringOrder(), spindexer.shootingMotif(),
                 pedroDriveOnPathChain(myPaths.SHOOTPATH1, 0.7, true),
                 shooter.transferAction(.7,0.1),
                 new ParallelAction(
@@ -150,7 +121,7 @@ public class BlueSortedAuto extends LinearOpMode {
                 )
         ));
 
-        Actions.runBlocking(new SequentialAction(
+        Actions.runBlocking(new SequentialAction(spindexer.setFiringOrder(), spindexer.shootingMotif(),
                 pedroDriveOnPathChain(myPaths.SHOOTPATH2, 0.7, true),
                 shooter.transferAction(.7,0.1),
                 new ParallelAction(
@@ -169,7 +140,7 @@ public class BlueSortedAuto extends LinearOpMode {
                 )
         ));
 
-        Actions.runBlocking(new SequentialAction(
+        Actions.runBlocking(new SequentialAction(spindexer.setFiringOrder(), spindexer.shootingMotif(),
                 pedroDriveOnPathChain(myPaths.SHOOTPATH3, 0.7, true),
                 shooter.transferAction(.7,0.1),
                 new ParallelAction(
@@ -208,7 +179,6 @@ public class BlueSortedAuto extends LinearOpMode {
                 telemetry.addData("path completion",follower.getPathCompletion());
                 telemetry.addData("following pathchain",follower.getFollowingPathChain());
                 telemetry.addData("parametric end",follower.atParametricEnd());
-                telemetry.addData("id",id);
 
                 //telemetry.addData("path", targetPathChain);
 
@@ -217,6 +187,36 @@ public class BlueSortedAuto extends LinearOpMode {
                 if(follower.isBusy()){
                     return true;
                 }else{
+                    return false;
+                }
+            }
+        };
+    }
+
+    private Action scanAprilTags() {
+        return new Action() {
+            private boolean initialized = false;
+            ElapsedTime tagTimer = new ElapsedTime();
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    initialized = true;
+                    tagTimer.reset();
+                }
+
+                shooter.result = shooter.limelight.getLatestResult();
+                shooter.fiducials = shooter.result.getFiducialResults();
+
+                for (LLResultTypes.FiducialResult fiducial : shooter.fiducials) {
+                    id = fiducial.getFiducialId();
+                }
+                telemetry.addData("id",id);
+
+                telemetry.update();
+
+               if(tagTimer.seconds() < 3){
+                   return true;
+               } else {
                     return false;
                 }
             }
@@ -241,7 +241,7 @@ public class BlueSortedAuto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(32.095, 135.590), new Pose(52.863, 100.749))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(60))
+                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(65))
                     .build();
 
             SHOOTPATH1 = follower
@@ -249,7 +249,7 @@ public class BlueSortedAuto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(52.863, 100.749), new Pose(48.400, 97))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(60), Math.toRadians(143))
+                    .setLinearHeadingInterpolation(Math.toRadians(65), Math.toRadians(140))
                     .build();
 
             FACEBALL1 = follower
