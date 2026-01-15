@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Spindexer;
+import org.firstinspires.ftc.teamcode.subsystems.Vision;
 
 @Autonomous(name="BlueSortedAuto", group="Linear OpMode")
 @Config
@@ -31,6 +32,7 @@ public class BlueSortedAuto extends LinearOpMode {
     private Follower follower;
     private Paths myPaths;
     private Shooter shooter = new Shooter(this);
+    private Vision vision = new Vision(this);
     private Spindexer spindexer = new Spindexer(this);
     private Intake intake = new Intake(this);
 
@@ -44,6 +46,7 @@ public class BlueSortedAuto extends LinearOpMode {
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
         shooter.init();
+        vision.init();
         spindexer.init();
         intake.init();
 
@@ -70,7 +73,7 @@ public class BlueSortedAuto extends LinearOpMode {
         Actions.runBlocking(new ParallelAction(
                 pedroDriveOnPathChain(myPaths.DRIVEBACKTOLOOK, 1, true),
                 shooter.shooterAction(shooter.REVOLUTIONS_PER_MINUTE/60*shooter.TICKS_PER_REVOLUTION, 0.1),
-                shooter.transferAction(0.7, 0.1)
+                shooter.transferAction(shooter.TRANSFER_SPEED, 0.1)
         ));
 
         Actions.runBlocking(scanAprilTags());
@@ -104,10 +107,9 @@ public class BlueSortedAuto extends LinearOpMode {
         //Align with goal and launch artifacts
         Actions.runBlocking(new SequentialAction(spindexer.setFiringOrder(), spindexer.shootingMotif(),
                 pedroDriveOnPathChain(myPaths.SHOOTPATH1, 0.7, true),
-                shooter.transferAction(.7,0.1),
-                new ParallelAction(
-                        shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                        spindexer.spindexerAction(0.1, 3.5))
+                shooter.transferAction(shooter.TRANSFER_SPEED,0.1),
+                shooter.linkageAction(shooter.LINKAGE_UP, 0.5),
+                        spindexer.spindexerAction(0.65, 3.5)
         ));
 
         Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL1, 0.7, true));
@@ -126,7 +128,7 @@ public class BlueSortedAuto extends LinearOpMode {
                 shooter.transferAction(.7,0.1),
                 new ParallelAction(
                         shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                        spindexer.spindexerAction(0.1, 3.5))
+                        spindexer.spindexerAction(0.65, 3.5))
         ));
 
         Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL2, 0.7, true));
@@ -142,10 +144,10 @@ public class BlueSortedAuto extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(spindexer.setFiringOrder(), spindexer.shootingMotif(),
                 pedroDriveOnPathChain(myPaths.SHOOTPATH3, 0.7, true),
-                shooter.transferAction(.7,0.1),
+                shooter.transferAction(shooter.TRANSFER_SPEED,0.1),
                 new ParallelAction(
                         shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                        spindexer.spindexerAction(0.1, 3.5))
+                        spindexer.spindexerAction(0.65, 3.5))
         ));
 
 
@@ -204,10 +206,10 @@ public class BlueSortedAuto extends LinearOpMode {
                     tagTimer.reset();
                 }
 
-                shooter.result = shooter.limelight.getLatestResult();
-                shooter.fiducials = shooter.result.getFiducialResults();
+                vision.result = vision.limelight.getLatestResult();
+                vision.fiducials = vision.result.getFiducialResults();
 
-                for (LLResultTypes.FiducialResult fiducial : shooter.fiducials) {
+                for (LLResultTypes.FiducialResult fiducial : vision.fiducials) {
                     id = fiducial.getFiducialId();
                 }
                 telemetry.addData("id",id);

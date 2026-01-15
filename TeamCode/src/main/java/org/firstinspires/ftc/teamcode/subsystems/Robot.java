@@ -21,6 +21,8 @@ public class Robot {
 
     Spindexer spindexer;
 
+    Vision vision;
+
     private FtcDashboard dash = FtcDashboard.getInstance();
     private List<Action> runningActions = new ArrayList<>();
 
@@ -29,12 +31,15 @@ public class Robot {
         myOpMode = opmode;
     }
     public void init(){
-        drivetrain = new Drivetrain(myOpMode);
+        vision = new Vision(myOpMode);
+        drivetrain = new Drivetrain(myOpMode, vision);
         intake = new Intake(myOpMode);
         power = new Power(myOpMode);
-        shooter = new Shooter (myOpMode);
+        shooter = new Shooter (myOpMode, vision);
         spindexer = new Spindexer(myOpMode);
 
+
+        vision.init();
         drivetrain.init();
         intake.init();
         power.init();

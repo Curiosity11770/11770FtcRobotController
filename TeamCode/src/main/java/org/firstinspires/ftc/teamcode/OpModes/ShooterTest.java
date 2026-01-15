@@ -45,7 +45,7 @@ public class ShooterTest extends LinearOpMode {
 
 
             telemetry.update();
-            telemetry.addData("velocity", velocity);
+            telemetry.addData("rpm", velocity);
         }
     }
 

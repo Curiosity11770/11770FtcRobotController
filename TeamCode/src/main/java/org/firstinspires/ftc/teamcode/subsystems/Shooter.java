@@ -23,7 +23,8 @@ public class Shooter {
     public DcMotorEx shootingMotor = null;
     public Servo linkageShooting = null;
     public CRServoImplEx transferServo = null;
-    public Limelight3A limelight = null;
+
+    public Vision vision;
 
     public final static double LOWER_THRESHOLD_MOTOR = 1000;
     public final static double LOWER_THRESHOLD_TRANSFER = 0.5;
@@ -31,57 +32,84 @@ public class Shooter {
     public final static int CLOSE_SHOOTER_SPEED = 0;
     public final static int FAR_SHOOTER_SPEED = 0;
 
-    public int TICKS_PER_SECOND = 0;
+    public double TICKS_PER_SECOND = 0;
     public int TICKS_PER_REVOLUTION = 28;
-    public int REVOLUTIONS_PER_MINUTE = 3500;
+    public double REVOLUTIONS_PER_MINUTE = 3500;
 
-    public double LINKAGE_UP = 0.5;
-    public double LINKAGE_DOWN = 0.1;
+    public double LINKAGE_UP = 0.3;
+    public double LINKAGE_DOWN = 0.6    ;
 
-    public  double TRANSFER_SPEED = 0.8;
+    public  double TRANSFER_SPEED = 1;
 
     ElapsedTime timer = new ElapsedTime();
 
-    public LLResult result;
+    private int velocity = 500; // starting velocity (ticks per second)
+    private final int VELOCITY_INCREMENT = 100; // how much to change per button press
+    private final int MAX_VELOCITY = 6000; // limit to avoid over-speeding
+    private final int MIN_VELOCITY = 0;
 
-    public List<LLResultTypes.FiducialResult> fiducials;
+    private boolean aPressedLast = false;
+    private boolean bPressedLast = false;
+
+
+    public Shooter (LinearOpMode opmode, Vision robotVision) {
+        myOpMode = opmode;
+        vision = robotVision;
+    }
 
     public Shooter (LinearOpMode opmode) {
         myOpMode = opmode;
     }
 
     public void init (){
-        shootingMotor = myOpMode.hardwareMap.get(DcMotorEx.class, "shooterMotor");
+        shootingMotor  = myOpMode.hardwareMap.get(DcMotorEx.class, "shooterMotor");
         linkageShooting  = myOpMode.hardwareMap.get(Servo.class, "linkageServo");
         transferServo = myOpMode.hardwareMap.get(CRServoImplEx.class, "transferServo");
 
-        limelight = myOpMode.hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.start();
-        timer.reset();
-        limelight.pipelineSwitch(1);
-        limelight.getLatestResult();
-
-        result = limelight.getLatestResult();
-
-        fiducials = result.getFiducialResults();
 
         linkageShooting.setPosition(LINKAGE_DOWN);
 
     }
 
     public void teleOp(){
+        if (myOpMode.gamepad1.left_trigger > 0.2 || myOpMode.gamepad1.right_trigger > 0.2) {
+            List<LLResultTypes.FiducialResult> fiducialResults = vision.result.getFiducialResults();
+            for (LLResultTypes.FiducialResult fr : fiducialResults) {
+                myOpMode.telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
+                myOpMode.telemetry.addData("targetPose", fr.getTargetPoseRobotSpace());
+                myOpMode.telemetry.addData("cameraPose", fr.getTargetPoseCameraSpace().getPosition().z);
 
+                REVOLUTIONS_PER_MINUTE = 1044 * fr.getTargetPoseCameraSpace().getPosition().z + 1967;
+                TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE/60*TICKS_PER_REVOLUTION;
+                shootingMotor.setVelocity(-TICKS_PER_SECOND);
+
+            }
+        } else {
+            REVOLUTIONS_PER_MINUTE = 3500;
+        }
         //calculate Ticks per second based on current RPM
         TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE/60*TICKS_PER_REVOLUTION;
-
-        //calculate measured RPM from motors current degrees per second
-        double measuredRPM = shootingMotor.getVelocity()/TICKS_PER_REVOLUTION*60;
 
         if(myOpMode.gamepad2.right_bumper){
             shootingMotor.setVelocity(0);
         }else if(myOpMode.gamepad2.left_bumper){
             shootingMotor.setVelocity(-TICKS_PER_SECOND);
         }
+
+        /*if (myOpMode.gamepad1.a && !aPressedLast) {
+            velocity += VELOCITY_INCREMENT;
+            if (velocity > MAX_VELOCITY) velocity = MAX_VELOCITY;
+        }
+
+        // Button B: Decrease velocity
+        if (myOpMode.gamepad1.b && !bPressedLast) {
+            velocity -= VELOCITY_INCREMENT;
+            if (velocity < MIN_VELOCITY) velocity = MIN_VELOCITY;
+        }
+
+        // Update flags
+        aPressedLast = myOpMode.gamepad1.a;
+        bPressedLast = myOpMode.gamepad1.b;*/
 
         if (myOpMode.gamepad2.dpad_up) {
             linkageShooting.setPosition(LINKAGE_UP);
@@ -91,9 +119,12 @@ public class Shooter {
             transferServo.setPower(0);
         }
 
+
+        myOpMode.telemetry.addData("shooter rpm", REVOLUTIONS_PER_MINUTE);
+
     }
 
-    public Action shooterAction(int velocity, double time) {
+    public Action shooterAction(double velocity, double time) {
         ElapsedTime actionTimer = new ElapsedTime();
         actionTimer.reset();
         return new Action() {

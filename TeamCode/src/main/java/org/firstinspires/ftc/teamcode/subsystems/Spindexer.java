@@ -145,7 +145,7 @@ public class Spindexer {
         colorUpdate(hsvValuesTwo, rgb1);
         colorUpdate(hsvValuesThree, rgb2);
 
-        if(myOpMode.gamepad2.x){
+        if(myOpMode.gamepad2.a){
             spindexerMode = SpindexerMode.CONTINUOUS;
         } else if (myOpMode.gamepad2.dpad_left){
             spindexerTargetIndex = 0;
@@ -158,11 +158,11 @@ public class Spindexer {
 
         if (spindexerMode == SpindexerMode.CONTINUOUS) {
             if (myOpMode.gamepad2.a) {
-                spindexerServo.setPower(0.2);
+                spindexerServo.setPower(0.65);
             } else if (myOpMode.gamepad2.b) {
-                spindexerServo.setPower(-0.2);
+                spindexerServo.setPower(-0.65);
             } else if (myOpMode.gamepad2.x) {
-                spindexerServo.setPower(0.1);
+                spindexerServo.setPower(0.3);
             } else {
                 spindexerServo.setPower(0);
             }
@@ -183,9 +183,9 @@ public class Spindexer {
 
             if (hsvValuesOne[0] > 200){
                 COLOR_STATUS[spindexerTargetIndex] = ColorMode.PURPLE;
-            } else if (hsvValuesOne[0] > 100){
+            } else if (hsvValuesOne[0] > 130){
                 COLOR_STATUS[spindexerTargetIndex] = ColorMode.GREEN;
-            } else if (hsvValuesOne[0] < 20){
+            } else if (hsvValuesOne[0] < 70){
                 COLOR_STATUS[spindexerTargetIndex] = ColorMode.EMPTY;
             }
         } else if(spindexerMode == SpindexerMode.MANUAL_INTAKE) {
