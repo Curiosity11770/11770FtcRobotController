@@ -179,7 +179,7 @@ public class Drivetrain {
             if (myOpMode.gamepad1.left_bumper) {
                 slowModeMultiplier = 0.25;
             } else if (myOpMode.gamepad1.right_bumper) {
-                slowModeMultiplier = 0.9;
+                slowModeMultiplier = 1;
             } else {
                 slowModeMultiplier = 0.5;
             }

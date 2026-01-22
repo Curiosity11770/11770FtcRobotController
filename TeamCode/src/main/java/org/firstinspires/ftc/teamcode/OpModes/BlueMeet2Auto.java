@@ -62,11 +62,10 @@ public class BlueMeet2Auto extends LinearOpMode {
         //Align with goal and launch artifacts
         Actions.runBlocking(new SequentialAction(
                 pedroDriveOnPathChain(myPaths.SHOOTPATH1, 0.7, true),
-                shooter.transferAction(.7,0.1),
-                new ParallelAction(
-                    shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                    spindexer.spindexerAction(0.1, 3.5))
-        ));
+                shooter.transferAction(1,0.1),
+                    shooter.linkageAction(shooter.LINKAGE_UP, 0.5),
+                    spindexer.spindexerAction(0.75, 3.5))
+        );
 
         Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL1, 0.7, true));
 
@@ -81,11 +80,10 @@ public class BlueMeet2Auto extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 pedroDriveOnPathChain(myPaths.SHOOTPATH2, 0.7, true),
-                shooter.transferAction(.7,0.1),
-                new ParallelAction(
+                shooter.transferAction(1,0.1),
                         shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                        spindexer.spindexerAction(0.1, 3.5))
-        ));
+                        spindexer.spindexerAction(0.75, 3.5))
+        );
 
         Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL2, 0.7, true));
 
@@ -100,10 +98,9 @@ public class BlueMeet2Auto extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 pedroDriveOnPathChain(myPaths.SHOOTPATH3, 0.7, true),
-                shooter.transferAction(.7,0.1),
-                new ParallelAction(
-                        shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                        spindexer.spindexerAction(0.1, 3.5))
+                shooter.transferAction(1,0.1),
+                        shooter.linkageAction(shooter.LINKAGE_UP, 0.5),
+                        spindexer.spindexerAction(0.75, 3.5)
         ));
 
 
@@ -177,7 +174,7 @@ public class BlueMeet2Auto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(52.863, 100.749), new Pose(48.400, 97))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(143))
+                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(140))
                     .build();
 
             FACEBALL1 = follower
@@ -201,7 +198,7 @@ public class BlueMeet2Auto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(17.000, 84.000), new Pose(49.774, 93.712))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(138))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
                     .build();
 
             FACEBALL2 = follower
@@ -209,7 +206,7 @@ public class BlueMeet2Auto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(49.774, 93.712), new Pose(49.602, 60.072))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(138), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(140), Math.toRadians(180))
                     .build();
 
             DRIVEINTOBALLS2 = follower
@@ -225,7 +222,7 @@ public class BlueMeet2Auto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(14.000, 60.000), new Pose(50.975, 92.510))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(138))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
                     .build();
 
             STRAFEPATH = follower
@@ -233,7 +230,7 @@ public class BlueMeet2Auto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(50.975, 92.510), new Pose(35.975, 82.510))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(138), Math.toRadians(90))
+                    .setLinearHeadingInterpolation(Math.toRadians(140), Math.toRadians(90))
                     .build();
         }
     }

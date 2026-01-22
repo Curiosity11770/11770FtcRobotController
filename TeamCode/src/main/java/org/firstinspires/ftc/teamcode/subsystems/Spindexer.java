@@ -9,10 +9,14 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DigitalChannelImpl;
+import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -29,6 +33,14 @@ public class Spindexer {
     public Servo rgb0 = null;
     public Servo rgb1 = null;
     public Servo rgb2 = null;
+    public DigitalChannel revGreen0 = null;
+    public DigitalChannel revRed0 = null;
+    public DigitalChannel revGreen1 = null;
+    public DigitalChannel revRed1 = null;
+    public DigitalChannel revGreen2 = null;
+    public DigitalChannel revRed2 = null;
+
+
 
     public NormalizedColorSensor colorSensorOne;
     public final float[] hsvValuesOne = new float[3];
@@ -50,11 +62,13 @@ public class Spindexer {
         GREEN
     }
 
-    public static final double[] LOAD_POSITIONS = {0.1,1.1,2.2};
+    public static final double[] LOAD_POSITIONS = {0.1,1.1,2.3};
 
     public ColorMode[] COLOR_STATUS = {ColorMode.EMPTY,ColorMode.EMPTY,ColorMode.EMPTY};
 
     public ColorMode[] MOTIF_ORDER = {ColorMode.GREEN,ColorMode.PURPLE,ColorMode.PURPLE};
+
+    public static final double[] FIRING_POSITIONS = {0.1,1.1,2.2};
 
     public final double[] FIRING_ORDER = {0, 1, 2};
 
@@ -93,6 +107,14 @@ public class Spindexer {
         rgb1 = myOpMode.hardwareMap.get(Servo.class, "rgb1");
         rgb2 = myOpMode.hardwareMap.get(Servo.class, "rgb2");
 
+        revGreen0 = myOpMode.hardwareMap.get(DigitalChannel.class, "revGreen0");
+        revRed0 = myOpMode.hardwareMap.get(DigitalChannel.class, "revRed0");
+        revGreen1 = myOpMode.hardwareMap.get(DigitalChannel.class, "revGreen1");
+        revRed1 = myOpMode.hardwareMap.get(DigitalChannel.class, "revRed1");
+        revGreen2 = myOpMode.hardwareMap.get(DigitalChannel.class, "revGreen2");
+        revRed2 = myOpMode.hardwareMap.get(DigitalChannel.class, "revRed2");
+
+
         colorSensorOne = myOpMode.hardwareMap.get(NormalizedColorSensor.class, "colorSensorOne");
         colorSensorTwo = myOpMode.hardwareMap.get(NormalizedColorSensor.class, "colorSensorTwo");
         colorSensorThree = myOpMode.hardwareMap.get(NormalizedColorSensor.class, "colorSensorThree");
@@ -113,11 +135,28 @@ public class Spindexer {
 
         timer.reset();
 
+        revGreen0.setMode(DigitalChannel.Mode.OUTPUT);
+        revRed0.setMode(DigitalChannel.Mode.OUTPUT);
+
+        revGreen1.setMode(DigitalChannel.Mode.OUTPUT);
+        revRed1.setMode(DigitalChannel.Mode.OUTPUT);
+        revGreen2.setMode(DigitalChannel.Mode.OUTPUT);
+        revRed2.setMode(DigitalChannel.Mode.OUTPUT);
+
+
     }
     public void teleOp() {
         colorSensorOne.setGain(2);
         colorsOne = colorSensorOne.getNormalizedColors();
         Color.colorToHSV(colorsOne.toColor(), hsvValuesOne);
+
+        colorSensorTwo.setGain(2);
+        colorsTwo = colorSensorTwo.getNormalizedColors();
+        Color.colorToHSV(colorsTwo.toColor(), hsvValuesTwo);
+
+        colorSensorThree.setGain(2);
+        colorsThree = colorSensorThree.getNormalizedColors();
+        Color.colorToHSV(colorsThree.toColor(), hsvValuesThree);
 
         myOpMode.telemetry.addLine()
                 .addData("Red", "%.3f", colorsOne.red)
@@ -129,21 +168,50 @@ public class Spindexer {
                 .addData("Value", "%.3f", hsvValuesOne[2]);
         myOpMode.telemetry.addData("Alpha", "%.3f", colorsOne.alpha);
 
-        colorSensorTwo.setGain(2);
-        colorsTwo = colorSensorTwo.getNormalizedColors();
-        Color.colorToHSV(colorsTwo.toColor(), hsvValuesTwo);
+        myOpMode.telemetry.addLine()
+                .addData("Red", "%.3f", colorsTwo.red)
+                .addData("Green", "%.3f", colorsTwo.green)
+                .addData("Blue", "%.3f", colorsTwo.blue);
+        myOpMode.telemetry.addLine()
+                .addData("Hue", "%.3f", hsvValuesTwo[0])
+                .addData("Saturation", "%.3f", hsvValuesTwo[1])
+                .addData("Value", "%.3f", hsvValuesTwo[2]);
+        myOpMode.telemetry.addData("Alpha", "%.3f", colorsTwo.alpha);
 
-        colorSensorThree.setGain(2);
-        colorsThree = colorSensorThree.getNormalizedColors();
-        Color.colorToHSV(colorsThree.toColor(), hsvValuesThree);
+        myOpMode.telemetry.addLine()
+                .addData("Red", "%.3f", colorsThree.red)
+                .addData("Green", "%.3f", colorsThree.green)
+                .addData("Blue", "%.3f", colorsThree.blue);
+        myOpMode.telemetry.addLine()
+                .addData("Hue", "%.3f", hsvValuesThree[0])
+                .addData("Saturation", "%.3f", hsvValuesThree[1])
+                .addData("Value", "%.3f", hsvValuesThree[2]);
+        myOpMode.telemetry.addData("Alpha", "%.3f", colorsThree.alpha);
+
+        myOpMode.telemetry.addData("colorStatus", COLOR_STATUS[0]);
+        myOpMode.telemetry.addData("colorStatus", COLOR_STATUS[1]);
+        myOpMode.telemetry.addData("colorStatus", COLOR_STATUS[2]);
+
+
 
         //colorChanger(rgb0, 0);
         //colorChanger(rgb1, 1);
         //colorChanger(rgb2, 2);
 
-        colorUpdate(hsvValuesOne, rgb0);
-        colorUpdate(hsvValuesTwo, rgb1);
-        colorUpdate(hsvValuesThree, rgb2);
+        //colorUpdate(hsvValuesOne, rgb0);
+        //colorUpdate(hsvValuesTwo, rgb1);
+        //colorUpdate(hsvValuesThree, rgb2);
+
+        colorRev(hsvValuesOne, revGreen0, revRed0);
+        colorRev(hsvValuesTwo, revGreen1, revRed1);
+        colorRev(hsvValuesThree, revGreen2, revRed2);
+
+        /*if(COLOR_STATUS[0] != ColorMode.EMPTY && COLOR_STATUS[1] != ColorMode.EMPTY &&
+                COLOR_STATUS[2] != ColorMode.EMPTY){
+            rgb0.setPosition(0.722);
+        } else {
+            rgb0.setPosition(0);
+        }*/
 
         if(myOpMode.gamepad2.a){
             spindexerMode = SpindexerMode.CONTINUOUS;
@@ -151,6 +219,10 @@ public class Spindexer {
             spindexerTargetIndex = 0;
             spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
             isTriggered = false;
+            COLOR_STATUS[0] = ColorMode.EMPTY;
+            COLOR_STATUS[1] = ColorMode.EMPTY;
+            COLOR_STATUS[2] = ColorMode.EMPTY;
+
             spindexerMode = SpindexerMode.AUTO_INTAKE;
         } else if (myOpMode.gamepad2.dpad_right){
             spindexerMode = SpindexerMode.MANUAL_INTAKE;
@@ -171,23 +243,33 @@ public class Spindexer {
 
             //if color sensor detects artifact
             if (hsvValuesOne[0] > 60 && !isTriggered && spindexerTargetIndex < 2) {
+
+                if (hsvValuesOne[0] > 200){
+                    COLOR_STATUS[spindexerTargetIndex] = ColorMode.PURPLE;
+                } else if (hsvValuesOne[0] > 130){
+                    COLOR_STATUS[spindexerTargetIndex] = ColorMode.GREEN;
+                } else if (hsvValuesOne[0] < 70){
+                    COLOR_STATUS[spindexerTargetIndex] = ColorMode.EMPTY;
+                }
+
                 //advance desired position
                 spindexerTargetIndex = (spindexerTargetIndex + 1) % 3;
                 spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
                 isTriggered = true;
+            } else if (hsvValuesOne[0] > 60 && !isTriggered && spindexerTargetIndex == 2){
+                if (hsvValuesOne[0] > 200){
+                    COLOR_STATUS[spindexerTargetIndex] = ColorMode.PURPLE;
+                } else if (hsvValuesOne[0] > 130){
+                    COLOR_STATUS[spindexerTargetIndex] = ColorMode.GREEN;
+                } else if (hsvValuesOne[0] < 70){
+                    COLOR_STATUS[spindexerTargetIndex] = ColorMode.EMPTY;
+                }
             }
 
             if(Math.abs(spindexerTargetPosition- spindexerEncoder.getVoltage()) < 0.2){
                 isTriggered = false;
             }
 
-            if (hsvValuesOne[0] > 200){
-                COLOR_STATUS[spindexerTargetIndex] = ColorMode.PURPLE;
-            } else if (hsvValuesOne[0] > 130){
-                COLOR_STATUS[spindexerTargetIndex] = ColorMode.GREEN;
-            } else if (hsvValuesOne[0] < 70){
-                COLOR_STATUS[spindexerTargetIndex] = ColorMode.EMPTY;
-            }
         } else if(spindexerMode == SpindexerMode.MANUAL_INTAKE) {
             spindexerToPositionPIDClass(spindexerTargetPosition);
             if (myOpMode.gamepad2.dpad_right) {
@@ -259,7 +341,10 @@ public class Spindexer {
                     FIRING_ORDER[2] = 1;
                 }
 
-                return actionTimer.seconds() < 0.1;
+                myOpMode.telemetry.addData("Firing Order: ", FIRING_ORDER[0]);
+                myOpMode.telemetry.update();
+
+                return actionTimer.seconds() < 2;
             }
         };
     }
@@ -281,14 +366,118 @@ public class Spindexer {
                 if (FIRING_ORDER[0] == 0){
                     spindexerTargetIndex = 1;
                     spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
-                } else if (FIRING_ORDER[1] == 1){
-                    spindexerTargetIndex = 2;
-
-                }  else if (FIRING_ORDER[2] == 2){
+                } else if (FIRING_ORDER[0] == 1){
                     spindexerTargetIndex = 0;
+                    spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+
+                }  else if (FIRING_ORDER[0] == 2){
+                    spindexerTargetIndex = 2;
+                    spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
 
                 }
+                myOpMode.telemetry.addData("ColorStatus: ", COLOR_STATUS[0]);
+                myOpMode.telemetry.addData("ColorStatus1", COLOR_STATUS[1]);
+                myOpMode.telemetry.addData("ColorStatus2: ", COLOR_STATUS[2]);
+
+                myOpMode.telemetry.addData("Motif Order",MOTIF_ORDER[0]);
+                myOpMode.telemetry.addData("Motif Order2",MOTIF_ORDER[1]);
+                myOpMode.telemetry.addData("Motif Order3",MOTIF_ORDER[2]);
+                myOpMode.telemetry.update();
                 return actionTimer.seconds() < 2;
+            }
+        };
+    }
+    public Action shootingMotif2() {
+        ElapsedTime actionTimer = new ElapsedTime();
+        actionTimer.reset();
+        return new Action() {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    actionTimer.reset();
+                    initialized = true;
+                }
+                spindexerToPositionPIDClass(spindexerTargetPosition);
+
+                if (FIRING_ORDER[0] == 0){
+                    spindexerTargetIndex = 0;
+                    spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+                } else if (FIRING_ORDER[0] == 1){
+                    spindexerTargetIndex = 2;
+                    spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+
+                }  else if (FIRING_ORDER[0] == 2){
+                    spindexerTargetIndex = 1;
+                    spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+
+                }
+                myOpMode.telemetry.addData("ColorStatus: ", COLOR_STATUS[0]);
+                myOpMode.telemetry.addData("ColorStatus1", COLOR_STATUS[1]);
+                myOpMode.telemetry.addData("ColorStatus2: ", COLOR_STATUS[2]);
+
+                myOpMode.telemetry.addData("Motif Order",MOTIF_ORDER[0]);
+                myOpMode.telemetry.addData("Motif Order2",MOTIF_ORDER[1]);
+                myOpMode.telemetry.addData("Motif Order3",MOTIF_ORDER[2]);
+                myOpMode.telemetry.update();
+                return actionTimer.seconds() < 2;
+            }
+        };
+    }
+
+
+    public Action setColorStatus(ColorMode color1, ColorMode color2, ColorMode color3) {
+        ElapsedTime actionTimer = new ElapsedTime();
+        actionTimer.reset();
+        return new Action() {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    actionTimer.reset();
+                    initialized = true;
+                }
+                COLOR_STATUS[0] = color1;
+                COLOR_STATUS[1] = color2;
+                COLOR_STATUS[2] = color3;
+                myOpMode.telemetry.addData("ColorStatus: ", COLOR_STATUS[0]);
+                myOpMode.telemetry.addData("ColorStatus1", COLOR_STATUS[1]);
+                myOpMode.telemetry.addData("ColorStatus2: ", COLOR_STATUS[2]);
+                myOpMode.telemetry.update();
+                return actionTimer.seconds() < 0.1;
+            }
+        };
+    }
+
+    public Action setMotifOrder(int id) {
+        ElapsedTime actionTimer = new ElapsedTime();
+        actionTimer.reset();
+        return new Action() {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    actionTimer.reset();
+                    initialized = true;
+                }
+                if (id == 21){
+                    MOTIF_ORDER = new ColorMode[]{ColorMode.GREEN, ColorMode.PURPLE, ColorMode.PURPLE};
+
+                }  else if (id == 22){
+
+                    MOTIF_ORDER = new ColorMode[]{ColorMode.PURPLE, ColorMode.GREEN, ColorMode.PURPLE};
+                } else if (id == 23) {
+
+                    MOTIF_ORDER = new ColorMode[]{ColorMode.PURPLE, ColorMode.PURPLE, ColorMode.GREEN};
+                }
+                myOpMode.telemetry.addData("Motif Order",MOTIF_ORDER[0]);
+                myOpMode.telemetry.addData("Motif Order2",MOTIF_ORDER[1]);
+                myOpMode.telemetry.addData("Motif Order3",MOTIF_ORDER[2]);
+                myOpMode.telemetry.update();
+                return actionTimer.seconds() < 1;
             }
         };
     }
@@ -354,14 +543,6 @@ public class Spindexer {
                         .addData("Value", "%.3f", hsvValuesThree[2]);
                 myOpMode.telemetry.addData("Alpha", "%.3f", colorsThree.alpha);
 
-                colorSensorTwo.setGain(2);
-                colorsTwo = colorSensorTwo.getNormalizedColors();
-                Color.colorToHSV(colorsTwo.toColor(), hsvValuesTwo);
-
-                colorSensorThree.setGain(2);
-                colorsThree = colorSensorThree.getNormalizedColors();
-                Color.colorToHSV(colorsThree.toColor(), hsvValuesThree);
-
                 colorChanger(rgb0, 0);
                 colorChanger(rgb1, 1);
                 colorChanger(rgb2, 2);
@@ -371,23 +552,30 @@ public class Spindexer {
                 //if color sensor detects artifact
                 if (hsvValuesOne[0] > 60 && !isTriggered && spindexerTargetIndex < 2) {
                     //advance desired position
-
+                    if (hsvValuesOne[0] > 200){
+                        COLOR_STATUS[spindexerTargetIndex] = ColorMode.PURPLE;
+                    } else if (hsvValuesOne[0] > 100){
+                        COLOR_STATUS[spindexerTargetIndex] = ColorMode.GREEN;
+                    } else if (hsvValuesOne[0] < 20){
+                        COLOR_STATUS[spindexerTargetIndex] = ColorMode.EMPTY;
+                    }
                     spindexerTargetIndex = (spindexerTargetIndex + 1) % 3;
                     spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
                     isTriggered = true;
+                } else if (hsvValuesOne[0] > 60 && !isTriggered && spindexerTargetIndex == 2){
+                    if (hsvValuesOne[0] > 200){
+                        COLOR_STATUS[spindexerTargetIndex] = ColorMode.PURPLE;
+                    } else if (hsvValuesOne[0] > 100){
+                        COLOR_STATUS[spindexerTargetIndex] = ColorMode.GREEN;
+                    } else if (hsvValuesOne[0] < 20){
+                        COLOR_STATUS[spindexerTargetIndex] = ColorMode.EMPTY;
+                    }
                 }
 
                 if(Math.abs(spindexerTargetPosition- spindexerEncoder.getVoltage()) < 0.2){
                     isTriggered = false;
                 }
 
-                if (hsvValuesOne[0] > 200){
-                    COLOR_STATUS[spindexerTargetIndex] = ColorMode.PURPLE;
-                } else if (hsvValuesOne[0] > 100){
-                    COLOR_STATUS[spindexerTargetIndex] = ColorMode.GREEN;
-                } else if (hsvValuesOne[0] < 20){
-                    COLOR_STATUS[spindexerTargetIndex] = ColorMode.EMPTY;
-                }
 
                 myOpMode.telemetry.addData("Spindexer Mode: ", spindexerMode);
                 myOpMode.telemetry.addData("Target Index: ", spindexerTargetIndex);
@@ -411,8 +599,23 @@ public class Spindexer {
             servo.setPosition(0.722);
         } else if (hsvValues[0] > 100) {
             servo.setPosition(0.500);
-        } else if (hsvValues[0] < 20){
+        } else if (hsvValues[0] < 60){
             servo.setPosition(0);
+        }
+
+    }
+
+    public void colorRev(float [] hsvValues, DigitalChannel servo, DigitalChannel servo2){
+        if (hsvValues[0] > 200){
+            servo.setState(false);
+            servo2.setState(true);
+            myOpMode.telemetry.addData("red ", servo2);
+        } else if (hsvValues[0] > 100) {
+            servo.setState(true);
+            servo2.setState(false);
+        } else if (hsvValues[0] < 60){
+            servo.setState(true);
+            servo2.setState(true);
         }
 
     }

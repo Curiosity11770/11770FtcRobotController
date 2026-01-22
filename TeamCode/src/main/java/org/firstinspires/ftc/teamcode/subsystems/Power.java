@@ -48,7 +48,7 @@ public class Power {
     }
 
     public void teleOp(){
-        if(myOpMode.gamepad1.dpad_up){
+        if(myOpMode.gamepad1.dpad_up && !(leftBase.getCurrentPosition() > 20000 || rightBase.getCurrentPosition() > 20000)){
             //baseToPositionPIDClass(11400);
             leftBase.setPower(1);
             rightBase.setPower(1);
