@@ -26,9 +26,9 @@ import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Spindexer;
 import org.firstinspires.ftc.teamcode.subsystems.Vision;
 
-@Autonomous(name="BlueSortedAuto", group="Linear OpMode")
+@Autonomous(name="RedSortedAuto", group="Linear OpMode")
 @Config
-public class BlueSortedAuto extends LinearOpMode {
+public class RedSortedAuto extends LinearOpMode {
     private Follower follower;
     private Paths myPaths;
     private Shooter shooter = new Shooter(this);
@@ -42,14 +42,13 @@ public class BlueSortedAuto extends LinearOpMode {
 
     public void runOpMode() throws InterruptedException {
 
-        Pose startPose = new Pose(32.35, 136, Math.toRadians(90));
+        Pose startPose = new Pose(111, 136, Math.toRadians(90));
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
         shooter.init();
         vision.init();
         spindexer.init();
         intake.init();
-
         myPaths = new Paths(follower);
 
         spindexer.COLOR_STATUS = new Spindexer.ColorMode[]{Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE};
@@ -71,7 +70,7 @@ public class BlueSortedAuto extends LinearOpMode {
         Actions.runBlocking(new SequentialAction(spindexer.setMotifOrder(id), spindexer.shootingMotif(id),
                 pedroDriveOnPathChain(myPaths.SHOOTPATH1, 1, true),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                        spindexer.spindexerAction(0.75, 2.75)
+                spindexer.spindexerAction(0.75, 3)
         ));
 
         Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL1, 1, true));
@@ -80,7 +79,7 @@ public class BlueSortedAuto extends LinearOpMode {
                 intake.intakeOn(0.1),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
                 new ParallelAction(
-                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.5, true),
+                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.4, true),
                         spindexer.autoIntake()
                 )
         ));
@@ -91,8 +90,7 @@ public class BlueSortedAuto extends LinearOpMode {
                 spindexer.shootingMotif2(id),
                 pedroDriveOnPathChain(myPaths.SHOOTPATH2, 1, true),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                        spindexer.spindexerAction(0.75, 2.75)
-
+                spindexer.spindexerAction(0.75, 3)
         ));
 
         Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL2, 1, true));
@@ -101,7 +99,7 @@ public class BlueSortedAuto extends LinearOpMode {
                 intake.intakeOn(0.1),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
                 new ParallelAction(
-                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS2, 0.5, true),
+                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS2, 0.4, true),
                         spindexer.autoIntake()
                 )
         ));
@@ -110,8 +108,8 @@ public class BlueSortedAuto extends LinearOpMode {
         Actions.runBlocking(new SequentialAction(spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
                 spindexer.shootingMotif(id),
                 pedroDriveOnPathChain(myPaths.SHOOTPATH3, 1, true),
-                        shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                        spindexer.spindexerAction(0.75, 2.75)
+                shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
+                spindexer.spindexerAction(0.75, 3)
         ));
 
 
@@ -180,9 +178,9 @@ public class BlueSortedAuto extends LinearOpMode {
 
                 telemetry.update();
 
-               if(tagTimer.seconds() < 0.1){
-                   return true;
-               } else {
+                if(tagTimer.seconds() < 0.1){
+                    return true;
+                } else {
                     return false;
                 }
             }
@@ -205,73 +203,73 @@ public class BlueSortedAuto extends LinearOpMode {
             DRIVEBACKTOLOOK = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(32.095, 135.590), new Pose(52.863, 100.749))
+                            new BezierLine(new Pose(111.1436, 135.590), new Pose(91.1436, 100.749))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(65))
+                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(115))
                     .build();
 
             SHOOTPATH1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(52.863, 100.749), new Pose(48.400, 97))
+                            new BezierLine(new Pose(91.1436, 100.749), new Pose(95, 97))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(65), Math.toRadians(140))
+                    .setLinearHeadingInterpolation(Math.toRadians(115), Math.toRadians(40))
                     .build();
 
             FACEBALL1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(48.400, 95.256), new Pose(48.572, 84.928))
+                            new BezierLine(new Pose(95, 95.25), new Pose(95, 85.928))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(140), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(40), Math.toRadians(0))
                     .build();
 
             DRIVEINTOBALLS1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(48.572, 84.928), new Pose(15.000, 83.000))
+                            new BezierLine(new Pose(95, 85.928), new Pose(129.572, 84.000))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             SHOOTPATH2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(17.000, 84.000), new Pose(49.774, 93.712))
+                            new BezierLine(new Pose(126.572, 84.000), new Pose(94, 93.712))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(40))
                     .build();
 
             FACEBALL2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(49.774, 93.712), new Pose(49.602, 59.072))
+                            new BezierLine(new Pose(94, 93.712), new Pose(94, 59.072))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(140), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(40), Math.toRadians(0))
                     .build();
 
             DRIVEINTOBALLS2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(49.602, 59.072), new Pose(10.500, 59.000))
+                            new BezierLine(new Pose(94, 59.072), new Pose(133, 59.000))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             SHOOTPATH3 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(14.000, 59.000), new Pose(50.975, 92.510))
+                            new BezierLine(new Pose(129, 59.000), new Pose(92.025, 92.510))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(40))
                     .build();
 
             STRAFEPATH = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(50.975, 92.510), new Pose(35.975, 82.510))
+                            new BezierLine(new Pose(92.025, 92.510), new Pose(107, 82.510))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(140), Math.toRadians(90))
+                    .setLinearHeadingInterpolation(Math.toRadians(40), Math.toRadians(90))
                     .build();
         }
     }

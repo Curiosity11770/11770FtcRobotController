@@ -100,8 +100,8 @@ public class BlueMeet2Auto extends LinearOpMode {
                 pedroDriveOnPathChain(myPaths.SHOOTPATH3, 0.7, true),
                 shooter.transferAction(1,0.1),
                         shooter.linkageAction(shooter.LINKAGE_UP, 0.5),
-                        spindexer.spindexerAction(0.75, 3.5)
-        ));
+                        spindexer.spindexerAction(0.75, 3.5))
+        );
 
 
         Actions.runBlocking(pedroDriveOnPathChain(myPaths.STRAFEPATH, 1, true));

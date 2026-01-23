@@ -82,7 +82,7 @@ public class Drivetrain {
 
         follower.update();
 
-        if (myOpMode.gamepad1.left_trigger > 0.2) {
+        if (myOpMode.gamepad1.right_trigger > 0.2) {
             vision.limelight.pipelineSwitch(5);
             autoTurn = true;
         } else if (myOpMode.gamepad1.left_trigger > 0.2) {

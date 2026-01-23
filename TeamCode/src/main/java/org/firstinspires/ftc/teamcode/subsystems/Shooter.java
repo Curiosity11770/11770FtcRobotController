@@ -78,12 +78,18 @@ public class Shooter {
                 myOpMode.telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
                 myOpMode.telemetry.addData("targetPose", fr.getTargetPoseRobotSpace());
                 myOpMode.telemetry.addData("cameraPose", fr.getTargetPoseCameraSpace().getPosition().z);
-
-                REVOLUTIONS_PER_MINUTE = 1044 * fr.getTargetPoseCameraSpace().getPosition().z + 1967;
-                TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE/60*TICKS_PER_REVOLUTION;
-                shootingMotor.setVelocity(-TICKS_PER_SECOND);
+                if(fr.getTargetPoseCameraSpace().getPosition().z <  2.5) {
+                    REVOLUTIONS_PER_MINUTE = 1044 * fr.getTargetPoseCameraSpace().getPosition().z + 1967;
+                    TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE / 60 * TICKS_PER_REVOLUTION;
+                    shootingMotor.setVelocity(-TICKS_PER_SECOND);
+                } else if (fr.getTargetPoseCameraSpace().getPosition().z > 2.5){
+                    REVOLUTIONS_PER_MINUTE = 1344 * fr.getTargetPoseCameraSpace().getPosition().z + 1967;
+                    TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE / 60 * TICKS_PER_REVOLUTION;
+                    shootingMotor.setVelocity(-TICKS_PER_SECOND);
+                }
 
             }
+
         } else {
             REVOLUTIONS_PER_MINUTE = 3500;
         }
@@ -141,7 +147,7 @@ public class Shooter {
         };
     }
 
-    public Action linkageAction(double power, double time) {
+    public Action linkageAction(double linkageAction, double time) {
         ElapsedTime actionTimer = new ElapsedTime();
         actionTimer.reset();
         return new Action() {
@@ -151,7 +157,7 @@ public class Shooter {
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
                     actionTimer.reset();
-                    linkageShooting.setPosition(LINKAGE_UP);
+                    linkageShooting.setPosition(linkageAction);
                     initialized = true;
                 }
                 return actionTimer.seconds() < time;

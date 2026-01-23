@@ -349,7 +349,7 @@ public class Spindexer {
         };
     }
 
-    public Action shootingMotif() {
+    public Action shootingMotif(int id) {
         ElapsedTime actionTimer = new ElapsedTime();
         actionTimer.reset();
         return new Action() {
@@ -363,14 +363,14 @@ public class Spindexer {
                 }
                 spindexerToPositionPIDClass(spindexerTargetPosition);
 
-                if (FIRING_ORDER[0] == 0){
-                    spindexerTargetIndex = 1;
-                    spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
-                } else if (FIRING_ORDER[0] == 1){
+                if (id == 21){
                     spindexerTargetIndex = 0;
                     spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+                } else if (id == 22){
+                    spindexerTargetIndex = 1;
+                    spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
 
-                }  else if (FIRING_ORDER[0] == 2){
+                }  else if (id == 23){
                     spindexerTargetIndex = 2;
                     spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
 
@@ -383,11 +383,11 @@ public class Spindexer {
                 myOpMode.telemetry.addData("Motif Order2",MOTIF_ORDER[1]);
                 myOpMode.telemetry.addData("Motif Order3",MOTIF_ORDER[2]);
                 myOpMode.telemetry.update();
-                return actionTimer.seconds() < 2;
+                return actionTimer.seconds() < 1;
             }
         };
     }
-    public Action shootingMotif2() {
+    public Action shootingMotif2(int id) {
         ElapsedTime actionTimer = new ElapsedTime();
         actionTimer.reset();
         return new Action() {
@@ -401,15 +401,15 @@ public class Spindexer {
                 }
                 spindexerToPositionPIDClass(spindexerTargetPosition);
 
-                if (FIRING_ORDER[0] == 0){
-                    spindexerTargetIndex = 0;
+                if (id == 21){
+                    spindexerTargetIndex = 1;
                     spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
-                } else if (FIRING_ORDER[0] == 1){
+                } else if (id == 22){
                     spindexerTargetIndex = 2;
                     spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
 
-                }  else if (FIRING_ORDER[0] == 2){
-                    spindexerTargetIndex = 1;
+                }  else if (id == 23){
+                    spindexerTargetIndex = 0;
                     spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
 
                 }
@@ -421,7 +421,7 @@ public class Spindexer {
                 myOpMode.telemetry.addData("Motif Order2",MOTIF_ORDER[1]);
                 myOpMode.telemetry.addData("Motif Order3",MOTIF_ORDER[2]);
                 myOpMode.telemetry.update();
-                return actionTimer.seconds() < 2;
+                return actionTimer.seconds() < 1;
             }
         };
     }
@@ -446,7 +446,7 @@ public class Spindexer {
                 myOpMode.telemetry.addData("ColorStatus1", COLOR_STATUS[1]);
                 myOpMode.telemetry.addData("ColorStatus2: ", COLOR_STATUS[2]);
                 myOpMode.telemetry.update();
-                return actionTimer.seconds() < 0.1;
+                return actionTimer.seconds() < 0.01;
             }
         };
     }
@@ -477,7 +477,7 @@ public class Spindexer {
                 myOpMode.telemetry.addData("Motif Order2",MOTIF_ORDER[1]);
                 myOpMode.telemetry.addData("Motif Order3",MOTIF_ORDER[2]);
                 myOpMode.telemetry.update();
-                return actionTimer.seconds() < 1;
+                return actionTimer.seconds() < 0.01;
             }
         };
     }
