@@ -40,8 +40,6 @@ public class Spindexer {
     public DigitalChannel revGreen2 = null;
     public DigitalChannel revRed2 = null;
 
-
-
     public NormalizedColorSensor colorSensorOne;
     public final float[] hsvValuesOne = new float[3];
     public NormalizedRGBA colorsOne;
@@ -54,7 +52,7 @@ public class Spindexer {
 
     PIDController spindexerPID;
 
-    //Spindexer Constants
+    private DigitalChannel laserInput;
 
     public enum ColorMode {
         PURPLE,
@@ -62,18 +60,13 @@ public class Spindexer {
         GREEN
     }
 
-    public static final double[] LOAD_POSITIONS = {0.1,1.1,2.3};
+    public static final double[] LOAD_POSITIONS = {0.5,1.6,2.7};
 
     public ColorMode[] COLOR_STATUS = {ColorMode.EMPTY,ColorMode.EMPTY,ColorMode.EMPTY};
 
     public ColorMode[] MOTIF_ORDER = {ColorMode.GREEN,ColorMode.PURPLE,ColorMode.PURPLE};
 
-    public static final double[] FIRING_POSITIONS = {0.1,1.1,2.2};
-
-    public final double[] FIRING_ORDER = {0, 1, 2};
-
-
-    public static final double SPINDEXER_KP = 0.3;
+    public static final double SPINDEXER_KP = 0.55;
     public static final double SPINDEXER_KI = 0;
     public static final double SPINDEXER_KD = 0.0;
 
@@ -85,7 +78,8 @@ public class Spindexer {
     public enum SpindexerMode {
         CONTINUOUS,
         AUTO_INTAKE,
-        MANUAL_INTAKE
+        MANUAL_INTAKE,
+        SORTING
     }
 
     public SpindexerMode spindexerMode = SpindexerMode.CONTINUOUS;
@@ -95,8 +89,11 @@ public class Spindexer {
 
     ElapsedTime timer = new ElapsedTime();
 
-    public Spindexer (LinearOpMode opmode){
+    Intake intake;
+
+    public Spindexer (LinearOpMode opmode, Intake myIntake){
         myOpMode = opmode;
+        intake = myIntake;
     }
 
     public void init (){
@@ -142,6 +139,11 @@ public class Spindexer {
         revRed1.setMode(DigitalChannel.Mode.OUTPUT);
         revGreen2.setMode(DigitalChannel.Mode.OUTPUT);
         revRed2.setMode(DigitalChannel.Mode.OUTPUT);
+
+        laserInput = myOpMode.hardwareMap.get(DigitalChannel.class, "laserDigitalInput");
+
+
+        laserInput.setMode(DigitalChannel.Mode.INPUT);
 
 
     }
@@ -193,27 +195,42 @@ public class Spindexer {
         myOpMode.telemetry.addData("colorStatus", COLOR_STATUS[2]);
 
 
+        boolean detected = laserInput.getState();
 
-        //colorChanger(rgb0, 0);
-        //colorChanger(rgb1, 1);
-        //colorChanger(rgb2, 2);
 
-        //colorUpdate(hsvValuesOne, rgb0);
-        //colorUpdate(hsvValuesTwo, rgb1);
-        //colorUpdate(hsvValuesThree, rgb2);
+        // Display detection state
+        if (detected) {
+            myOpMode.telemetry.addLine("Object detected!");
+        } else {
+            myOpMode.telemetry.addLine("No object detected");
+        }
+
+        if (laserInput.getState()) {
+           /* COLOR_STATUS[0] = ColorMode.EMPTY;
+            COLOR_STATUS[1] = ColorMode.EMPTY;
+            COLOR_STATUS[2] = ColorMode.EMPTY;*/
+        }
+
+
+
+
+        /*
+        colorChanger(rgb0, 0);
+        colorChanger(rgb1, 1);
+        colorChanger(rgb2, 2);
 
         colorRev(hsvValuesOne, revGreen0, revRed0);
         colorRev(hsvValuesTwo, revGreen1, revRed1);
         colorRev(hsvValuesThree, revGreen2, revRed2);
+        */
 
-        /*if(COLOR_STATUS[0] != ColorMode.EMPTY && COLOR_STATUS[1] != ColorMode.EMPTY &&
-                COLOR_STATUS[2] != ColorMode.EMPTY){
-            rgb0.setPosition(0.722);
-        } else {
-            rgb0.setPosition(0);
-        }*/
+        colorUpdate(hsvValuesOne, rgb0);
+        colorUpdate(hsvValuesTwo, rgb1);
+        colorUpdate(hsvValuesThree, rgb2);
 
-        if(myOpMode.gamepad2.a){
+        if (myOpMode.gamepad2.a) {
+            spindexerMode = SpindexerMode.CONTINUOUS;
+        } else if (myOpMode.gamepad2.b){
             spindexerMode = SpindexerMode.CONTINUOUS;
         } else if (myOpMode.gamepad2.dpad_left){
             spindexerTargetIndex = 0;
@@ -226,6 +243,10 @@ public class Spindexer {
             spindexerMode = SpindexerMode.AUTO_INTAKE;
         } else if (myOpMode.gamepad2.dpad_right){
             spindexerMode = SpindexerMode.MANUAL_INTAKE;
+        } else if(myOpMode.gamepad2.x){
+            spindexerMode = SpindexerMode.SORTING;
+        } else if (myOpMode.gamepad2.y){
+            spindexerMode = SpindexerMode.SORTING;
         }
 
         if (spindexerMode == SpindexerMode.CONTINUOUS) {
@@ -233,8 +254,6 @@ public class Spindexer {
                 spindexerServo.setPower(0.65);
             } else if (myOpMode.gamepad2.b) {
                 spindexerServo.setPower(-0.65);
-            } else if (myOpMode.gamepad2.x) {
-                spindexerServo.setPower(0.3);
             } else {
                 spindexerServo.setPower(0);
             }
@@ -248,7 +267,7 @@ public class Spindexer {
                     COLOR_STATUS[spindexerTargetIndex] = ColorMode.PURPLE;
                 } else if (hsvValuesOne[0] > 130){
                     COLOR_STATUS[spindexerTargetIndex] = ColorMode.GREEN;
-                } else if (hsvValuesOne[0] < 70){
+                } else if (hsvValuesOne[0] < 80){
                     COLOR_STATUS[spindexerTargetIndex] = ColorMode.EMPTY;
                 }
 
@@ -264,6 +283,9 @@ public class Spindexer {
                 } else if (hsvValuesOne[0] < 70){
                     COLOR_STATUS[spindexerTargetIndex] = ColorMode.EMPTY;
                 }
+                if(!(myOpMode.gamepad2.right_trigger > 0.2) &&  !(myOpMode.gamepad2.left_trigger > 0.2)) {
+                    intake.intakeMotor.setPower(1);
+                }
             }
 
             if(Math.abs(spindexerTargetPosition- spindexerEncoder.getVoltage()) < 0.2){
@@ -276,13 +298,27 @@ public class Spindexer {
                 spindexerTargetIndex = (spindexerTargetIndex + 1) % 3;
                 spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
             }
+        } else if (spindexerMode == SpindexerMode.SORTING){
+            if(myOpMode.gamepad2.y){
+                if(hsvValuesThree[0] > 200){
+                    spindexerServo.setPower(0);
+                } else {
+                    spindexerServo.setPower(0.65);
+                }
+            } else if (myOpMode.gamepad2.x){
+                if(hsvValuesThree[0] < 200 && hsvValuesThree[0] > 100){
+                    spindexerServo.setPower(0);
+                } else {
+                    spindexerServo.setPower(0.65);
+                }
+
+            }
         }
 
         myOpMode.telemetry.addData("Spindexer Mode: ", spindexerMode);
         myOpMode.telemetry.addData("Target Index: ", spindexerTargetIndex);
         myOpMode.telemetry.addData("Target Position: ", spindexerTargetPosition);
         myOpMode.telemetry.addData("Current Position", spindexerEncoder.getVoltage());
-        //add telemetry for color value
     }
 
     public Action spindexerAction(double power, double time) {
@@ -299,52 +335,6 @@ public class Spindexer {
                     initialized = true;
                 }
                 return actionTimer.seconds() < time;
-            }
-        };
-    }
-
-    public Action setFiringOrder() {
-        ElapsedTime actionTimer = new ElapsedTime();
-        actionTimer.reset();
-        return new Action() {
-            private boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                if (!initialized) {
-                    actionTimer.reset();
-                    initialized = true;
-                }
-                // 0,1,2
-                if (COLOR_STATUS[0] == MOTIF_ORDER[0] &&
-                        COLOR_STATUS[1] == MOTIF_ORDER[1] &&
-                        COLOR_STATUS[2] == MOTIF_ORDER[2]) {
-
-                    FIRING_ORDER[0] = 0;
-                    FIRING_ORDER[1] = 1;
-                    FIRING_ORDER[2] = 2;
-                } else if (COLOR_STATUS[1] == MOTIF_ORDER[0] &&
-                        COLOR_STATUS[2] == MOTIF_ORDER[1] &&
-                        COLOR_STATUS[0] == MOTIF_ORDER[2]) {
-
-                    FIRING_ORDER[0] = 1;
-                    FIRING_ORDER[1] = 2;
-                    FIRING_ORDER[2] = 0;
-                }
-// 2,0,1
-                else if (COLOR_STATUS[2] == MOTIF_ORDER[0] &&
-                        COLOR_STATUS[0] == MOTIF_ORDER[1] &&
-                        COLOR_STATUS[1] == MOTIF_ORDER[2]) {
-
-                    FIRING_ORDER[0] = 2;
-                    FIRING_ORDER[1] = 0;
-                    FIRING_ORDER[2] = 1;
-                }
-
-                myOpMode.telemetry.addData("Firing Order: ", FIRING_ORDER[0]);
-                myOpMode.telemetry.update();
-
-                return actionTimer.seconds() < 2;
             }
         };
     }
@@ -570,6 +560,8 @@ public class Spindexer {
                     } else if (hsvValuesOne[0] < 20){
                         COLOR_STATUS[spindexerTargetIndex] = ColorMode.EMPTY;
                     }
+
+                    intake.intakeMotor.setPower(1);
                 }
 
                 if(Math.abs(spindexerTargetPosition- spindexerEncoder.getVoltage()) < 0.2){

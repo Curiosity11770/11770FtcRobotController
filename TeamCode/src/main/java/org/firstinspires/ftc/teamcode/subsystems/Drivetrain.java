@@ -1,15 +1,11 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
 import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.teamcode.OpModes.FieldOrientedTeleop;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.utility.PIDController;
 
@@ -45,6 +41,10 @@ public class Drivetrain {
     public double turnKP = 0.018;
     public double turnKI = 0;
     public double turnKD = 0;
+
+    private boolean isHoldingPosition = false;
+    private int currentPipeline = 1;
+
 
     public Drivetrain(LinearOpMode opmode, Vision robotVision) {
 
@@ -83,17 +83,23 @@ public class Drivetrain {
         follower.update();
 
         if (myOpMode.gamepad1.right_trigger > 0.2) {
-            vision.limelight.pipelineSwitch(5);
+            if (currentPipeline != 5) {
+                vision.limelight.pipelineSwitch(5);
+                currentPipeline = 5;
+            }
             autoTurn = true;
         } else if (myOpMode.gamepad1.left_trigger > 0.2) {
-            vision.limelight.pipelineSwitch(0);
+            if (currentPipeline != 0) {
+                vision.limelight.pipelineSwitch(0);
+                currentPipeline = 0;
+            }
             autoTurn = true;
         } else {
             autoTurn = false;
         }
         if (!autoTurn) {
             turnInput = -myOpMode.gamepad1.right_stick_x * slowModeMultiplier;
-        } else if (autoTurn) {
+        } else {
 
             vision.result = vision.limelight.getLatestResult();
             if (vision.result.isValid()) {
@@ -127,15 +133,32 @@ public class Drivetrain {
                     myOpMode.telemetry.addData("cameraPose", fr.getTargetPoseCameraSpace());
 
                 }
-
-                double turnPower = turnPID.calculate(0, vision.result.getTx());
-                myOpMode.telemetry.addData("turnPower", turnPower);
-
+                if (vision.result.isValid()) {
+                    double turnPower = turnPID.calculate(0, vision.result.getTx());
                     turnInput = turnPower;
+                    myOpMode.telemetry.addData("turnPower", turnPower);
+                } else {
+                    turnInput = 0;
+                }
+
 
 
             }
         }
+
+        if(myOpMode.gamepad1.dpad_left) {
+            follower.holdPoint(follower.getPose());
+            isHoldingPosition = true;
+            myOpMode.telemetry.addData("Status", "HOLDING POSITION (Active Braking)");
+            return;
+        }
+
+        if (isHoldingPosition) {
+            follower.startTeleopDrive(true);
+            isHoldingPosition = false;
+        }
+
+
             if (myOpMode.gamepad1.x) {
                 driveMode = DriveMode.ROBOT_CENTRIC;
             } else if (myOpMode.gamepad1.b) {

@@ -33,8 +33,8 @@ public class RedSortedAuto extends LinearOpMode {
     private Paths myPaths;
     private Shooter shooter = new Shooter(this);
     private Vision vision = new Vision(this);
-    private Spindexer spindexer = new Spindexer(this);
     private Intake intake = new Intake(this);
+    private Spindexer spindexer = new Spindexer(this, intake);
 
     int id = 21;
 
@@ -79,7 +79,7 @@ public class RedSortedAuto extends LinearOpMode {
                 intake.intakeOn(0.1),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
                 new ParallelAction(
-                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.4, true),
+                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.2, true),
                         spindexer.autoIntake()
                 )
         ));
@@ -99,7 +99,7 @@ public class RedSortedAuto extends LinearOpMode {
                 intake.intakeOn(0.1),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
                 new ParallelAction(
-                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS2, 0.4, true),
+                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS2, 0.2, true),
                         spindexer.autoIntake()
                 )
         ));
@@ -219,7 +219,7 @@ public class RedSortedAuto extends LinearOpMode {
             FACEBALL1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(95, 95.25), new Pose(95, 85.928))
+                            new BezierLine(new Pose(95, 95.25), new Pose(95, 83.928))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(40), Math.toRadians(0))
                     .build();
@@ -227,7 +227,7 @@ public class RedSortedAuto extends LinearOpMode {
             DRIVEINTOBALLS1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(95, 85.928), new Pose(129.572, 84.000))
+                            new BezierLine(new Pose(95, 83.928), new Pose(129.572, 82.000))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
@@ -235,7 +235,7 @@ public class RedSortedAuto extends LinearOpMode {
             SHOOTPATH2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(126.572, 84.000), new Pose(94, 93.712))
+                            new BezierLine(new Pose(126.572, 82.000), new Pose(94, 93.712))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(40))
                     .build();
@@ -243,7 +243,7 @@ public class RedSortedAuto extends LinearOpMode {
             FACEBALL2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(94, 93.712), new Pose(94, 59.072))
+                            new BezierLine(new Pose(94, 93.712), new Pose(94, 58.072))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(40), Math.toRadians(0))
                     .build();
@@ -251,7 +251,7 @@ public class RedSortedAuto extends LinearOpMode {
             DRIVEINTOBALLS2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(94, 59.072), new Pose(133, 59.000))
+                            new BezierLine(new Pose(94, 58.072), new Pose(133, 58.000))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
@@ -259,7 +259,7 @@ public class RedSortedAuto extends LinearOpMode {
             SHOOTPATH3 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(129, 59.000), new Pose(92.025, 92.510))
+                            new BezierLine(new Pose(129, 58.000), new Pose(92.025, 92.510))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(40))
                     .build();

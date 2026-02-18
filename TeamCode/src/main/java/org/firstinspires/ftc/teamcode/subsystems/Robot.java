@@ -36,7 +36,7 @@ public class Robot {
         intake = new Intake(myOpMode);
         power = new Power(myOpMode);
         shooter = new Shooter (myOpMode, vision);
-        spindexer = new Spindexer(myOpMode);
+        spindexer = new Spindexer(myOpMode, intake);
 
 
         vision.init();
@@ -74,15 +74,6 @@ public class Robot {
         runningActions = newActions;
 
         dash.sendTelemetryPacket(packet);
-
-       /* if (myOpMode.gamepad2.y){
-            runningActions.add(new SequentialAction(
-                    shooter.shooterAction(shooter.TICKS_PER_SECOND),
-                    spindexer.spindexerAction(0.6),
-                    shooter.transferAction(shooter.TRANSFER_SPEED),
-                    shooter.linkageAction(shooter.LINKAGE_UP)
-                    ));
-        }*/
     }
 
 }

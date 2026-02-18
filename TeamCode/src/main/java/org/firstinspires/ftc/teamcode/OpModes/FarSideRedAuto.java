@@ -30,8 +30,8 @@ public class FarSideRedAuto extends LinearOpMode {
     private Follower follower;
     private Paths myPaths;
     private Shooter shooter = new Shooter(this);
-    private Spindexer spindexer = new Spindexer(this);
     private Intake intake = new Intake(this);
+    private Spindexer spindexer = new Spindexer(this, intake);
 
     @Override
 

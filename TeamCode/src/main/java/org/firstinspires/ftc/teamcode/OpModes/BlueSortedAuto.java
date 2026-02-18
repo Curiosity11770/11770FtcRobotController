@@ -33,8 +33,8 @@ public class BlueSortedAuto extends LinearOpMode {
     private Paths myPaths;
     private Shooter shooter = new Shooter(this);
     private Vision vision = new Vision(this);
-    private Spindexer spindexer = new Spindexer(this);
     private Intake intake = new Intake(this);
+    private Spindexer spindexer = new Spindexer(this, intake);
 
     int id = 21;
 
@@ -80,7 +80,7 @@ public class BlueSortedAuto extends LinearOpMode {
                 intake.intakeOn(0.1),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
                 new ParallelAction(
-                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.5, true),
+                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.33, true),
                         spindexer.autoIntake()
                 )
         ));
@@ -101,7 +101,7 @@ public class BlueSortedAuto extends LinearOpMode {
                 intake.intakeOn(0.1),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
                 new ParallelAction(
-                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS2, 0.5, true),
+                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS2, 0.33, true),
                         spindexer.autoIntake()
                 )
         ));
@@ -215,7 +215,7 @@ public class BlueSortedAuto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(52.863, 100.749), new Pose(48.400, 97))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(65), Math.toRadians(140))
+                    .setLinearHeadingInterpolation(Math.toRadians(65), Math.toRadians(138))
                     .build();
 
             FACEBALL1 = follower
@@ -223,13 +223,13 @@ public class BlueSortedAuto extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(48.400, 95.256), new Pose(48.572, 84.928))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(140), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(138), Math.toRadians(180))
                     .build();
 
             DRIVEINTOBALLS1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(48.572, 84.928), new Pose(15.000, 83.000))
+                            new BezierLine(new Pose(48.572, 84.928), new Pose(15.000, 84.500))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
@@ -237,23 +237,23 @@ public class BlueSortedAuto extends LinearOpMode {
             SHOOTPATH2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(17.000, 84.000), new Pose(49.774, 93.712))
+                            new BezierLine(new Pose(17.000, 84.500), new Pose(49.774, 93.712))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
                     .build();
 
             FACEBALL2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(49.774, 93.712), new Pose(49.602, 59.072))
+                            new BezierLine(new Pose(49.774, 93.712), new Pose(49.602, 60.572))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(140), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
                     .build();
 
             DRIVEINTOBALLS2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(49.602, 59.072), new Pose(10.500, 59.000))
+                            new BezierLine(new Pose(49.602, 60.572), new Pose(10.500, 60.500))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
@@ -261,9 +261,9 @@ public class BlueSortedAuto extends LinearOpMode {
             SHOOTPATH3 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(14.000, 59.000), new Pose(50.975, 92.510))
+                            new BezierLine(new Pose(14.000, 60.000), new Pose(50.975, 92.510))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
                     .build();
 
             STRAFEPATH = follower

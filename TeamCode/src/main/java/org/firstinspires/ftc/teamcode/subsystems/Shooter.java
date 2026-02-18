@@ -34,12 +34,12 @@ public class Shooter {
 
     public double TICKS_PER_SECOND = 0;
     public int TICKS_PER_REVOLUTION = 28;
-    public double REVOLUTIONS_PER_MINUTE = 3500;
+    public double REVOLUTIONS_PER_MINUTE = 3800;
 
     public double LINKAGE_UP = 0.3;
-    public double LINKAGE_DOWN = 0.6    ;
+    public double LINKAGE_DOWN = 0.72    ;
 
-    public  double TRANSFER_SPEED = 1;
+    public double TRANSFER_SPEED = -1;
 
     ElapsedTime timer = new ElapsedTime();
 
