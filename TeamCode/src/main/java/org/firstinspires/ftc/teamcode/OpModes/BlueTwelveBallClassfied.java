@@ -13,6 +13,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.acmerobotics.roadrunner.ftc.ParallelOTOSEncoder;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -221,6 +222,7 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
         public PathChain FACEBALL3;
         public PathChain DRIVEINTOBALLS3;
         public PathChain SHOOTPATH4;
+        public PathChain CLEARCLASSFIER;
         public PathChain STRAFEPATH;
 
         public Paths(Follower follower) {
@@ -281,10 +283,21 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
+            CLEARCLASSFIER = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierCurve(new Pose(10.500, 60.500),
+                                    new Pose(12.500, 69.500),
+                                    new Pose(8.500, 69.500))
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    .build();
+
             SHOOTPATH3 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(14.000, 60.000), new Pose(50.975, 92.510))
+                            new BezierCurve(new Pose(8.500, 69.500), new Pose(10.500, 60.500),
+                                    new Pose(50.975, 92.510))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(132))
                     .build();
