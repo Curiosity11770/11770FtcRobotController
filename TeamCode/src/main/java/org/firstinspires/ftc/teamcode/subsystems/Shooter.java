@@ -34,7 +34,7 @@ public class Shooter {
 
     public double TICKS_PER_SECOND = 0;
     public int TICKS_PER_REVOLUTION = 28;
-    public double REVOLUTIONS_PER_MINUTE = 3800;
+    public double REVOLUTIONS_PER_MINUTE = 4200;
 
     public double LINKAGE_UP = 0.3;
     public double LINKAGE_DOWN = 0.72    ;

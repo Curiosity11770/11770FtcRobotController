@@ -204,7 +204,8 @@ public class Drivetrain {
             } else if (myOpMode.gamepad1.right_bumper) {
                 slowModeMultiplier = 1;
             } else {
-                slowModeMultiplier = 0.5;
+                slowModeMultiplier = 0.75
+                ;
             }
 
             myOpMode.telemetry.addData("Drive Mode: ", driveMode);

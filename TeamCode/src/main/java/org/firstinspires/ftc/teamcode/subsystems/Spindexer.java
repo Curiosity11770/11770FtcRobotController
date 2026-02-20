@@ -60,7 +60,7 @@ public class Spindexer {
         GREEN
     }
 
-    public static final double[] LOAD_POSITIONS = {0.5,1.6,2.7};
+    public static final double[] LOAD_POSITIONS = {0.41,1.51,2.61};
 
     public ColorMode[] COLOR_STATUS = {ColorMode.EMPTY,ColorMode.EMPTY,ColorMode.EMPTY};
 
@@ -373,7 +373,7 @@ public class Spindexer {
                 myOpMode.telemetry.addData("Motif Order2",MOTIF_ORDER[1]);
                 myOpMode.telemetry.addData("Motif Order3",MOTIF_ORDER[2]);
                 myOpMode.telemetry.update();
-                return actionTimer.seconds() < 1;
+                return actionTimer.seconds() < 0.5;
             }
         };
     }
@@ -411,7 +411,7 @@ public class Spindexer {
                 myOpMode.telemetry.addData("Motif Order2",MOTIF_ORDER[1]);
                 myOpMode.telemetry.addData("Motif Order3",MOTIF_ORDER[2]);
                 myOpMode.telemetry.update();
-                return actionTimer.seconds() < 1;
+                return actionTimer.seconds() < 0.5;
             }
         };
     }
@@ -575,7 +575,7 @@ public class Spindexer {
                 myOpMode.telemetry.addData("Current Position", spindexerEncoder.getVoltage());
                 myOpMode.telemetry.update();
 
-                return actionTimer.seconds() < 4;
+                return actionTimer.seconds() < 3;
             }
         };
     }

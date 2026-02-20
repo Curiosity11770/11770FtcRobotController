@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.acmerobotics.roadrunner.ftc.ParallelOTOSEncoder;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -26,9 +27,9 @@ import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Spindexer;
 import org.firstinspires.ftc.teamcode.subsystems.Vision;
 
-@Autonomous(name="BlueSortedAuto", group="Linear OpMode")
+@Autonomous(name="BlueTwelveBallClassfied", group="Linear OpMode")
 @Config
-public class BlueSortedAuto extends LinearOpMode {
+public class BlueTwelveBallClassfied extends LinearOpMode {
     private Follower follower;
     private Paths myPaths;
     private Shooter shooter = new Shooter(this);
@@ -68,31 +69,10 @@ public class BlueSortedAuto extends LinearOpMode {
         Actions.runBlocking(scanAprilTags());
 
         //Align with goal and launch artifacts
-        Actions.runBlocking(new SequentialAction(spindexer.setMotifOrder(id), spindexer.shootingMotif(id),
-                pedroDriveOnPathChain(myPaths.SHOOTPATH1, 1, true),
+        Actions.runBlocking(new SequentialAction(new ParallelAction(spindexer.setMotifOrder(id), spindexer.shootingMotif(id),
+                pedroDriveOnPathChain(myPaths.SHOOTPATH1, 1, true)),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                        spindexer.spindexerAction(0.75, 2.75)
-        ));
-
-        Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL1, 1, true));
-
-        Actions.runBlocking(new SequentialAction(
-                intake.intakeOn(0.1),
-                shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
-                new ParallelAction(
-                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.33, true),
-                        spindexer.autoIntake()
-                )
-        ));
-
-
-        Actions.runBlocking(new SequentialAction(
-                spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN),
-                spindexer.shootingMotif2(id),
-                pedroDriveOnPathChain(myPaths.SHOOTPATH2, 1, true),
-                shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                        spindexer.spindexerAction(0.75, 2.75)
-
+                spindexer.spindexerAction(0.75, 1.75)
         ));
 
         Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL2, 1, true));
@@ -107,11 +87,51 @@ public class BlueSortedAuto extends LinearOpMode {
         ));
 
 
+        Actions.runBlocking(new SequentialAction(
+                spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN),
+                spindexer.shootingMotif2(id),
+                pedroDriveOnPathChain(myPaths.SHOOTPATH3, 1, true),
+                shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
+                spindexer.spindexerAction(0.75, 1.75)
+
+        ));
+
+        Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL1, 1, true));
+
+        Actions.runBlocking(new SequentialAction(
+                intake.intakeOn(0.1),
+                shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
+                new ParallelAction(
+                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.33, true),
+                        spindexer.autoIntake()
+                )
+        ));
+
+
         Actions.runBlocking(new SequentialAction(spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
                 spindexer.shootingMotif(id),
-                pedroDriveOnPathChain(myPaths.SHOOTPATH3, 1, true),
-                        shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                        spindexer.spindexerAction(0.75, 2.75)
+                pedroDriveOnPathChain(myPaths.SHOOTPATH2, 1, true),
+                shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
+                spindexer.spindexerAction(0.75, 1.75)
+        ));
+
+        Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL3, 1, true));
+
+        Actions.runBlocking(new SequentialAction(
+                intake.intakeOn(0.1),
+                shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
+                new ParallelAction(
+                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS3, 0.33, true),
+                        spindexer.autoIntake()
+                )
+        ));
+
+
+        Actions.runBlocking(new SequentialAction(spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
+                spindexer.shootingMotif(id),
+                pedroDriveOnPathChain(myPaths.SHOOTPATH4, 1, true),
+                shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
+                spindexer.spindexerAction(0.75, 1.75)
         ));
 
 
@@ -180,9 +200,9 @@ public class BlueSortedAuto extends LinearOpMode {
 
                 telemetry.update();
 
-               if(tagTimer.seconds() < 0.1){
-                   return true;
-               } else {
+                if(tagTimer.seconds() < 0.1){
+                    return true;
+                } else {
                     return false;
                 }
             }
@@ -198,6 +218,9 @@ public class BlueSortedAuto extends LinearOpMode {
         public PathChain FACEBALL2;
         public PathChain DRIVEINTOBALLS2;
         public PathChain SHOOTPATH3;
+        public PathChain FACEBALL3;
+        public PathChain DRIVEINTOBALLS3;
+        public PathChain SHOOTPATH4;
         public PathChain STRAFEPATH;
 
         public Paths(Follower follower) {
@@ -229,7 +252,7 @@ public class BlueSortedAuto extends LinearOpMode {
             DRIVEINTOBALLS1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(48.572, 84.928), new Pose(15.000, 84.500))
+                            new BezierLine(new Pose(48.572, 84.928), new Pose(22.000, 84.500))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
@@ -237,7 +260,7 @@ public class BlueSortedAuto extends LinearOpMode {
             SHOOTPATH2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(17.000, 84.500), new Pose(49.774, 93.712))
+                            new BezierLine(new Pose(22.000, 84.500), new Pose(49.774, 93.712))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(132))
                     .build();
@@ -262,6 +285,29 @@ public class BlueSortedAuto extends LinearOpMode {
                     .pathBuilder()
                     .addPath(
                             new BezierLine(new Pose(14.000, 60.000), new Pose(50.975, 92.510))
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(132))
+                    .build();
+            FACEBALL3 = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierLine(new Pose(49.774, 93.712), new Pose(49.602, 36.572))
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(132), Math.toRadians(180))
+                    .build();
+
+            DRIVEINTOBALLS3 = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierLine(new Pose(49.602, 36.572), new Pose(10.500, 36.500))
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    .build();
+
+            SHOOTPATH4 = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierLine(new Pose(14.000, 36.000), new Pose(50.975, 92.510))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(132))
                     .build();
