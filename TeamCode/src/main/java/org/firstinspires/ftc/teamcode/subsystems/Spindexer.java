@@ -160,7 +160,7 @@ public class Spindexer {
         colorsThree = colorSensorThree.getNormalizedColors();
         Color.colorToHSV(colorsThree.toColor(), hsvValuesThree);
 
-        myOpMode.telemetry.addLine()
+        /*myOpMode.telemetry.addLine()
                 .addData("Red", "%.3f", colorsOne.red)
                 .addData("Green", "%.3f", colorsOne.green)
                 .addData("Blue", "%.3f", colorsOne.blue);
@@ -188,7 +188,7 @@ public class Spindexer {
                 .addData("Hue", "%.3f", hsvValuesThree[0])
                 .addData("Saturation", "%.3f", hsvValuesThree[1])
                 .addData("Value", "%.3f", hsvValuesThree[2]);
-        myOpMode.telemetry.addData("Alpha", "%.3f", colorsThree.alpha);
+        myOpMode.telemetry.addData("Alpha", "%.3f", colorsThree.alpha);*/
 
         myOpMode.telemetry.addData("colorStatus", COLOR_STATUS[0]);
         myOpMode.telemetry.addData("colorStatus", COLOR_STATUS[1]);
@@ -317,7 +317,7 @@ public class Spindexer {
 
         myOpMode.telemetry.addData("Spindexer Mode: ", spindexerMode);
         myOpMode.telemetry.addData("Target Index: ", spindexerTargetIndex);
-        myOpMode.telemetry.addData("Target Position: ", spindexerTargetPosition);
+        //myOpMode.telemetry.addData("Target Position: ", spindexerTargetPosition);
         myOpMode.telemetry.addData("Current Position", spindexerEncoder.getVoltage());
     }
 

@@ -105,38 +105,38 @@ public class Drivetrain {
             if (vision.result.isValid()) {
 
                 // Access general information
-                Pose3D botpose = vision.result.getBotpose();
+               /* Pose3D botpose = vision.result.getBotpose();
                 double captureLatency = vision.result.getCaptureLatency();
                 double targetingLatency = vision.result.getTargetingLatency();
-                double parseLatency = vision.result.getParseLatency();
+                double parseLatency = vision.result.getParseLatency();*/
 
-                myOpMode.telemetry.addData("tx", vision.result.getTx());
+               /* myOpMode.telemetry.addData("tx", vision.result.getTx());
                 myOpMode.telemetry.addData("txnc", vision.result.getTxNC());
                 myOpMode.telemetry.addData("ty", vision.result.getTy());
                 myOpMode.telemetry.addData("tync", vision.result.getTyNC());
 
 
-                myOpMode.telemetry.addData("Botpose", botpose.toString());
+                myOpMode.telemetry.addData("Botpose", botpose.toString());*/
 
-                // Access barcode results
+                /*// Access barcode results
                 List<LLResultTypes.BarcodeResult> barcodeResults = vision.result.getBarcodeResults();
                 for (LLResultTypes.BarcodeResult br : barcodeResults) {
                     myOpMode.telemetry.addData("Barcode", "Data: %s", br.getData());
 
-                }
+                }*/
 
                 // Access fiducial results
                 List<LLResultTypes.FiducialResult> fiducialResults = vision.result.getFiducialResults();
                 for (LLResultTypes.FiducialResult fr : fiducialResults) {
-                    myOpMode.telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
-                    myOpMode.telemetry.addData("targetPose", fr.getTargetPoseRobotSpace());
+                    //myOpMode.telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
+                    //myOpMode.telemetry.addData("targetPose", fr.getTargetPoseRobotSpace());
                     myOpMode.telemetry.addData("cameraPose", fr.getTargetPoseCameraSpace());
 
                 }
                 if (vision.result.isValid()) {
                     double turnPower = turnPID.calculate(0, vision.result.getTx());
                     turnInput = turnPower;
-                    myOpMode.telemetry.addData("turnPower", turnPower);
+                    //myOpMode.telemetry.addData("turnPower", turnPower);
                 } else {
                     turnInput = 0;
                 }
@@ -170,13 +170,13 @@ public class Drivetrain {
 
             }
 
-        List<LLResultTypes.FiducialResult> fiducialResults = vision.result.getFiducialResults();
+        /*List<LLResultTypes.FiducialResult> fiducialResults = vision.result.getFiducialResults();
         for (LLResultTypes.FiducialResult fr : fiducialResults) {
             myOpMode.telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
             myOpMode.telemetry.addData("targetPose", fr.getTargetPoseRobotSpace());
             myOpMode.telemetry.addData("cameraPose", fr.getTargetPoseCameraSpace());
 
-        }
+        }*/
 
             if (driveMode == DriveMode.ROBOT_CENTRIC) {
                 follower.setTeleOpDrive(
@@ -204,8 +204,7 @@ public class Drivetrain {
             } else if (myOpMode.gamepad1.right_bumper) {
                 slowModeMultiplier = 1;
             } else {
-                slowModeMultiplier = 0.75
-                ;
+                slowModeMultiplier = 1;
             }
 
             myOpMode.telemetry.addData("Drive Mode: ", driveMode);

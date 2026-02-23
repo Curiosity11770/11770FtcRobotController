@@ -51,6 +51,8 @@ public class Shooter {
     private boolean aPressedLast = false;
     private boolean bPressedLast = false;
 
+    List<LLResultTypes.FiducialResult> fiducialResults;
+
 
     public Shooter (LinearOpMode opmode, Vision robotVision) {
         myOpMode = opmode;
@@ -73,17 +75,14 @@ public class Shooter {
 
     public void teleOp(){
         if (myOpMode.gamepad1.left_trigger > 0.2 || myOpMode.gamepad1.right_trigger > 0.2) {
-            List<LLResultTypes.FiducialResult> fiducialResults = vision.result.getFiducialResults();
+            fiducialResults = vision.result.getFiducialResults();
             for (LLResultTypes.FiducialResult fr : fiducialResults) {
-                myOpMode.telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
-                myOpMode.telemetry.addData("targetPose", fr.getTargetPoseRobotSpace());
-                myOpMode.telemetry.addData("cameraPose", fr.getTargetPoseCameraSpace().getPosition().z);
                 if(fr.getTargetPoseCameraSpace().getPosition().z <  2.5) {
                     REVOLUTIONS_PER_MINUTE = 1044 * fr.getTargetPoseCameraSpace().getPosition().z + 1967;
                     TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE / 60 * TICKS_PER_REVOLUTION;
                     shootingMotor.setVelocity(-TICKS_PER_SECOND);
                 } else if (fr.getTargetPoseCameraSpace().getPosition().z > 2.5){
-                    REVOLUTIONS_PER_MINUTE = 1344 * fr.getTargetPoseCameraSpace().getPosition().z + 1967;
+                    REVOLUTIONS_PER_MINUTE = 1244 * fr.getTargetPoseCameraSpace().getPosition().z + 1967;
                     TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE / 60 * TICKS_PER_REVOLUTION;
                     shootingMotor.setVelocity(-TICKS_PER_SECOND);
                 }
@@ -105,17 +104,24 @@ public class Shooter {
         /*if (myOpMode.gamepad1.a && !aPressedLast) {
             velocity += VELOCITY_INCREMENT;
             if (velocity > MAX_VELOCITY) velocity = MAX_VELOCITY;
+            REVOLUTIONS_PER_MINUTE = velocity;
+            TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE/60*TICKS_PER_REVOLUTION;
+            shootingMotor.setVelocity(-TICKS_PER_SECOND);
         }
 
         // Button B: Decrease velocity
         if (myOpMode.gamepad1.b && !bPressedLast) {
             velocity -= VELOCITY_INCREMENT;
             if (velocity < MIN_VELOCITY) velocity = MIN_VELOCITY;
+            REVOLUTIONS_PER_MINUTE = velocity;
+            TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE/60*TICKS_PER_REVOLUTION;
+            shootingMotor.setVelocity(-TICKS_PER_SECOND);
         }
 
         // Update flags
         aPressedLast = myOpMode.gamepad1.a;
         bPressedLast = myOpMode.gamepad1.b;*/
+
 
         if (myOpMode.gamepad2.dpad_up) {
             linkageShooting.setPosition(LINKAGE_UP);
