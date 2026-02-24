@@ -12,6 +12,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServoImplEx;
@@ -26,6 +27,7 @@ import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.utility.PIDController;
 @Config
 
@@ -44,7 +46,7 @@ public class Spindexer {
     public DigitalChannel revGreen2 = null;
     public DigitalChannel revRed2 = null;
 
-    public NormalizedColorSensor colorSensorOne;
+    public RevColorSensorV3 colorSensorOne;
     public final float[] hsvValuesOne = new float[3];
     public NormalizedRGBA colorsOne;
     public NormalizedColorSensor colorSensorTwo;
@@ -121,7 +123,7 @@ public class Spindexer {
         revRed2 = myOpMode.hardwareMap.get(DigitalChannel.class, "revRed2");
 
 
-        colorSensorOne = myOpMode.hardwareMap.get(NormalizedColorSensor.class, "colorSensorOne");
+        colorSensorOne = myOpMode.hardwareMap.get(RevColorSensorV3.class, "colorSensorOne");
         colorSensorTwo = myOpMode.hardwareMap.get(NormalizedColorSensor.class, "colorSensorTwo");
         colorSensorThree = myOpMode.hardwareMap.get(NormalizedColorSensor.class, "colorSensorThree");
 
@@ -278,7 +280,7 @@ public class Spindexer {
             spindexerToPositionPIDClass(spindexerTargetPosition);
 
             //if color sensor detects artifact
-            if (hsvValuesOne[0] > 60 && !isTriggered && spindexerTargetIndex < 2) {
+            if (colorSensorOne.getDistance(DistanceUnit.MM) < 50 && !isTriggered && spindexerTargetIndex < 2) {
 
                 if (hsvValuesOne[0] > 200){
                     COLOR_STATUS[spindexerTargetIndex] = ColorMode.PURPLE;
@@ -292,7 +294,7 @@ public class Spindexer {
                 spindexerTargetIndex = (spindexerTargetIndex + 1) % 3;
                 spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
                 isTriggered = true;
-            } else if (hsvValuesOne[0] > 60 && !isTriggered && spindexerTargetIndex == 2){
+            } else if (colorSensorOne.getDistance(DistanceUnit.MM) < 50 && !isTriggered && spindexerTargetIndex == 2){
                 if (hsvValuesOne[0] > 200){
                     COLOR_STATUS[spindexerTargetIndex] = ColorMode.PURPLE;
                 } else if (hsvValuesOne[0] > 130){
@@ -374,18 +376,14 @@ public class Spindexer {
                     actionTimer.reset();
                     initialized = true;
                 }
-                spindexerToPositionPIDClass(spindexerTargetPosition);
 
                 if (id == 21){
-                    spindexerTargetIndex = 0;
-                    spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+                    spindexerToPositionPIDClass(LOAD_POSITIONS[0]);
                 } else if (id == 22){
-                    spindexerTargetIndex = 1;
-                    spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+                    spindexerToPositionPIDClass(LOAD_POSITIONS[1]);
 
                 }  else if (id == 23){
-                    spindexerTargetIndex = 2;
-                    spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+                    spindexerToPositionPIDClass(LOAD_POSITIONS[2]);
 
                 }
                 myOpMode.telemetry.addData("ColorStatus: ", COLOR_STATUS[0]);
@@ -415,15 +413,12 @@ public class Spindexer {
                 spindexerToPositionPIDClass(spindexerTargetPosition);
 
                 if (id == 21){
-                    spindexerTargetIndex = 1;
-                    spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+                    spindexerToPositionPIDClass(LOAD_POSITIONS[1]);
                 } else if (id == 22){
-                    spindexerTargetIndex = 2;
-                    spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+                    spindexerToPositionPIDClass(LOAD_POSITIONS[2]);
 
                 }  else if (id == 23){
-                    spindexerTargetIndex = 0;
-                    spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+                    spindexerToPositionPIDClass(LOAD_POSITIONS[0]);
 
                 }
                 myOpMode.telemetry.addData("ColorStatus: ", COLOR_STATUS[0]);
@@ -563,7 +558,7 @@ public class Spindexer {
                 spindexerToPositionPIDClass(spindexerTargetPosition);
 
                 //if color sensor detects artifact
-                if (hsvValuesOne[0] > 60 && !isTriggered && spindexerTargetIndex < 2) {
+                if (colorSensorOne.getDistance(DistanceUnit.MM) < 50 && !isTriggered && spindexerTargetIndex < 2) {
                     //advance desired position
                     if (hsvValuesOne[0] > 200){
                         COLOR_STATUS[spindexerTargetIndex] = ColorMode.PURPLE;
@@ -575,7 +570,7 @@ public class Spindexer {
                     spindexerTargetIndex = (spindexerTargetIndex + 1) % 3;
                     spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
                     isTriggered = true;
-                } else if (hsvValuesOne[0] > 60 && !isTriggered && spindexerTargetIndex == 2){
+                } else if (colorSensorOne.getDistance(DistanceUnit.MM) < 50 && !isTriggered && spindexerTargetIndex == 2){
                     if (hsvValuesOne[0] > 200){
                         COLOR_STATUS[spindexerTargetIndex] = ColorMode.PURPLE;
                     } else if (hsvValuesOne[0] > 100){

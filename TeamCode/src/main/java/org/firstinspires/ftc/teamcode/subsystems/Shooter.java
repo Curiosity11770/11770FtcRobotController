@@ -38,7 +38,7 @@ public class Shooter {
 
     public double TICKS_PER_SECOND = 0;
     public int TICKS_PER_REVOLUTION = 28;
-    public double REVOLUTIONS_PER_MINUTE = 3300;
+    public double REVOLUTIONS_PER_MINUTE = 3700;
 
     public double LINKAGE_UP = 0.3;
     public double LINKAGE_DOWN = 0.72    ;
@@ -177,8 +177,8 @@ public class Shooter {
             shootingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             velocityMode = VelocityMode.ON;
         } else if (myOpMode.gamepad1.dpad_right){
-            shootingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            velocityMode = VelocityMode.BANGBANG;
+            //shootingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            //velocityMode = VelocityMode.BANGBANG;
         }
 
 
