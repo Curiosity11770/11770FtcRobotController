@@ -30,7 +30,7 @@ public class MetaAutoRed extends LinearOpMode {
     private Paths myPaths;
     private Shooter shooter = new Shooter(this);
     private Intake intake = new Intake(this);
-    private Spindexer spindexer = new Spindexer(this, intake);
+    private Spindexer spindexer = new Spindexer(this, intake, shooter);
 
     @Override
 

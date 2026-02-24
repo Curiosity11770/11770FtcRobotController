@@ -36,7 +36,7 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
     private Shooter shooter = new Shooter(this);
     private Vision vision = new Vision(this);
     private Intake intake = new Intake(this);
-    private Spindexer spindexer = new Spindexer(this, intake);
+    private Spindexer spindexer = new Spindexer(this, intake, shooter);
 
     int id = 21;
 

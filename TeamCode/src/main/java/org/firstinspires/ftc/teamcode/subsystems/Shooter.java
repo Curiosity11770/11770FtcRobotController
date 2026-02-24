@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.limelightvision.LLFieldMap;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -16,8 +18,10 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import java.util.List;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.List;
+@Config
 public class Shooter {
     private LinearOpMode myOpMode = null;
     public DcMotorEx shootingMotor = null;
@@ -34,7 +38,7 @@ public class Shooter {
 
     public double TICKS_PER_SECOND = 0;
     public int TICKS_PER_REVOLUTION = 28;
-    public double REVOLUTIONS_PER_MINUTE = 4200;
+    public double REVOLUTIONS_PER_MINUTE = 3300;
 
     public double LINKAGE_UP = 0.3;
     public double LINKAGE_DOWN = 0.72    ;
@@ -53,11 +57,30 @@ public class Shooter {
 
     List<LLResultTypes.FiducialResult> fiducialResults;
 
+    public boolean transferOn = false;
+
 
     public Shooter (LinearOpMode opmode, Vision robotVision) {
         myOpMode = opmode;
         vision = robotVision;
     }
+
+    enum ShooterMode {
+        TUNINGMODE,
+        AUTO,
+        CLOSE,
+        FAR
+    }
+
+    enum VelocityMode {
+        OFF,
+        ON,
+        BANGBANG
+    }
+
+    public double measuredRPM = 0;
+    public ShooterMode shooterMode = ShooterMode.AUTO;
+    public VelocityMode velocityMode = VelocityMode.OFF;
 
     public Shooter (LinearOpMode opmode) {
         myOpMode = opmode;
@@ -71,42 +94,32 @@ public class Shooter {
 
         linkageShooting.setPosition(LINKAGE_DOWN);
 
+        shootingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
     }
 
     public void teleOp(){
-        if (myOpMode.gamepad1.left_trigger > 0.2 || myOpMode.gamepad1.right_trigger > 0.2) {
-            fiducialResults = vision.result.getFiducialResults();
-            for (LLResultTypes.FiducialResult fr : fiducialResults) {
-                if(fr.getTargetPoseCameraSpace().getPosition().z <  2.5) {
-                    REVOLUTIONS_PER_MINUTE = 1044 * fr.getTargetPoseCameraSpace().getPosition().z + 1967;
-                    TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE / 60 * TICKS_PER_REVOLUTION;
-                    shootingMotor.setVelocity(-TICKS_PER_SECOND);
-                } else if (fr.getTargetPoseCameraSpace().getPosition().z > 2.5){
-                    REVOLUTIONS_PER_MINUTE = 1244 * fr.getTargetPoseCameraSpace().getPosition().z + 1967;
-                    TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE / 60 * TICKS_PER_REVOLUTION;
-                    shootingMotor.setVelocity(-TICKS_PER_SECOND);
+        if(shooterMode == ShooterMode.AUTO){
+            if (myOpMode.gamepad1.left_trigger > 0.2 || myOpMode.gamepad1.right_trigger > 0.2) {
+                fiducialResults = vision.result.getFiducialResults();
+                for (LLResultTypes.FiducialResult fr : fiducialResults) {
+                    REVOLUTIONS_PER_MINUTE = 507*fr.getTargetPoseCameraSpace().getPosition().z +2770;
+                    TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE/60*TICKS_PER_REVOLUTION;
                 }
+
+            } else {
+                REVOLUTIONS_PER_MINUTE = 3300;
+                TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE/60*TICKS_PER_REVOLUTION;
 
             }
 
-        } else {
-            REVOLUTIONS_PER_MINUTE = 3500;
-        }
-        //calculate Ticks per second based on current RPM
-        TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE/60*TICKS_PER_REVOLUTION;
+        } else if (shooterMode == ShooterMode.TUNINGMODE){
 
-        if(myOpMode.gamepad2.right_bumper){
-            shootingMotor.setVelocity(0);
-        }else if(myOpMode.gamepad2.left_bumper){
-            shootingMotor.setVelocity(-TICKS_PER_SECOND);
-        }
-
-        /*if (myOpMode.gamepad1.a && !aPressedLast) {
+             if (myOpMode.gamepad1.a && !aPressedLast) {
             velocity += VELOCITY_INCREMENT;
             if (velocity > MAX_VELOCITY) velocity = MAX_VELOCITY;
             REVOLUTIONS_PER_MINUTE = velocity;
             TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE/60*TICKS_PER_REVOLUTION;
-            shootingMotor.setVelocity(-TICKS_PER_SECOND);
         }
 
         // Button B: Decrease velocity
@@ -115,24 +128,86 @@ public class Shooter {
             if (velocity < MIN_VELOCITY) velocity = MIN_VELOCITY;
             REVOLUTIONS_PER_MINUTE = velocity;
             TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE/60*TICKS_PER_REVOLUTION;
-            shootingMotor.setVelocity(-TICKS_PER_SECOND);
         }
 
         // Update flags
         aPressedLast = myOpMode.gamepad1.a;
-        bPressedLast = myOpMode.gamepad1.b;*/
+        bPressedLast = myOpMode.gamepad1.b;
+
+        } else if (shooterMode == ShooterMode.FAR){
+            REVOLUTIONS_PER_MINUTE = 5400;
+            TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE / 60 * TICKS_PER_REVOLUTION;
+        } else if (shooterMode == ShooterMode.CLOSE){
+            REVOLUTIONS_PER_MINUTE = 3500;
+            TICKS_PER_SECOND = REVOLUTIONS_PER_MINUTE / 60 * TICKS_PER_REVOLUTION;
+        }
+
+        if (myOpMode.gamepad1.left_trigger > 0.2 || myOpMode.gamepad1.right_trigger > 0.2) {
+            shooterMode = ShooterMode.AUTO;
+        } else if (myOpMode.gamepad1.a || myOpMode.gamepad1.b){
+            //shooterMode = ShooterMode.TUNINGMODE;
+        } else if (myOpMode.gamepad2.left_bumper) {
+            shooterMode = ShooterMode.CLOSE;
+        }
+
+        measuredRPM = shootingMotor.getVelocity()/TICKS_PER_REVOLUTION*60;
+
+
+
+
+        if(velocityMode == VelocityMode.OFF){
+            shootingMotor.setVelocity(0);
+
+        } else if (velocityMode == VelocityMode.ON){
+            shootingMotor.setVelocity(-TICKS_PER_SECOND);
+
+        } else if (velocityMode == VelocityMode.BANGBANG){
+            if(REVOLUTIONS_PER_MINUTE - Math.abs(measuredRPM) >= 15) {
+                shootingMotor.setPower(-1);
+            } else {
+                shootingMotor.setPower(0);
+            }
+
+        }
+
+        //calculate Ticks per second based on current RPM
+        if(myOpMode.gamepad2.right_bumper){
+            velocityMode = VelocityMode.OFF;
+        }else if(myOpMode.gamepad2.left_bumper){
+            shootingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            velocityMode = VelocityMode.ON;
+        } else if (myOpMode.gamepad1.dpad_right){
+            shootingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            velocityMode = VelocityMode.BANGBANG;
+        }
+
 
 
         if (myOpMode.gamepad2.dpad_up) {
             linkageShooting.setPosition(LINKAGE_UP);
             transferServo.setPower(TRANSFER_SPEED);
+            transferOn = true;
         } else if (myOpMode.gamepad2.dpad_down){
             linkageShooting.setPosition(LINKAGE_DOWN);
             transferServo.setPower(0);
+            transferOn = false;
         }
 
 
         myOpMode.telemetry.addData("shooter rpm", REVOLUTIONS_PER_MINUTE);
+        myOpMode.telemetry.addData("measuredRpm", measuredRPM);
+        myOpMode.telemetry.addData("ShooterMode", shooterMode);
+        myOpMode.telemetry.addData("VelocityMode", velocityMode);
+
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        Telemetry dashboardTelemetry = dashboard.getTelemetry();
+
+       dashboardTelemetry.addData("shooter rpm", REVOLUTIONS_PER_MINUTE);
+        dashboardTelemetry.addData("measuredRpm", -measuredRPM);
+        dashboardTelemetry.addData("ShooterMode", shooterMode);
+        dashboardTelemetry.addData("VelocityMode", velocityMode);
+        //dashboardTelemetry.update();
+
 
     }
 

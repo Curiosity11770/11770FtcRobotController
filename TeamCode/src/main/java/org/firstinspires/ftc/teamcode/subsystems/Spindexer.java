@@ -6,6 +6,8 @@ import android.graphics.Color;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.pedropathing.paths.PathChain;
@@ -23,7 +25,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.utility.PIDController;
+@Config
 
 public class Spindexer {
     private LinearOpMode myOpMode = null;
@@ -60,7 +64,7 @@ public class Spindexer {
         GREEN
     }
 
-    public static final double[] LOAD_POSITIONS = {0.41,1.51,2.61};
+    public static final double[] LOAD_POSITIONS = {0.62,1.72,2.82};
 
     public ColorMode[] COLOR_STATUS = {ColorMode.EMPTY,ColorMode.EMPTY,ColorMode.EMPTY};
 
@@ -73,8 +77,11 @@ public class Spindexer {
 
     public final static int LOWER_THRESHOLD = 0;
 
+    public static double SPINDEXER_SPEED = 0.65;
+
     public boolean isTriggered = false;
 
+    public int THRESHOLD = 50;
     public enum SpindexerMode {
         CONTINUOUS,
         AUTO_INTAKE,
@@ -90,10 +97,12 @@ public class Spindexer {
     ElapsedTime timer = new ElapsedTime();
 
     Intake intake;
+    Shooter shooter;
 
-    public Spindexer (LinearOpMode opmode, Intake myIntake){
+    public Spindexer (LinearOpMode opmode, Intake myIntake, Shooter myShooter){
         myOpMode = opmode;
         intake = myIntake;
+        shooter = myShooter;
     }
 
     public void init (){
@@ -251,9 +260,17 @@ public class Spindexer {
 
         if (spindexerMode == SpindexerMode.CONTINUOUS) {
             if (myOpMode.gamepad2.a) {
-                spindexerServo.setPower(0.65);
+                if(shooter.transferOn) {
+                    if (Math.abs(shooter.REVOLUTIONS_PER_MINUTE - Math.abs(shooter.measuredRPM)) < THRESHOLD) {
+                        spindexerServo.setPower(SPINDEXER_SPEED);
+                    } else {
+                        spindexerServo.setPower(0);
+                    }
+                } else {
+                    spindexerServo.setPower(SPINDEXER_SPEED);
+            }
             } else if (myOpMode.gamepad2.b) {
-                spindexerServo.setPower(-0.65);
+                spindexerServo.setPower(-SPINDEXER_SPEED);
             } else {
                 spindexerServo.setPower(0);
             }
@@ -303,13 +320,13 @@ public class Spindexer {
                 if(hsvValuesThree[0] > 200){
                     spindexerServo.setPower(0);
                 } else {
-                    spindexerServo.setPower(0.65);
+                    spindexerServo.setPower(SPINDEXER_SPEED);
                 }
             } else if (myOpMode.gamepad2.x){
                 if(hsvValuesThree[0] < 200 && hsvValuesThree[0] > 100){
                     spindexerServo.setPower(0);
                 } else {
-                    spindexerServo.setPower(0.65);
+                    spindexerServo.setPower(SPINDEXER_SPEED);
                 }
 
             }
@@ -319,6 +336,12 @@ public class Spindexer {
         myOpMode.telemetry.addData("Target Index: ", spindexerTargetIndex);
         //myOpMode.telemetry.addData("Target Position: ", spindexerTargetPosition);
         myOpMode.telemetry.addData("Current Position", spindexerEncoder.getVoltage());
+
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        Telemetry dashboardTelemetry = dashboard.getTelemetry();
+
+        dashboardTelemetry.addData("spindexerSpeed", SPINDEXER_SPEED);
+        dashboardTelemetry.update();
     }
 
     public Action spindexerAction(double power, double time) {

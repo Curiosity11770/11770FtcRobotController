@@ -36,7 +36,7 @@ public class Robot {
         intake = new Intake(myOpMode);
         power = new Power(myOpMode);
         shooter = new Shooter (myOpMode, vision);
-        spindexer = new Spindexer(myOpMode, intake);
+        spindexer = new Spindexer(myOpMode, intake, shooter);
 
 
         vision.init();

@@ -34,7 +34,7 @@ public class BlueSortedAuto extends LinearOpMode {
     private Shooter shooter = new Shooter(this);
     private Vision vision = new Vision(this);
     private Intake intake = new Intake(this);
-    private Spindexer spindexer = new Spindexer(this, intake);
+    private Spindexer spindexer = new Spindexer(this, intake, shooter);
 
     int id = 21;
 
@@ -69,7 +69,7 @@ public class BlueSortedAuto extends LinearOpMode {
 
         //Align with goal and launch artifacts
         Actions.runBlocking(new SequentialAction(spindexer.setMotifOrder(id), spindexer.shootingMotif(id),
-                pedroDriveOnPathChain(myPaths.SHOOTPATH1, 1, true),
+                pedroDriveOnPathChain(myPaths.SHOOTPATH1, 1, true), intake.intakeOn(0.01),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
                         spindexer.spindexerAction(0.75, 2.75)
         ));
