@@ -52,6 +52,11 @@ public class Drivetrain {
         vision = robotVision;
     }
 
+    public Drivetrain(LinearOpMode opmode) {
+
+        myOpMode = opmode;
+    }
+
     public void init(){
         leftFrontDrive = myOpMode.hardwareMap.get(DcMotor.class, "leftFrontDrive");
         rightFrontDrive = myOpMode.hardwareMap.get(DcMotor.class, "rightFrontDrive");
@@ -209,6 +214,42 @@ public class Drivetrain {
 
             myOpMode.telemetry.addData("Drive Mode: ", driveMode);
 
+    }
+
+    public void teleOpExtra() {
+        //Drivetrain TeleOp Code
+        double max;
+
+        // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
+        double axial   = -myOpMode.gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+        double lateral =  myOpMode.gamepad1.left_stick_x;
+        double yaw     =  myOpMode.gamepad1.right_stick_x;
+
+        // Combine the joystick requests for each axis-motion to determine each wheel's power.
+        // Set up a variable for each drive wheel to save the power level for telemetry.
+        double leftFrontPower  = axial + lateral + yaw;
+        double rightFrontPower = axial - lateral - yaw;
+        double leftBackPower   = axial - lateral + yaw;
+        double rightBackPower  = axial + lateral - yaw;
+
+        // Normalize the values so no wheel power exceeds 100%
+        // This ensures that the robot maintains the desired motion.
+        max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+        max = Math.max(max, Math.abs(leftBackPower));
+        max = Math.max(max, Math.abs(rightBackPower));
+
+        if (max > 1.0) {
+            leftFrontPower  /= max;
+            rightFrontPower /= max;
+            leftBackPower   /= max;
+            rightBackPower  /= max;
+        }
+
+        // Send calculated power to wheels
+        leftFrontDrive.setPower(leftFrontPower);
+        rightFrontDrive.setPower(rightFrontPower);
+        leftBackDrive.setPower(leftBackPower);
+        rightBackDrive.setPower(rightBackPower);
     }
 
     public void update(){
