@@ -91,10 +91,10 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
                 pedroDriveOnPathChain(myPaths.CLEARCLASSFIER2, 1, true),
                 pedroDriveOnPathChain(myPaths.CLEARCLASSFIER3, 1, true)));
 
-        Actions.runBlocking(new SequentialAction(
+        Actions.runBlocking(new SequentialAction(new ParallelAction(
                 spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN),
                 spindexer.shootingMotif2(id),
-                pedroDriveOnPathChain(myPaths.SHOOTPATH3, 1, true),
+                pedroDriveOnPathChain(myPaths.SHOOTPATH3, 1, true)),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
                 spindexer.spindexerAction(0.75, 1.25)
 
@@ -103,7 +103,7 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
         Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL1, 1, true));
 
         Actions.runBlocking(new SequentialAction(
-                intake.intakeOn(0.1),
+                intake.intakeOn(0.01),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
                 new ParallelAction(
                         pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.3, true),
@@ -112,9 +112,9 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
         ));
 
 
-        Actions.runBlocking(new SequentialAction(spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
+        Actions.runBlocking(new SequentialAction(new ParallelAction(spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
                 spindexer.shootingMotif(id),
-                pedroDriveOnPathChain(myPaths.SHOOTPATH2, 1, true),
+                pedroDriveOnPathChain(myPaths.SHOOTPATH2, 1, true)),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
                 spindexer.spindexerAction(0.75, 1.25)
         ));
@@ -131,9 +131,9 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
         ));
 
 
-        Actions.runBlocking(new SequentialAction(spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
+        Actions.runBlocking(new SequentialAction(new ParallelAction(spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
                 spindexer.shootingMotif(id),
-                pedroDriveOnPathChain(myPaths.SHOOTPATH4, 1, true),
+                pedroDriveOnPathChain(myPaths.SHOOTPATH4, 1, true)),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
                 spindexer.spindexerAction(0.75, 1.75)
         ));

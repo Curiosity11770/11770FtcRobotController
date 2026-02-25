@@ -38,12 +38,15 @@ public class Drivetrain {
     public double turnInput = 0;
     DriveMode driveMode = DriveMode.ROBOT_CENTRIC;
 
-    public double turnKP = 0.018;
+    public double turnKP = 0.03;
     public double turnKI = 0;
     public double turnKD = 0;
 
     private boolean isHoldingPosition = false;
     private int currentPipeline = 1;
+
+    public static double roboLocationX;
+    public static double roboLocationY;
 
 
     public Drivetrain(LinearOpMode opmode, Vision robotVision) {
