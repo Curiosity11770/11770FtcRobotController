@@ -239,6 +239,11 @@ public class Shooter {
                 if (!initialized) {
                     actionTimer.reset();
                     linkageShooting.setPosition(linkageAction);
+                    if(linkageAction == LINKAGE_UP){
+                        transferServo.setPower(TRANSFER_SPEED);
+                    } else if (linkageAction == LINKAGE_DOWN) {
+                        transferServo.setPower(0);
+                    }
                     initialized = true;
                 }
                 return actionTimer.seconds() < time;

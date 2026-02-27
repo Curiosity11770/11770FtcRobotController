@@ -132,7 +132,7 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
 
 
         Actions.runBlocking(new SequentialAction(new ParallelAction(spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
-                spindexer.shootingMotif(id),
+                spindexer.shootingMotif3(id),
                 pedroDriveOnPathChain(myPaths.SHOOTPATH4, 1, true)),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
                 spindexer.spindexerAction(0.75, 1.25)
@@ -163,12 +163,12 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
                 telemetry.addData("y", follower.getPose().getY());
                 telemetry.addData("heading", follower.getPose().getHeading());
                 telemetry.addData("isbusy", follower.isBusy());
-                telemetry.addData("distance remaining",follower.getDistanceRemaining());
+                //telemetry.addData("distance remaining",follower.getDistanceRemaining());
                 telemetry.addData("At pose",follower.atPose(targetPathChain.endPose(),2,2,Math.toRadians(10)));
-                telemetry.addData("T-Value",follower.getCurrentTValue());
+                //telemetry.addData("T-Value",follower.getCurrentTValue());
                 telemetry.addData("path completion",follower.getPathCompletion());
-                telemetry.addData("following pathchain",follower.getFollowingPathChain());
-                telemetry.addData("parametric end",follower.atParametricEnd());
+                //telemetry.addData("following pathchain",follower.getFollowingPathChain());
+                //telemetry.addData("parametric end",follower.atParametricEnd());
 
                 //telemetry.addData("path", targetPathChain);
 
@@ -246,21 +246,21 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(52.863, 100.749), new Pose(48.400, 97))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(65), Math.toRadians(140))
+                    .setLinearHeadingInterpolation(Math.toRadians(65), Math.toRadians(133))
                     .build();
 
             FACEBALL1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(48.400, 97), new Pose(41.572, 84.928))
+                            new BezierLine(new Pose(50.971, 92.510), new Pose(41.572, 85.928))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(140), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(133), Math.toRadians(180))
                     .build();
 
             DRIVEINTOBALLS1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(41.572, 84.928), new Pose(24.000, 84.900))
+                            new BezierLine(new Pose(41.572, 85.928), new Pose(24.000, 85.900))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
@@ -268,7 +268,7 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
             SHOOTPATH2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(24.000, 84.500), new Pose(41.774, 93.712))
+                            new BezierLine(new Pose(24.000, 85.900), new Pose(41.774, 93.712))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(132))
                     .build();

@@ -359,6 +359,9 @@ public class Spindexer {
                     spindexerServo.setPower(power);
                     initialized = true;
                 }
+
+                myOpMode.telemetry.addData("spindexerAction", actionTimer.seconds());
+                myOpMode.telemetry.update();
                 return actionTimer.seconds() < time;
             }
         };
@@ -384,6 +387,41 @@ public class Spindexer {
 
                 }  else if (id == 23){
                     spindexerToPositionPIDClass(LOAD_POSITIONS[2]);
+
+                }
+                myOpMode.telemetry.addData("ColorStatus: ", COLOR_STATUS[0]);
+                myOpMode.telemetry.addData("ColorStatus1", COLOR_STATUS[1]);
+                myOpMode.telemetry.addData("ColorStatus2: ", COLOR_STATUS[2]);
+
+                myOpMode.telemetry.addData("Motif Order",MOTIF_ORDER[0]);
+                myOpMode.telemetry.addData("Motif Order2",MOTIF_ORDER[1]);
+                myOpMode.telemetry.addData("Motif Order3",MOTIF_ORDER[2]);
+                myOpMode.telemetry.update();
+                return actionTimer.seconds() < 0.5;
+            }
+        };
+    }
+
+    public Action shootingMotif3(int id) {
+        ElapsedTime actionTimer = new ElapsedTime();
+        actionTimer.reset();
+        return new Action() {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    actionTimer.reset();
+                    initialized = true;
+                }
+
+                if (id == 21){
+                    spindexerToPositionPIDClass(LOAD_POSITIONS[2]);
+                } else if (id == 22){
+                    spindexerToPositionPIDClass(LOAD_POSITIONS[0]);
+
+                }  else if (id == 23){
+                    spindexerToPositionPIDClass(LOAD_POSITIONS[1]);
 
                 }
                 myOpMode.telemetry.addData("ColorStatus: ", COLOR_STATUS[0]);
