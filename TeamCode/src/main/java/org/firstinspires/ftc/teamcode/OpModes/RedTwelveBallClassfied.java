@@ -28,9 +28,9 @@ import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Spindexer;
 import org.firstinspires.ftc.teamcode.subsystems.Vision;
 
-@Autonomous(name="BlueTwelveBallClassfied", group="Linear OpMode")
+@Autonomous(name="RedTwelveBallClassfied", group="Linear OpMode")
 @Config
-public class BlueTwelveBallClassfied extends LinearOpMode {
+public class RedTwelveBallClassfied extends LinearOpMode {
     private Follower follower;
     private Paths myPaths;
     private Shooter shooter = new Shooter(this);
@@ -44,7 +44,7 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
 
     public void runOpMode() throws InterruptedException {
 
-        Pose startPose = new Pose(32.35, 136, Math.toRadians(90));
+        Pose startPose = new Pose(111.75, 136, Math.toRadians(90));
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
         shooter.init();
@@ -236,124 +236,124 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
             DRIVEBACKTOLOOK = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(32.095, 135.590), new Pose(52.863, 100.749))
+                            new BezierLine(new Pose(111.905, 135.590), new Pose(91.137, 100.749))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(65))
+                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(115))
                     .build();
 
             SHOOTPATH1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(52.863, 100.749), new Pose(48.400, 97))
+                            new BezierLine(new Pose(91.137, 100.749), new Pose(95.6, 97))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(65), Math.toRadians(133))
+                    .setLinearHeadingInterpolation(Math.toRadians(115), Math.toRadians(47))
                     .build();
 
             FACEBALL2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(48.400, 97), new Pose(41.602, 61.072))
+                            new BezierLine(new Pose(95.6, 97), new Pose(102.398, 61.072))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(132), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(47), Math.toRadians(0))
                     .build();
 
             DRIVEINTOBALLS2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(41.602, 61.072), new Pose(15.500, 61.072))
+                            new BezierLine(new Pose(102.398, 61.072), new Pose(128.5, 61.072))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             CLEARCLASSFIER = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(15.500, 61.072),
-                                    new Pose(18.500, 69.500))
+                            new BezierLine(new Pose(128.5, 61.072),
+                                    new Pose(125.5, 69.500))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             CLEARCLASSFIER2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(18.500, 69.500),
-                                    new Pose(15.500, 69.500))
+                            new BezierLine(new Pose(125.5, 69.500),
+                                    new Pose(128.5, 69.500))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             CLEARCLASSFIER3 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(15.500, 69.500),
-                                    new Pose(35.500, 69.500))
+                            new BezierLine(new Pose(128.5, 69.500),
+                                    new Pose(108.500, 69.500))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             SHOOTPATH3 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(35.500, 69.500), new Pose(50.975, 92.510))
+                            new BezierLine(new Pose(108.500, 69.500), new Pose(93.025, 92.510))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(132))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(47))
                     .build();
 
             FACEBALL1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(50.971, 92.510), new Pose(41.572, 85.928))
+                            new BezierLine(new Pose(93.025, 92.510), new Pose(102.428, 85.928))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(133), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(47), Math.toRadians(0))
                     .build();
 
             DRIVEINTOBALLS1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(41.572, 85.928), new Pose(24.000, 85.900))
+                            new BezierLine(new Pose(102.428, 85.928), new Pose(120, 85.900))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             SHOOTPATH2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(24.000, 85.900), new Pose(41.774, 93.712))
+                            new BezierLine(new Pose(120, 85.900), new Pose(102.226, 93.712))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(132))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(47))
                     .build();
 
             FACEBALL3 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(41.774, 93.712), new Pose(41.602, 38.572))
+                            new BezierLine(new Pose(102.226, 93.712), new Pose(102.226, 38.572))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(132), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(47), Math.toRadians(0))
                     .build();
 
             DRIVEINTOBALLS3 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(41.602, 38.572), new Pose(18.500, 38.500))
+                            new BezierLine(new Pose(102.226, 38.572), new Pose(125.5, 38.500))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             SHOOTPATH4 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(18.500, 38.500), new Pose(50.975, 92.510))
+                            new BezierLine(new Pose(125.5, 38.500), new Pose(93.025, 92.510))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(132))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(48))
                     .build();
 
             STRAFEPATH = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(50.975, 92.510), new Pose(35.975, 82.510))
+                            new BezierLine(new Pose(93.025, 92.510), new Pose(108.025, 82.510))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(132), Math.toRadians(90))
+                    .setLinearHeadingInterpolation(Math.toRadians(48), Math.toRadians(90))
                     .build();
         }
     }

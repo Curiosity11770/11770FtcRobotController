@@ -85,7 +85,7 @@ public class FarSideBlueAuto extends LinearOpMode {
                 pedroDriveOnPathChain(myPaths.INTAKE1, 1, true, 4),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.1),
                 new ParallelAction(
-                        pedroDriveOnPathChain(myPaths.FORWARD, 0.5, true, 4),
+                        pedroDriveOnPathChain(myPaths.FORWARD, 0.7, true, 4),
                         spindexer.autoIntake()
                 ),
                 pedroDriveOnPathChain(myPaths.SHOOT2, 1, true, 1),
