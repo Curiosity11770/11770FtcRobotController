@@ -27,7 +27,7 @@ public class Intake {
 
     public void teleOp(){
         if(myOpMode.gamepad2.left_trigger > 0.2){
-            intakeMotor.setPower(1);
+            intakeMotor.setPower(0.5);
         }else if(myOpMode.gamepad2.right_trigger > 0.2){
             intakeMotor.setPower(-1);
         } else {

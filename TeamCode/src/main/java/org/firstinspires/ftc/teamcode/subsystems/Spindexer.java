@@ -72,7 +72,7 @@ public class Spindexer {
 
     public ColorMode[] MOTIF_ORDER = {ColorMode.GREEN,ColorMode.PURPLE,ColorMode.PURPLE};
 
-    public static final double SPINDEXER_KP = 0.55;
+    public static final double SPINDEXER_KP = 0.3;
     public static final double SPINDEXER_KI = 0;
     public static final double SPINDEXER_KD = 0.0;
 
@@ -83,7 +83,7 @@ public class Spindexer {
 
     public boolean isTriggered = false;
 
-    public int THRESHOLD = 50;
+    public int THRESHOLD = 100;
     public enum SpindexerMode {
         CONTINUOUS,
         AUTO_INTAKE,
@@ -303,7 +303,7 @@ public class Spindexer {
                     COLOR_STATUS[spindexerTargetIndex] = ColorMode.EMPTY;
                 }
                 if(!(myOpMode.gamepad2.right_trigger > 0.2) &&  !(myOpMode.gamepad2.left_trigger > 0.2)) {
-                    intake.intakeMotor.setPower(1);
+                    intake.intakeMotor.setPower(0.5);
                 }
             }
 
@@ -682,7 +682,9 @@ public class Spindexer {
     public void spindexerToPositionPIDClass(double targetPosition) {
         double output = spindexerPID.calculate(targetPosition, spindexerEncoder.getVoltage());
 
-        spindexerServo.setPower(-output);
+        if(Math.abs(targetPosition - spindexerEncoder.getVoltage()) > 0.1) {
+            spindexerServo.setPower(-output);
+        }
 
         myOpMode.telemetry.addData("spindexer", spindexerEncoder.getVoltage());
         myOpMode.telemetry.addData("output", output);

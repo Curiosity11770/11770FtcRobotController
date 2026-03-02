@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.pedropathing.follower.Follower;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.utility.PIDController;
@@ -27,6 +29,8 @@ public class Drivetrain {
 
     public PIDController turnPID = null;
 
+    public GoBildaPinpointDriver pinpoint;
+
 
     enum DriveMode{
         ROBOT_CENTRIC,
@@ -38,7 +42,7 @@ public class Drivetrain {
     public double turnInput = 0;
     DriveMode driveMode = DriveMode.ROBOT_CENTRIC;
 
-    public double turnKP = 0.03;
+    public double turnKP = 0.025;
     public double turnKI = 0;
     public double turnKD = 0;
 
@@ -76,6 +80,9 @@ public class Drivetrain {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
+        pinpoint = myOpMode.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        pinpoint.setOffsets(-5, 8, DistanceUnit.INCH);
+
         follower = Constants.createFollower(myOpMode.hardwareMap);
         follower.update();
         myOpMode.telemetry.addData("Status", "Waiting for Start");
@@ -110,7 +117,6 @@ public class Drivetrain {
         } else {
 
             vision.result = vision.limelight.getLatestResult();
-            if (vision.result.isValid()) {
 
                 // Access general information
                /* Pose3D botpose = vision.result.getBotpose();
@@ -141,6 +147,8 @@ public class Drivetrain {
                     myOpMode.telemetry.addData("cameraPose", fr.getTargetPoseCameraSpace());
 
                 }
+                myOpMode.telemetry.addData("Result", vision.result.isValid());
+                myOpMode.telemetry.addData("Tx", vision.result.getTx());
                 if (vision.result.isValid()) {
                     double turnPower = turnPID.calculate(0, vision.result.getTx());
                     turnInput = turnPower;
@@ -151,7 +159,7 @@ public class Drivetrain {
 
 
 
-            }
+
         }
 
         if(myOpMode.gamepad1.dpad_left) {

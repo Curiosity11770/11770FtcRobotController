@@ -70,76 +70,61 @@ public class RedTwelveBallClassfied extends LinearOpMode {
         Actions.runBlocking(scanAprilTags());
 
         //Align with goal and launch artifacts
-        Actions.runBlocking(new SequentialAction(new ParallelAction(spindexer.setMotifOrder(id), spindexer.shootingMotif(id),
-                pedroDriveOnPathChain(myPaths.SHOOTPATH1, 1, true)),
-                shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                spindexer.spindexerAction(0.75, 1.25)
-        ));
-
-        Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL2, 1, true));
-
         Actions.runBlocking(new SequentialAction(
+                new ParallelAction(
+                        spindexer.setMotifOrder(id), spindexer.shootingMotif(id),
+                    pedroDriveOnPathChain(myPaths.SHOOTPATH1, 1, true)),
+                shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
+                spindexer.spindexerAction(0.75, 1.25),
+                pedroDriveOnPathChain(myPaths.FACEBALL2, 1, true),
                 intake.intakeOn(0.1),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
                 new ParallelAction(
                         pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS2, 0.3, true),
                         spindexer.autoIntake()
-                )
-        ));
-
-        Actions.runBlocking(new SequentialAction(pedroDriveOnPathChain(myPaths.CLEARCLASSFIER, 1, true),
+                ),
+                pedroDriveOnPathChain(myPaths.CLEARCLASSFIER, 1, true),
                 pedroDriveOnPathChain(myPaths.CLEARCLASSFIER2, 1, true),
-                pedroDriveOnPathChain(myPaths.CLEARCLASSFIER3, 1, true)));
-
-        Actions.runBlocking(new SequentialAction(new ParallelAction(
+                pedroDriveOnPathChain(myPaths.CLEARCLASSFIER3, 1, true),
                 spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN),
                 spindexer.shootingMotif2(id),
-                pedroDriveOnPathChain(myPaths.SHOOTPATH3, 1, true)),
+                pedroDriveOnPathChain(myPaths.SHOOTPATH3, 1, true),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                spindexer.spindexerAction(0.75, 1.25)
-
-        ));
-
-        Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL1, 1, true));
-
-        Actions.runBlocking(new SequentialAction(
+                spindexer.spindexerAction(0.75, 1.25),
+                new ParallelAction(
+                        spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN),
+                        spindexer.shootingMotif2(id),
+                        pedroDriveOnPathChain(myPaths.SHOOTPATH3, 1, true)),
+                shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
+                spindexer.spindexerAction(0.75, 1.25),
+                pedroDriveOnPathChain(myPaths.FACEBALL1, 1, true),
                 intake.intakeOn(0.01),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
                 new ParallelAction(
                         pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.3, true),
                         spindexer.autoIntake()
-                )
-        ));
-
-
-        Actions.runBlocking(new SequentialAction(new ParallelAction(spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
-                spindexer.shootingMotif(id),
-                pedroDriveOnPathChain(myPaths.SHOOTPATH2, 1, true)),
+                ),
+                new ParallelAction(
+                    spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
+                    spindexer.shootingMotif(id),
+                    pedroDriveOnPathChain(myPaths.SHOOTPATH2, 1, true)),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                spindexer.spindexerAction(0.75, 1.25)
-        ));
-
-        Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL3, 1, true));
-
-        Actions.runBlocking(new SequentialAction(
+                spindexer.spindexerAction(0.75, 1.25),
+                pedroDriveOnPathChain(myPaths.FACEBALL3, 1, true),
                 intake.intakeOn(0.1),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
                 new ParallelAction(
                         pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS3, 0.3, true),
                         spindexer.autoIntake()
-                )
-        ));
-
-
-        Actions.runBlocking(new SequentialAction(new ParallelAction(spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
-                spindexer.shootingMotif3(id),
-                pedroDriveOnPathChain(myPaths.SHOOTPATH4, 1, true)),
+                ),
+                new ParallelAction(spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
+                        spindexer.shootingMotif3(id),
+                        pedroDriveOnPathChain(myPaths.SHOOTPATH4, 1, true)),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                spindexer.spindexerAction(0.75, 1.25)
+                spindexer.spindexerAction(0.75, 1.25),
+                pedroDriveOnPathChain(myPaths.STRAFEPATH, 1, true)
+
         ));
-
-
-        Actions.runBlocking(pedroDriveOnPathChain(myPaths.STRAFEPATH, 1, true));
 
     }
 
@@ -252,7 +237,7 @@ public class RedTwelveBallClassfied extends LinearOpMode {
             FACEBALL2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(95.6, 97), new Pose(102.398, 61.072))
+                            new BezierLine(new Pose(95.6, 97), new Pose(102.398, 64.072))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(47), Math.toRadians(0))
                     .build();
@@ -260,7 +245,7 @@ public class RedTwelveBallClassfied extends LinearOpMode {
             DRIVEINTOBALLS2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(102.398, 61.072), new Pose(128.5, 61.072))
+                            new BezierLine(new Pose(102.398, 64.072), new Pose(128.5, 64.072))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
@@ -268,7 +253,7 @@ public class RedTwelveBallClassfied extends LinearOpMode {
             CLEARCLASSFIER = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(128.5, 61.072),
+                            new BezierLine(new Pose(128.5, 64.072),
                                     new Pose(125.5, 69.500))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
