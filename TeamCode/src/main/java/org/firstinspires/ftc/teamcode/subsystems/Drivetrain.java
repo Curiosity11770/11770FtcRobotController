@@ -80,7 +80,7 @@ public class Drivetrain {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        pinpoint = myOpMode.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        pinpoint = myOpMode.hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         pinpoint.setOffsets(-5, 8, DistanceUnit.INCH);
 
         follower = Constants.createFollower(myOpMode.hardwareMap);

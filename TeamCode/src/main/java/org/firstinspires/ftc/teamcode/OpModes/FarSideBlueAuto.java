@@ -167,7 +167,7 @@ public class FarSideBlueAuto extends LinearOpMode {
 
                                     new Pose(13.08, 19.50)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(113), Math.toRadians(180))
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
 
                     .build();
             FORWARD = follower.pathBuilder().addPath(

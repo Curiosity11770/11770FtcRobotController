@@ -682,8 +682,10 @@ public class Spindexer {
     public void spindexerToPositionPIDClass(double targetPosition) {
         double output = spindexerPID.calculate(targetPosition, spindexerEncoder.getVoltage());
 
-        if(Math.abs(targetPosition - spindexerEncoder.getVoltage()) > 0.1) {
+        if(Math.abs(targetPosition - spindexerEncoder.getVoltage()) > 0.2) {
             spindexerServo.setPower(-output);
+        } else {
+            spindexerServo.setPower(0);
         }
 
         myOpMode.telemetry.addData("spindexer", spindexerEncoder.getVoltage());

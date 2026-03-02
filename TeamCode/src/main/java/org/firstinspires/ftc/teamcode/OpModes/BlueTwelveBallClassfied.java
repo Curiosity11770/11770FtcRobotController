@@ -70,76 +70,56 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
         Actions.runBlocking(scanAprilTags());
 
         //Align with goal and launch artifacts
-        Actions.runBlocking(new SequentialAction(new ParallelAction(spindexer.setMotifOrder(id), spindexer.shootingMotif(id),
+        Actions.runBlocking(
+                new SequentialAction(new ParallelAction(spindexer.setMotifOrder(id), spindexer.shootingMotif(id),
                 pedroDriveOnPathChain(myPaths.SHOOTPATH1, 1, true)),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                spindexer.spindexerAction(0.75, 1.25)
-        ));
-
-        Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL2, 1, true));
-
-        Actions.runBlocking(new SequentialAction(
+                spindexer.spindexerAction(0.75, 1.25),
+                pedroDriveOnPathChain(myPaths.FACEBALL2, 1, true),
                 intake.intakeOn(0.1),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
                 new ParallelAction(
                         pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS2, 0.3, true),
                         spindexer.autoIntake()
-                )
-        ));
-
-        Actions.runBlocking(new SequentialAction(pedroDriveOnPathChain(myPaths.CLEARCLASSFIER, 1, true),
+                ),
+                pedroDriveOnPathChain(myPaths.CLEARCLASSFIER, 1, true),
                 pedroDriveOnPathChain(myPaths.CLEARCLASSFIER2, 1, true),
-                pedroDriveOnPathChain(myPaths.CLEARCLASSFIER3, 1, true)));
-
-        Actions.runBlocking(new SequentialAction(new ParallelAction(
-                spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN),
-                spindexer.shootingMotif2(id),
-                pedroDriveOnPathChain(myPaths.SHOOTPATH3, 1, true)),
+                pedroDriveOnPathChain(myPaths.CLEARCLASSFIER3, 1, true),
+                new ParallelAction(
+                        spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN),
+                        spindexer.shootingMotif2(id),
+                        pedroDriveOnPathChain(myPaths.SHOOTPATH3, 1, true)),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                spindexer.spindexerAction(0.75, 1.25)
-
-        ));
-
-        Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL1, 1, true));
-
-        Actions.runBlocking(new SequentialAction(
+                spindexer.spindexerAction(0.75, 1.25),
+                pedroDriveOnPathChain(myPaths.FACEBALL1, 1, true),
                 intake.intakeOn(0.01),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
                 new ParallelAction(
                         pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.3, true),
                         spindexer.autoIntake()
-                )
-        ));
-
-
-        Actions.runBlocking(new SequentialAction(new ParallelAction(spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
-                spindexer.shootingMotif(id),
-                pedroDriveOnPathChain(myPaths.SHOOTPATH2, 1, true)),
+                ),
+                new ParallelAction(
+                        spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
+                        spindexer.shootingMotif(id),
+                        pedroDriveOnPathChain(myPaths.SHOOTPATH2, 1, true)),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                spindexer.spindexerAction(0.75, 1.25)
-        ));
-
-        Actions.runBlocking(pedroDriveOnPathChain(myPaths.FACEBALL3, 1, true));
-
-        Actions.runBlocking(new SequentialAction(
+                spindexer.spindexerAction(0.75, 1.25),
+                pedroDriveOnPathChain(myPaths.FACEBALL3, 1, true),
                 intake.intakeOn(0.1),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
                 new ParallelAction(
                         pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS3, 0.3, true),
                         spindexer.autoIntake()
-                )
+                ),
+                 new ParallelAction(
+                         spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
+                         spindexer.shootingMotif3(id),
+                         pedroDriveOnPathChain(myPaths.SHOOTPATH4, 1, true)),
+                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
+                 spindexer.spindexerAction(0.75, 1.25),
+                 pedroDriveOnPathChain(myPaths.STRAFEPATH, 1, true)
+
         ));
-
-
-        Actions.runBlocking(new SequentialAction(new ParallelAction(spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
-                spindexer.shootingMotif3(id),
-                pedroDriveOnPathChain(myPaths.SHOOTPATH4, 1, true)),
-                shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                spindexer.spindexerAction(0.75, 1.25)
-        ));
-
-
-        Actions.runBlocking(pedroDriveOnPathChain(myPaths.STRAFEPATH, 1, true));
 
     }
 

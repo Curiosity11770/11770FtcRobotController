@@ -24,9 +24,9 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Spindexer;
 
-@Autonomous(name="RedFarExtraThree", group="Linear OpMode")
+@Autonomous(name="BlueFarExtraThree", group="Linear OpMode")
 @Config
-public class RedFarExtraThree extends LinearOpMode {
+public class BlueFarExtraThree extends LinearOpMode {
     private Follower follower;
     private Paths myPaths;
     private Shooter shooter = new Shooter(this);
@@ -37,7 +37,7 @@ public class RedFarExtraThree extends LinearOpMode {
 
     public void runOpMode() throws InterruptedException {
 
-        Pose startPose = new Pose(88, 8, Math.toRadians(90));
+        Pose startPose = new Pose(56, 8, Math.toRadians(90));
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
         shooter.init();
@@ -170,72 +170,74 @@ public class RedFarExtraThree extends LinearOpMode {
         public Paths(Follower follower) {
             SHOOT1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(88, 8),
-                                    new Pose(87.75, 15.04)
+                                    new Pose(56, 8),
+                                    new Pose(56.25, 15.04)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(67))
+                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(113))
 
                     .build();
 
             FACEBALL1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(87.75, 15.04), new Pose(102.226, 38.572))
+                            new BezierLine(new Pose(56.25, 15.04), new Pose(41.602, 36.572))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(67), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(113), Math.toRadians(180))
                     .build();
 
             DRIVEINTOBALLS1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(102.226, 38.572), new Pose(125.5, 38.500))
+                            new BezierLine(new Pose(41.602, 36.572), new Pose(18.500, 36.500))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
             SHOOT3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(125.5, 38.500),
-                                    new Pose(87.75, 15.04)
+                                    new Pose(18.500, 36.500),
+                                    new Pose(56.25, 15.04)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(67))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(113))
 
                     .build();
 
             INTAKE1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(87.75, 15.04),
+                                    new Pose(56.25, 15.04),
 
-                                    new Pose(130.92, 19.50)
+                                    new Pose(13.08, 19.50)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
 
                     .build();
             FORWARD = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(130.92, 19.50),
+                                    new Pose(13.08, 19.50),
 
-                                    new Pose(132.92, 11.50)
+                                    new Pose(11.08, 11.50)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
                     .build();
 
+
+
             SHOOT2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(132.92, 11.50),
+                                    new Pose(11.08, 11.50),
 
-                                    new Pose(87.75, 15.04)
+                                    new Pose(56.25, 15.04)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(67))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(113))
 
                     .build();
 
             LEAVE = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(87.75, 15.04),
+                                    new Pose(56.25, 15.04),
 
-                                    new Pose(87.75, 28)
+                                    new Pose(56.25, 28)
                             )
                     ).setTangentHeadingInterpolation()
 
