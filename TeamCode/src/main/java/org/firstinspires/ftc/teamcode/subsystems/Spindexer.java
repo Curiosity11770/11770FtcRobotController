@@ -341,9 +341,22 @@ public class Spindexer {
                 }
             } else if (myOpMode.gamepad2.x){
                 if(hsvValuesThree[0] < 200 && hsvValuesThree[0] > 100){
-                    spindexerServo.setPower(0);
+                    if (CHECK){
+                        timer.reset();
+                    }
+                    CHECK = false;
+                    spindexerServo.setPower(SPINDEXER_SPEED);
+                    shooter.transferOn = true;
+                    shooter.transferServo.setPower(shooter.TRANSFER_SPEED);
+                    shooter.linkageShooting.setPosition(shooter.LINKAGE_UP);
                 } else {
                     spindexerServo.setPower(0.1);
+                    CHECK = true;
+                    if(timer.seconds() > 1.5 || laserInput.getState()) {
+                        shooter.transferOn = false;
+                        shooter.transferServo.setPower(0);
+                        shooter.linkageShooting.setPosition(shooter.LINKAGE_DOWN);
+                    }
                 }
 
             }
