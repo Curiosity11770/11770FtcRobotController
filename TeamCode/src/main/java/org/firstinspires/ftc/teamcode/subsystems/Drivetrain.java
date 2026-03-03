@@ -6,6 +6,7 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -13,11 +14,15 @@ import org.firstinspires.ftc.teamcode.utility.PIDController;
 
 import java.util.List;
 
+
+
 public class Drivetrain {
     public DcMotor rightFrontDrive = null;
     public DcMotor leftFrontDrive = null;
     public DcMotor rightBackDrive = null;
     public DcMotor leftBackDrive = null;
+
+    PIDController headingController;
 
     private LinearOpMode myOpMode = null;
 
@@ -38,6 +43,11 @@ public class Drivetrain {
         BLUE_FIELD_CENTRIC
     }
 
+     enum SideMode {
+        RED,
+        BLUE
+    }
+
     public boolean autoTurn = false;
     public double turnInput = 0;
     DriveMode driveMode = DriveMode.ROBOT_CENTRIC;
@@ -49,8 +59,15 @@ public class Drivetrain {
     private boolean isHoldingPosition = false;
     private int currentPipeline = 1;
 
-    public static double roboLocationX;
-    public static double roboLocationY;
+    public double roboLocationX;
+    public double roboLocationY;
+
+    public SideMode side = SideMode.BLUE;
+
+    public static double HEADING_KP = 0.002;
+    public static double HEADING_KI = 0;
+    public static double HEADING_KD = 0;
+    public static double MAX_OUT = 0.4;
 
 
     public Drivetrain(LinearOpMode opmode, Vision robotVision) {
@@ -65,6 +82,9 @@ public class Drivetrain {
     }
 
     public void init(){
+
+        headingController = new PIDController(HEADING_KP, HEADING_KI, HEADING_KD, MAX_OUT);
+
         leftFrontDrive = myOpMode.hardwareMap.get(DcMotor.class, "leftFrontDrive");
         rightFrontDrive = myOpMode.hardwareMap.get(DcMotor.class, "rightFrontDrive");
         leftBackDrive = myOpMode.hardwareMap.get(DcMotor.class, "leftBackDrive");
@@ -82,6 +102,19 @@ public class Drivetrain {
 
         pinpoint = myOpMode.hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         pinpoint.setOffsets(-5, 8, DistanceUnit.INCH);
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD,
+                GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        pinpoint.recalibrateIMU();
+
+        if(myOpMode.gamepad1.left_bumper){
+            side = SideMode.RED;
+            myOpMode.telemetry.addData(">", "RED");
+        }else if(myOpMode.gamepad1.right_bumper){
+            side = SideMode.BLUE;
+            myOpMode.telemetry.addData(">", "BLUE");
+        }
+
 
         follower = Constants.createFollower(myOpMode.hardwareMap);
         follower.update();
@@ -96,6 +129,9 @@ public class Drivetrain {
     public void teleOp() {
 
         follower.update();
+
+        roboLocationX = pinpoint.getPosX(DistanceUnit.INCH);
+        roboLocationY = pinpoint.getPosY(DistanceUnit.INCH);
 
         if (myOpMode.gamepad1.right_trigger > 0.2) {
             if (currentPipeline != 5) {
@@ -160,6 +196,17 @@ public class Drivetrain {
 
 
 
+        }
+        if(myOpMode.gamepad1.dpad_right) {
+
+            if (side == SideMode.RED) {
+                double adjustedError = angleWrap(38 - pinpoint.getHeading(AngleUnit.DEGREES));
+                turnInput = -headingController.calculate(adjustedError);
+            } else if (side == SideMode.BLUE) {
+                double adjustedError = angleWrap(142 - pinpoint.getHeading(AngleUnit.DEGREES));
+                turnInput = -headingController.calculate(adjustedError);
+
+            }
         }
 
         if(myOpMode.gamepad1.dpad_left) {
@@ -265,6 +312,19 @@ public class Drivetrain {
 
     public void update(){
 
+    }
+
+    public double angleWrap(double degrees) {
+
+        while (degrees > 180) {
+            degrees -= 360;
+        }
+        while (degrees < -180) {
+            degrees += 360;
+        }
+
+        // keep in mind that the result is in degrees
+        return degrees;
     }
 
 }
