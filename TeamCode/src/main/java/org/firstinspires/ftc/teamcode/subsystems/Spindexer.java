@@ -333,7 +333,7 @@ public class Spindexer {
                 } else {
                     spindexerServo.setPower(0.1);
                     CHECK = true;
-                    if(timer.seconds() > 1.5) {
+                    if(timer.seconds() > 1.5 || laserInput.getState()) {
                         shooter.transferOn = false;
                         shooter.transferServo.setPower(0);
                         shooter.linkageShooting.setPosition(shooter.LINKAGE_DOWN);
