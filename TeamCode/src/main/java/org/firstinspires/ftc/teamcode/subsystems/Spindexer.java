@@ -91,6 +91,8 @@ public class Spindexer {
         SORTING
     }
 
+    public boolean CHECK = true;
+
     public SpindexerMode spindexerMode = SpindexerMode.CONTINUOUS;
     public int spindexerTargetIndex = 0;
     public double spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
@@ -319,16 +321,29 @@ public class Spindexer {
             }
         } else if (spindexerMode == SpindexerMode.SORTING){
             if(myOpMode.gamepad2.y){
-                if(hsvValuesThree[0] > 200){
-                    spindexerServo.setPower(0);
-                } else {
+                if(hsvValuesThree[0] > 200) {
+                    if (CHECK){
+                        timer.reset();
+                }
+                    CHECK = false;
                     spindexerServo.setPower(SPINDEXER_SPEED);
+                    shooter.transferOn = true;
+                    shooter.transferServo.setPower(shooter.TRANSFER_SPEED);
+                    shooter.linkageShooting.setPosition(shooter.LINKAGE_UP);
+                } else {
+                    spindexerServo.setPower(0.1);
+                    CHECK = true;
+                    if(timer.seconds() > 1.5) {
+                        shooter.transferOn = false;
+                        shooter.transferServo.setPower(0);
+                        shooter.linkageShooting.setPosition(shooter.LINKAGE_DOWN);
+                    }
                 }
             } else if (myOpMode.gamepad2.x){
                 if(hsvValuesThree[0] < 200 && hsvValuesThree[0] > 100){
                     spindexerServo.setPower(0);
                 } else {
-                    spindexerServo.setPower(SPINDEXER_SPEED);
+                    spindexerServo.setPower(0.1);
                 }
 
             }

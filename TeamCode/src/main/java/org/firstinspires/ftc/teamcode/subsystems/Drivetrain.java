@@ -64,10 +64,10 @@ public class Drivetrain {
 
     public SideMode side = SideMode.BLUE;
 
-    public static double HEADING_KP = 0.002;
+    public static double HEADING_KP = 0.005;
     public static double HEADING_KI = 0;
     public static double HEADING_KD = 0;
-    public static double MAX_OUT = 0.4;
+    public static double MAX_OUT = 0.8;
 
 
     public Drivetrain(LinearOpMode opmode, Vision robotVision) {
@@ -129,6 +129,14 @@ public class Drivetrain {
     public void teleOp() {
 
         follower.update();
+
+        if(myOpMode.gamepad1.left_bumper){
+            side = SideMode.RED;
+            myOpMode.telemetry.addData(">", "RED");
+        }else if(myOpMode.gamepad1.right_bumper){
+            side = SideMode.BLUE;
+            myOpMode.telemetry.addData(">", "BLUE");
+        }
 
         roboLocationX = pinpoint.getPosX(DistanceUnit.INCH);
         roboLocationY = pinpoint.getPosY(DistanceUnit.INCH);
@@ -197,12 +205,9 @@ public class Drivetrain {
 
 
         }
-        if(myOpMode.gamepad1.dpad_right) {
+        /*if(myOpMode.gamepad1.dpad_right) {
 
             if (side == SideMode.RED) {
-                double adjustedError = angleWrap(38 - pinpoint.getHeading(AngleUnit.DEGREES));
-                turnInput = -headingController.calculate(adjustedError);
-            } else if (side == SideMode.BLUE) {
                 double adjustedError = angleWrap(142 - pinpoint.getHeading(AngleUnit.DEGREES));
                 turnInput = -headingController.calculate(adjustedError);
 
@@ -210,11 +215,14 @@ public class Drivetrain {
         }
 
         if(myOpMode.gamepad1.dpad_left) {
+                double adjustedError = angleWrap(38 - pinpoint.getHeading(AngleUnit.DEGREES));
+                turnInput = -headingController.calculate(adjustedError);
+            } else if (side == SideMode.BLUE) {
             follower.holdPoint(follower.getPose());
             isHoldingPosition = true;
             myOpMode.telemetry.addData("Status", "HOLDING POSITION (Active Braking)");
             return;
-        }
+        }*/
 
         if (isHoldingPosition) {
             follower.startTeleopDrive(true);
