@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.acmerobotics.roadrunner.ftc.ParallelOTOSEncoder;
 import com.pedropathing.follower.Follower;
@@ -76,6 +77,7 @@ public class RedTwelveBallClassfied extends LinearOpMode {
                     pedroDriveOnPathChain(myPaths.SHOOTPATH1, 1, true)),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
                 spindexer.spindexerAction(0.75, 1.25),
+                spindexer.spindexerAction(0, 0.01),
                 pedroDriveOnPathChain(myPaths.FACEBALL2, 1, true),
                 intake.intakeOn(0.1),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
@@ -83,41 +85,41 @@ public class RedTwelveBallClassfied extends LinearOpMode {
                         pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS2, 0.3, true),
                         spindexer.autoIntake()
                 ),
-                pedroDriveOnPathChain(myPaths.CLEARCLASSFIER, 1, true),
-                pedroDriveOnPathChain(myPaths.CLEARCLASSFIER2, 1, true),
+                pedroDriveTimeout(myPaths.CLEARCLASSFIER, 1, true, 0.8),
+
+                pedroDriveTimeout(myPaths.CLEARCLASSFIER2, 1, true, 0.8),
+                new SleepAction(0.5),
+
+
                 pedroDriveOnPathChain(myPaths.CLEARCLASSFIER3, 1, true),
-                spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN),
-                spindexer.shootingMotif2(id),
-                pedroDriveOnPathChain(myPaths.SHOOTPATH3, 1, true),
-                shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                spindexer.spindexerAction(0.75, 1.25),
                 new ParallelAction(
-                        spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN),
-                        spindexer.shootingMotif2(id),
-                        pedroDriveOnPathChain(myPaths.SHOOTPATH3, 1, true)),
+                        spindexer.shootingMotif(id),
+                        pedroDriveOnPathChain(myPaths.SHOOTPATH3, 1, true)
+                ),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
                 spindexer.spindexerAction(0.75, 1.25),
+                spindexer.spindexerAction(0, 0.01),
                 pedroDriveOnPathChain(myPaths.FACEBALL1, 1, true),
                 intake.intakeOn(0.01),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
                 new ParallelAction(
-                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.3, true),
+                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.31, true),
                         spindexer.autoIntake()
                 ),
                 new ParallelAction(
-                    spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
-                    spindexer.shootingMotif(id),
+                    spindexer.shootingMotif2(id),
                     pedroDriveOnPathChain(myPaths.SHOOTPATH2, 1, true)),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
                 spindexer.spindexerAction(0.75, 1.25),
+                spindexer.spindexerAction(0, 0.01),
                 pedroDriveOnPathChain(myPaths.FACEBALL3, 1, true),
                 intake.intakeOn(0.1),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
                 new ParallelAction(
-                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS3, 0.3, true),
+                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS3, 0.31, true),
                         spindexer.autoIntake()
                 ),
-                new ParallelAction(spindexer.setColorStatus(Spindexer.ColorMode.PURPLE, Spindexer.ColorMode.GREEN, Spindexer.ColorMode.PURPLE),
+                new ParallelAction(
                         spindexer.shootingMotif3(id),
                         pedroDriveOnPathChain(myPaths.SHOOTPATH4, 1, true)),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
@@ -126,6 +128,49 @@ public class RedTwelveBallClassfied extends LinearOpMode {
 
         ));
 
+    }
+
+    private Action pedroDriveTimeout(PathChain targetPathChain, double maxPower, boolean holdPos, double time) {
+        return new Action() {
+            private boolean initialized = false;
+            ElapsedTime pathTimer = new ElapsedTime();
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    initialized = true;
+                    pathTimer.reset();
+                    follower.followPath(targetPathChain, maxPower,holdPos);
+                }
+
+
+                follower.update();
+
+                telemetry.addData("pathtimer", pathTimer.seconds());
+                telemetry.addData("x", follower.getPose().getX());
+                telemetry.addData("y", follower.getPose().getY());
+                telemetry.addData("heading", follower.getPose().getHeading());
+                telemetry.addData("isbusy", follower.isBusy());
+                //telemetry.addData("distance remaining",follower.getDistanceRemaining());
+                telemetry.addData("At pose",follower.atPose(targetPathChain.endPose(),2,2,Math.toRadians(10)));
+                //telemetry.addData("T-Value",follower.getCurrentTValue());
+                telemetry.addData("path completion",follower.getPathCompletion());
+                //telemetry.addData("following pathchain",follower.getFollowingPathChain());
+                //telemetry.addData("parametric end",follower.atParametricEnd());
+
+                //telemetry.addData("path", targetPathChain);
+
+                telemetry.update();
+                if(pathTimer.seconds() > time){
+                    return false;
+                }
+
+                if(follower.isBusy()){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        };
     }
 
     private Action pedroDriveOnPathChain(PathChain targetPathChain, double maxPower, boolean holdPos) {
@@ -189,7 +234,7 @@ public class RedTwelveBallClassfied extends LinearOpMode {
 
                 telemetry.update();
 
-                if(tagTimer.seconds() < 0.1){
+                if(tagTimer.seconds() < 0.3){
                     return true;
                 } else {
                     return false;
@@ -245,7 +290,7 @@ public class RedTwelveBallClassfied extends LinearOpMode {
             DRIVEINTOBALLS2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(102.398, 64.072), new Pose(128.5, 64.072))
+                            new BezierLine(new Pose(102.398, 64.072), new Pose(120, 64.072))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
@@ -253,8 +298,8 @@ public class RedTwelveBallClassfied extends LinearOpMode {
             CLEARCLASSFIER = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(128.5, 64.072),
-                                    new Pose(125.5, 69.500))
+                            new BezierLine(new Pose(120, 64.072),
+                                    new Pose(120, 69.500))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
@@ -262,8 +307,8 @@ public class RedTwelveBallClassfied extends LinearOpMode {
             CLEARCLASSFIER2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(125.5, 69.500),
-                                    new Pose(128.5, 69.500))
+                            new BezierLine(new Pose(120, 69.500),
+                                    new Pose(128, 69.500))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
@@ -271,8 +316,8 @@ public class RedTwelveBallClassfied extends LinearOpMode {
             CLEARCLASSFIER3 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(128.5, 69.500),
-                                    new Pose(108.500, 69.500))
+                            new BezierLine(new Pose(126, 69.500),
+                                    new Pose(104.500, 69.500))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
@@ -320,7 +365,7 @@ public class RedTwelveBallClassfied extends LinearOpMode {
             DRIVEINTOBALLS3 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(102.226, 38.572), new Pose(125.5, 38.500))
+                            new BezierLine(new Pose(102.226, 38.572), new Pose(120, 38.500))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
@@ -328,7 +373,7 @@ public class RedTwelveBallClassfied extends LinearOpMode {
             SHOOTPATH4 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(125.5, 38.500), new Pose(93.025, 92.510))
+                            new BezierLine(new Pose(120, 38.500), new Pose(93.025, 92.510))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(48))
                     .build();

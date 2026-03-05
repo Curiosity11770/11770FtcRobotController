@@ -145,11 +145,13 @@ public class BlueFarExtraThree extends LinearOpMode {
 
                 telemetry.update();
 
+                if ((pathTimer.seconds() > seconds)){
+                    return false;
+                }
+
                 if(follower.isBusy()){
                     return true;
-                }else if (pathTimer.seconds() > seconds){
-                    return false;
-                }else{
+                } else{
                     return false;
                 }
             }

@@ -77,13 +77,14 @@ public class Spindexer {
     public static final double SPINDEXER_KD = 0.0;
 
 
-    public final static int LOWER_THRESHOLD = 0;
+    public double LOWER_THRESHOLD = 0;
 
     public static double SPINDEXER_SPEED = 0.65;
 
     public boolean isTriggered = false;
+    double targetIndex;
 
-    public int THRESHOLD = 100;
+    public int THRESHOLD = 75;
     public enum SpindexerMode {
         CONTINUOUS,
         AUTO_INTAKE,
@@ -264,6 +265,11 @@ public class Spindexer {
 
         if (spindexerMode == SpindexerMode.CONTINUOUS) {
             if (myOpMode.gamepad2.a) {
+                shooter.fiducialResults = shooter.vision.result.getFiducialResults();
+                for (LLResultTypes.FiducialResult fr : shooter.fiducialResults) {
+                    LOWER_THRESHOLD = fr.getTargetPoseCameraSpace().getPosition().z;
+                }
+                if(LOWER_THRESHOLD > 2.5){
                 if(shooter.transferOn) {
                     if (Math.abs(shooter.REVOLUTIONS_PER_MINUTE - Math.abs(shooter.measuredRPM)) < THRESHOLD) {
                         spindexerServo.setPower(SPINDEXER_SPEED);
@@ -273,6 +279,9 @@ public class Spindexer {
                 } else {
                     spindexerServo.setPower(SPINDEXER_SPEED);
             }
+                } else {
+                    spindexerServo.setPower(SPINDEXER_SPEED);
+                }
             } else if (myOpMode.gamepad2.b) {
                 spindexerServo.setPower(-SPINDEXER_SPEED);
             } else {
@@ -340,7 +349,7 @@ public class Spindexer {
                     }
                 }
             } else if (myOpMode.gamepad2.x){
-                if(hsvValuesThree[0] < 200 && hsvValuesThree[0] > 100){
+                if(hsvValuesThree[0] < 180 && hsvValuesThree[0] > 100){
                     if (CHECK){
                         timer.reset();
                     }
@@ -359,6 +368,11 @@ public class Spindexer {
                     }
                 }
 
+            } else {
+                spindexerServo.setPower(0);
+                shooter.transferOn = false;
+                shooter.transferServo.setPower(0);
+                shooter.linkageShooting.setPosition(shooter.LINKAGE_DOWN);
             }
         }
 
@@ -406,17 +420,18 @@ public class Spindexer {
                 if (!initialized) {
                     actionTimer.reset();
                     initialized = true;
+                    if (id == 21){
+                        targetIndex = LOAD_POSITIONS[0];
+                    } else if (id == 22){
+                        targetIndex = LOAD_POSITIONS[1];
+
+                    }  else if (id == 23){
+                        targetIndex = LOAD_POSITIONS[2];
+
+                    }
                 }
 
-                if (id == 21){
-                    spindexerToPositionPIDClass(LOAD_POSITIONS[0]);
-                } else if (id == 22){
-                    spindexerToPositionPIDClass(LOAD_POSITIONS[1]);
-
-                }  else if (id == 23){
-                    spindexerToPositionPIDClass(LOAD_POSITIONS[2]);
-
-                }
+                spindexerToPositionPIDClass(targetIndex);
                 myOpMode.telemetry.addData("ColorStatus: ", COLOR_STATUS[0]);
                 myOpMode.telemetry.addData("ColorStatus1", COLOR_STATUS[1]);
                 myOpMode.telemetry.addData("ColorStatus2: ", COLOR_STATUS[2]);
@@ -425,7 +440,7 @@ public class Spindexer {
                 myOpMode.telemetry.addData("Motif Order2",MOTIF_ORDER[1]);
                 myOpMode.telemetry.addData("Motif Order3",MOTIF_ORDER[2]);
                 myOpMode.telemetry.update();
-                return actionTimer.seconds() < 0.5;
+                return actionTimer.seconds() < 1;
             }
         };
     }
@@ -441,17 +456,19 @@ public class Spindexer {
                 if (!initialized) {
                     actionTimer.reset();
                     initialized = true;
+                    if (id == 21){
+                        targetIndex = LOAD_POSITIONS[2];
+                    } else if (id == 22){
+                        targetIndex = LOAD_POSITIONS[0];
+
+                    }  else if (id == 23){
+                        targetIndex = LOAD_POSITIONS[1];
+
+                    }
                 }
 
-                if (id == 21){
-                    spindexerToPositionPIDClass(LOAD_POSITIONS[2]);
-                } else if (id == 22){
-                    spindexerToPositionPIDClass(LOAD_POSITIONS[0]);
+                spindexerToPositionPIDClass(targetIndex);
 
-                }  else if (id == 23){
-                    spindexerToPositionPIDClass(LOAD_POSITIONS[1]);
-
-                }
                 myOpMode.telemetry.addData("ColorStatus: ", COLOR_STATUS[0]);
                 myOpMode.telemetry.addData("ColorStatus1", COLOR_STATUS[1]);
                 myOpMode.telemetry.addData("ColorStatus2: ", COLOR_STATUS[2]);
@@ -460,7 +477,7 @@ public class Spindexer {
                 myOpMode.telemetry.addData("Motif Order2",MOTIF_ORDER[1]);
                 myOpMode.telemetry.addData("Motif Order3",MOTIF_ORDER[2]);
                 myOpMode.telemetry.update();
-                return actionTimer.seconds() < 0.5;
+                return actionTimer.seconds() < 1;
             }
         };
     }
@@ -475,18 +492,19 @@ public class Spindexer {
                 if (!initialized) {
                     actionTimer.reset();
                     initialized = true;
+                    if (id == 21){
+                        targetIndex = LOAD_POSITIONS[1];
+                    } else if (id == 22){
+                        targetIndex = LOAD_POSITIONS[2];
+
+                    }  else if (id == 23){
+                        targetIndex = LOAD_POSITIONS[0];
+
+                    }
                 }
-                spindexerToPositionPIDClass(spindexerTargetPosition);
 
-                if (id == 21){
-                    spindexerToPositionPIDClass(LOAD_POSITIONS[1]);
-                } else if (id == 22){
-                    spindexerToPositionPIDClass(LOAD_POSITIONS[2]);
+                spindexerToPositionPIDClass(targetIndex);
 
-                }  else if (id == 23){
-                    spindexerToPositionPIDClass(LOAD_POSITIONS[0]);
-
-                }
                 myOpMode.telemetry.addData("ColorStatus: ", COLOR_STATUS[0]);
                 myOpMode.telemetry.addData("ColorStatus1", COLOR_STATUS[1]);
                 myOpMode.telemetry.addData("ColorStatus2: ", COLOR_STATUS[2]);
@@ -495,7 +513,7 @@ public class Spindexer {
                 myOpMode.telemetry.addData("Motif Order2",MOTIF_ORDER[1]);
                 myOpMode.telemetry.addData("Motif Order3",MOTIF_ORDER[2]);
                 myOpMode.telemetry.update();
-                return actionTimer.seconds() < 0.5;
+                return actionTimer.seconds() < 1;
             }
         };
     }
@@ -658,6 +676,10 @@ public class Spindexer {
                 myOpMode.telemetry.addData("Target Position: ", spindexerTargetPosition);
                 myOpMode.telemetry.addData("Current Position", spindexerEncoder.getVoltage());
                 myOpMode.telemetry.update();
+
+                if(hsvValuesOne[0] > 100 && hsvValuesTwo[0] > 100 && hsvValuesThree[0] > 100){
+                    return false;
+                }
 
                 return actionTimer.seconds() < 3;
             }

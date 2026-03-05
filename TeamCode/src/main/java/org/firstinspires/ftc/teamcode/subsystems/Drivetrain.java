@@ -52,7 +52,7 @@ public class Drivetrain {
     public double turnInput = 0;
     DriveMode driveMode = DriveMode.ROBOT_CENTRIC;
 
-    public double turnKP = 0.025;
+    public double turnKP = 0.017;
     public double turnKI = 0;
     public double turnKD = 0;
 
@@ -121,7 +121,7 @@ public class Drivetrain {
         myOpMode.telemetry.addData("Status", "Waiting for Start");
         myOpMode.telemetry.update();
         follower.startTeleopDrive(true);
-        turnPID = new PIDController(turnKP, turnKI, turnKD, 0.8);
+        turnPID = new PIDController(turnKP, turnKI, turnKD, 0.7);
 
 
     }
@@ -205,24 +205,25 @@ public class Drivetrain {
 
 
         }
-        /*if(myOpMode.gamepad1.dpad_right) {
+        if(myOpMode.gamepad1.dpad_right) {
 
             if (side == SideMode.RED) {
                 double adjustedError = angleWrap(142 - pinpoint.getHeading(AngleUnit.DEGREES));
                 turnInput = -headingController.calculate(adjustedError);
 
+            } else if (side == SideMode.BLUE) {
+                double adjustedError = angleWrap(38 - pinpoint.getHeading(AngleUnit.DEGREES));
+                turnInput = -headingController.calculate(adjustedError);
             }
         }
 
         if(myOpMode.gamepad1.dpad_left) {
-                double adjustedError = angleWrap(38 - pinpoint.getHeading(AngleUnit.DEGREES));
-                turnInput = -headingController.calculate(adjustedError);
-            } else if (side == SideMode.BLUE) {
+
             follower.holdPoint(follower.getPose());
             isHoldingPosition = true;
             myOpMode.telemetry.addData("Status", "HOLDING POSITION (Active Braking)");
             return;
-        }*/
+        }
 
         if (isHoldingPosition) {
             follower.startTeleopDrive(true);

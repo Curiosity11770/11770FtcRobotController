@@ -178,7 +178,7 @@ public class RedSortedAuto extends LinearOpMode {
 
                 telemetry.update();
 
-                if(tagTimer.seconds() < 0.1){
+                if(tagTimer.seconds() < 0.3){
                     return true;
                 } else {
                     return false;
