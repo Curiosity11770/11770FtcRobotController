@@ -214,12 +214,12 @@ public class BlueFarExtraThree extends LinearOpMode {
 
                     .build();
             FORWARD = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(13.08, 19.50),
+                    new BezierLine(
+                            new Pose(13.08, 17.50),
 
-                                    new Pose(11.08, 11.50)
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                            new Pose(11.08, 10.50)
+                    )
+            ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
                     .build();
 
@@ -227,7 +227,7 @@ public class BlueFarExtraThree extends LinearOpMode {
 
             SHOOT2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(11.08, 11.50),
+                                    new Pose(11.08, 10.50),
 
                                     new Pose(56.25, 15.04)
                             )

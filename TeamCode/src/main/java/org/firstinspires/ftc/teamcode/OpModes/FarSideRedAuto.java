@@ -69,7 +69,7 @@ public class FarSideRedAuto extends LinearOpMode {
                 spindexer.spindexerAction(0.5, 0.5),
                 spindexer.spindexerAction(0, 0.01),
                 intake.intakeOn(0.1),
-                pedroDriveOnPathChain(myPaths.INTAKE1, 1, true, 4),
+                pedroDriveOnPathChain(myPaths.INTAKE1, 0.6, true, 4),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.1),
                 new ParallelAction(
                         pedroDriveOnPathChain(myPaths.FORWARD, 0.4, true, 4),
@@ -171,25 +171,25 @@ public class FarSideRedAuto extends LinearOpMode {
                             new BezierLine(
                                     new Pose(87.75, 15.04),
 
-                                    new Pose(130.92, 19.50)
+                                    new Pose(131.92, 15.50)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                     .build();
             FORWARD = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(130.92, 17.50),
+                                    new Pose(131.92, 15.50),
 
-                                    new Pose(132.92, 10.50)
+                                    new Pose(133.92, 10.50)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
                     .build();
             FORWARD2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(130.92, 17.50),
+                                    new Pose(131.92, 15.50),
 
-                                    new Pose(132.92, 10.50)
+                                    new Pose(133.92, 10.50)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(335))
 
@@ -197,17 +197,17 @@ public class FarSideRedAuto extends LinearOpMode {
 
             SHOOT2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(132.92, 10.50),
+                                    new Pose(133.92, 10.50),
 
                                     new Pose(87.75, 15.04)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(67))
+                    ).setLinearHeadingInterpolation(Math.toRadians(335), Math.toRadians(67))
 
                     .build();
 
             SHOOT3 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(132.92, 10.50),
+                                    new Pose(133.92, 10.50),
 
                                     new Pose(87.75, 15.04)
                             )

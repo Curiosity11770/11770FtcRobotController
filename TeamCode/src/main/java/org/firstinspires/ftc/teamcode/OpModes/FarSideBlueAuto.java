@@ -57,8 +57,8 @@ public class FarSideBlueAuto extends LinearOpMode {
         //Align with goal and launch artifacts
         Actions.runBlocking(new SequentialAction(
                 new ParallelAction(
-                    pedroDriveOnPathChain(myPaths.SHOOT1, 1, true, 1),
-                    shooter.shooterAction(4300/60*shooter.TICKS_PER_REVOLUTION, 0.1)
+                        pedroDriveOnPathChain(myPaths.SHOOT1, 1, true, 1),
+                        shooter.shooterAction(4300/60*shooter.TICKS_PER_REVOLUTION, 0.1)
                 ),
                 new SleepAction(2.0), shooter.transferAction(1,0.1),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
@@ -67,28 +67,31 @@ public class FarSideBlueAuto extends LinearOpMode {
                 spindexer.spindexerAction(0.5, 0.3),
                 spindexer.spindexerAction(0, 1),
                 spindexer.spindexerAction(0.5, 0.5),
+                spindexer.spindexerAction(0, 0.01),
                 intake.intakeOn(0.1),
-                pedroDriveOnPathChain(myPaths.INTAKE1, 1, true, 4),
+                pedroDriveOnPathChain(myPaths.INTAKE1, 0.7, true, 4),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.1),
                 new ParallelAction(
-                        pedroDriveOnPathChain(myPaths.FORWARD, 0.5, true, 4),
+                        pedroDriveOnPathChain(myPaths.FORWARD, 0.33, true, 4),
                         spindexer.autoIntake()
                 ),
-                pedroDriveOnPathChain(myPaths.SHOOT2, 1, true, 1),
+                pedroDriveOnPathChain(myPaths.SHOOT2, 1, true, 4),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
                 spindexer.spindexerAction(0.5, 0.5),
                 spindexer.spindexerAction(0, 1),
                 spindexer.spindexerAction(0.5, 0.3),
                 spindexer.spindexerAction(0, 1),
                 spindexer.spindexerAction(0.5, 0.5),
+                spindexer.spindexerAction(0, 0.01),
                 intake.intakeOn(0.1),
-                pedroDriveOnPathChain(myPaths.INTAKE1, 1, true, 4),
-                shooter.linkageAction(shooter.LINKAGE_DOWN, 0.1),
                 new ParallelAction(
-                        pedroDriveOnPathChain(myPaths.FORWARD, 0.7, true, 4),
-                        spindexer.autoIntake()
+                        new SequentialAction(
+                                pedroDriveOnPathChain(myPaths.INTAKE1, 0.5, true, 4),
+                                shooter.linkageAction(shooter.LINKAGE_DOWN, 0.1),
+                                pedroDriveOnPathChain(myPaths.FORWARD2, 0.33, true, 4)),
+                        spindexer.autoIntakeTime(6.0)
                 ),
-                pedroDriveOnPathChain(myPaths.SHOOT2, 1, true, 1),
+                pedroDriveOnPathChain(myPaths.SHOOT3, 1, true, 4),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
                 spindexer.spindexerAction(0.5, 0.5),
                 spindexer.spindexerAction(0, 1),
@@ -151,6 +154,8 @@ public class FarSideBlueAuto extends LinearOpMode {
         public PathChain INTAKE1;
         public PathChain FORWARD;
         public PathChain SHOOT2;
+        public PathChain FORWARD2;
+        public PathChain SHOOT3;
         public PathChain LEAVE;
 
         public Paths(Follower follower) {
@@ -174,21 +179,40 @@ public class FarSideBlueAuto extends LinearOpMode {
                     .build();
             FORWARD = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(13.08, 19.50),
+                                    new Pose(13.08, 17.50),
 
-                                    new Pose(11.08, 11.50)
+                                    new Pose(11.08, 10.50)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+
+                    .build();
+            FORWARD2 = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(13.08, 17.50),
+
+                                    new Pose(11.08, 10.50)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(205))
 
                     .build();
 
             SHOOT2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(11.08, 11.50),
+                                    new Pose(11.08, 10.50),
 
                                     new Pose(56.25, 15.04)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(113))
+
+                    .build();
+
+            SHOOT3 = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(11.08, 10.50),
+
+                                    new Pose(56.25, 15.04)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(205), Math.toRadians(113))
 
                     .build();
 

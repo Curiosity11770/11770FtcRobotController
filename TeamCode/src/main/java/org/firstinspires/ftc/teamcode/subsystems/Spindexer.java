@@ -66,7 +66,7 @@ public class Spindexer {
         GREEN
     }
 
-    public static final double[] LOAD_POSITIONS = {0.62,1.72,2.82};
+    public static final double[] LOAD_POSITIONS = {0.5,1.6,2.7};
 
     public ColorMode[] COLOR_STATUS = {ColorMode.EMPTY,ColorMode.EMPTY,ColorMode.EMPTY};
 
@@ -289,7 +289,6 @@ public class Spindexer {
             }
         }else if(spindexerMode == SpindexerMode.AUTO_INTAKE) {
             spindexerToPositionPIDClass(spindexerTargetPosition);
-
             //if color sensor detects artifact
             if (colorSensorOne.getDistance(DistanceUnit.MM) < 50 && !isTriggered && spindexerTargetIndex < 2) {
 
@@ -574,6 +573,119 @@ public class Spindexer {
         };
     }
 
+    public Action autoIntakeTime(double time) {
+        ElapsedTime actionTimer = new ElapsedTime();
+        actionTimer.reset();
+        return new Action() {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    actionTimer.reset();
+                    spindexerTargetIndex = 0;
+                    spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+                    isTriggered = false;
+                    spindexerMode = SpindexerMode.AUTO_INTAKE;
+                    initialized = true;
+                }
+
+
+                colorSensorOne.setGain(2);
+                colorsOne = colorSensorOne.getNormalizedColors();
+                Color.colorToHSV(colorsOne.toColor(), hsvValuesOne);
+
+                colorSensorTwo.setGain(2);
+                colorsTwo= colorSensorTwo.getNormalizedColors();
+                Color.colorToHSV(colorsTwo.toColor(), hsvValuesTwo);
+
+                colorSensorThree.setGain(2);
+                colorsThree = colorSensorThree.getNormalizedColors();
+                Color.colorToHSV(colorsThree.toColor(), hsvValuesThree);
+
+
+                myOpMode.telemetry.addLine()
+                        .addData("Red", "%.3f", colorsOne.red)
+                        .addData("Green", "%.3f", colorsOne.green)
+                        .addData("Blue", "%.3f", colorsOne.blue);
+                myOpMode.telemetry.addLine()
+                        .addData("Hue", "%.3f", hsvValuesOne[0])
+                        .addData("Saturation", "%.3f", hsvValuesOne[1])
+                        .addData("Value", "%.3f", hsvValuesOne[2]);
+                myOpMode.telemetry.addData("Alpha", "%.3f", colorsOne.alpha);
+
+                myOpMode.telemetry.addLine()
+                        .addData("Red", "%.3f", colorsTwo.red)
+                        .addData("Green", "%.3f", colorsTwo.green)
+                        .addData("Blue", "%.3f", colorsTwo.blue);
+                myOpMode.telemetry.addLine()
+                        .addData("Hue", "%.3f", hsvValuesTwo[0])
+                        .addData("Saturation", "%.3f", hsvValuesTwo[1])
+                        .addData("Value", "%.3f", hsvValuesTwo[2]);
+                myOpMode.telemetry.addData("Alpha", "%.3f", colorsTwo.alpha);
+
+                myOpMode.telemetry.addLine()
+                        .addData("Red", "%.3f", colorsThree.red)
+                        .addData("Green", "%.3f", colorsThree.green)
+                        .addData("Blue", "%.3f", colorsThree.blue);
+                myOpMode.telemetry.addLine()
+                        .addData("Hue", "%.3f", hsvValuesThree[0])
+                        .addData("Saturation", "%.3f", hsvValuesThree[1])
+                        .addData("Value", "%.3f", hsvValuesThree[2]);
+                myOpMode.telemetry.addData("Alpha", "%.3f", colorsThree.alpha);
+
+                colorChanger(rgb0, 0);
+                colorChanger(rgb1, 1);
+                colorChanger(rgb2, 2);
+
+                spindexerToPositionPIDClass(spindexerTargetPosition);
+
+                //if color sensor detects artifact
+                if (colorSensorOne.getDistance(DistanceUnit.MM) < 50 && !isTriggered && spindexerTargetIndex < 2) {
+                    //advance desired position
+                    if (hsvValuesOne[0] > 200){
+                        COLOR_STATUS[spindexerTargetIndex] = ColorMode.PURPLE;
+                    } else if (hsvValuesOne[0] > 100){
+                        COLOR_STATUS[spindexerTargetIndex] = ColorMode.GREEN;
+                    } else if (hsvValuesOne[0] < 20){
+                        COLOR_STATUS[spindexerTargetIndex] = ColorMode.EMPTY;
+                    }
+                    spindexerTargetIndex = (spindexerTargetIndex + 1) % 3;
+                    spindexerTargetPosition = LOAD_POSITIONS[spindexerTargetIndex];
+                    isTriggered = true;
+                } else if (colorSensorOne.getDistance(DistanceUnit.MM) < 50 && !isTriggered && spindexerTargetIndex == 2){
+                    if (hsvValuesOne[0] > 200){
+                        COLOR_STATUS[spindexerTargetIndex] = ColorMode.PURPLE;
+                    } else if (hsvValuesOne[0] > 100){
+                        COLOR_STATUS[spindexerTargetIndex] = ColorMode.GREEN;
+                    } else if (hsvValuesOne[0] < 20){
+                        COLOR_STATUS[spindexerTargetIndex] = ColorMode.EMPTY;
+                    }
+
+                    intake.intakeMotor.setPower(1);
+                }
+
+                if(Math.abs(spindexerTargetPosition- spindexerEncoder.getVoltage()) < 0.2){
+                    isTriggered = false;
+                }
+
+
+                myOpMode.telemetry.addData("Spindexer Mode: ", spindexerMode);
+                myOpMode.telemetry.addData("Target Index: ", spindexerTargetIndex);
+                myOpMode.telemetry.addData("Target Position: ", spindexerTargetPosition);
+                myOpMode.telemetry.addData("Current Position", spindexerEncoder.getVoltage());
+                myOpMode.telemetry.update();
+
+                if(hsvValuesOne[0] > 100 && hsvValuesTwo[0] > 100 && hsvValuesThree[0] > 100){
+                    return false;
+                }
+
+                return actionTimer.seconds() < time;
+            }
+        };
+    }
+
+
     public Action autoIntake() {
         ElapsedTime actionTimer = new ElapsedTime();
         actionTimer.reset();
@@ -732,7 +844,7 @@ public class Spindexer {
     public void spindexerToPositionPIDClass(double targetPosition) {
         double output = spindexerPID.calculate(targetPosition, spindexerEncoder.getVoltage());
 
-        if(Math.abs(targetPosition - spindexerEncoder.getVoltage()) > 0.2) {
+        if(Math.abs(targetPosition - spindexerEncoder.getVoltage()) > 0.25) {
             spindexerServo.setPower(-output);
         } else {
             spindexerServo.setPower(0);

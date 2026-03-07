@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.acmerobotics.roadrunner.ftc.ParallelOTOSEncoder;
 import com.pedropathing.follower.Follower;
@@ -70,9 +71,10 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
         Actions.runBlocking(scanAprilTags());
 
         //Align with goal and launch artifacts
-        Actions.runBlocking(
-                new SequentialAction(new ParallelAction(spindexer.setMotifOrder(id), spindexer.shootingMotif(id),
-                pedroDriveOnPathChain(myPaths.SHOOTPATH1, 1, true)),
+        Actions.runBlocking(new SequentialAction(
+                new ParallelAction(
+                        spindexer.setMotifOrder(id), spindexer.shootingMotif(id),
+                        pedroDriveOnPathChain(myPaths.SHOOTPATH1, 1, true)),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
                 spindexer.spindexerAction(0.75, 1.25),
                 spindexer.spindexerAction(0, 0.01),
@@ -83,12 +85,14 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
                         pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS2, 0.3, true),
                         spindexer.autoIntake()
                 ),
-                pedroDriveOnPathChain(myPaths.CLEARCLASSFIER, 1, true),
-                pedroDriveOnPathChain(myPaths.CLEARCLASSFIER2, 1, true),
+                pedroDriveTimeout(myPaths.CLEARCLASSFIER, 1, true, 0.2),
+                pedroDriveTimeout(myPaths.CLEARCLASSFIER2, 1, true, 0.5),
+                new SleepAction(0.3),
                 pedroDriveOnPathChain(myPaths.CLEARCLASSFIER3, 1, true),
                 new ParallelAction(
                         spindexer.shootingMotif(id),
-                        pedroDriveOnPathChain(myPaths.SHOOTPATH3, 1, true)),
+                        pedroDriveOnPathChain(myPaths.SHOOTPATH3, 1, true)
+                ),
                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
                 spindexer.spindexerAction(0.75, 1.25),
                 spindexer.spindexerAction(0, 0.01),
@@ -96,7 +100,7 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
                 intake.intakeOn(0.01),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
                 new ParallelAction(
-                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.3, true),
+                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS1, 0.31, true),
                         spindexer.autoIntake()
                 ),
                 new ParallelAction(
@@ -109,18 +113,61 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
                 intake.intakeOn(0.1),
                 shooter.linkageAction(shooter.LINKAGE_DOWN, 0.01),
                 new ParallelAction(
-                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS3, 0.3, true),
+                        pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS3, 0.31, true),
                         spindexer.autoIntake()
                 ),
-                 new ParallelAction(
-                         spindexer.shootingMotif3(id),
-                         pedroDriveOnPathChain(myPaths.SHOOTPATH4, 1, true)),
-                 shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
-                 spindexer.spindexerAction(0.75, 1.25),
-                 pedroDriveOnPathChain(myPaths.STRAFEPATH, 1, true)
+                new ParallelAction(
+                        spindexer.shootingMotif3(id),
+                        pedroDriveOnPathChain(myPaths.SHOOTPATH4, 1, true)),
+                shooter.linkageAction(shooter.LINKAGE_UP, 0.1),
+                spindexer.spindexerAction(0.75, 1.25),
+                pedroDriveOnPathChain(myPaths.STRAFEPATH, 1, true)
 
         ));
 
+    }
+
+    private Action pedroDriveTimeout(PathChain targetPathChain, double maxPower, boolean holdPos, double time) {
+        return new Action() {
+            private boolean initialized = false;
+            ElapsedTime pathTimer = new ElapsedTime();
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    initialized = true;
+                    pathTimer.reset();
+                    follower.followPath(targetPathChain, maxPower,holdPos);
+                }
+
+
+                follower.update();
+
+                telemetry.addData("pathtimer", pathTimer.seconds());
+                telemetry.addData("x", follower.getPose().getX());
+                telemetry.addData("y", follower.getPose().getY());
+                telemetry.addData("heading", follower.getPose().getHeading());
+                telemetry.addData("isbusy", follower.isBusy());
+                //telemetry.addData("distance remaining",follower.getDistanceRemaining());
+                telemetry.addData("At pose",follower.atPose(targetPathChain.endPose(),2,2,Math.toRadians(10)));
+                //telemetry.addData("T-Value",follower.getCurrentTValue());
+                telemetry.addData("path completion",follower.getPathCompletion());
+                //telemetry.addData("following pathchain",follower.getFollowingPathChain());
+                //telemetry.addData("parametric end",follower.atParametricEnd());
+
+                //telemetry.addData("path", targetPathChain);
+
+                telemetry.update();
+                if(pathTimer.seconds() > time){
+                    return false;
+                }
+
+                if(follower.isBusy()){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        };
     }
 
     private Action pedroDriveOnPathChain(PathChain targetPathChain, double maxPower, boolean holdPos) {
@@ -283,7 +330,7 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
             DRIVEINTOBALLS2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(37.602, 61.072), new Pose(24.000, 61.072))
+                            new BezierLine(new Pose(37.602, 61.072), new Pose(21.000, 61.072))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
@@ -291,8 +338,8 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
             CLEARCLASSFIER = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(15.500, 61.072),
-                                    new Pose(18.500, 69.500))
+                            new BezierLine(new Pose(21.000, 61.072),
+                                    new Pose(24.000, 69.500))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
@@ -300,7 +347,7 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
             CLEARCLASSFIER2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(18.500, 69.500),
+                            new BezierLine(new Pose(24.000, 69.500),
                                     new Pose(15.500, 69.500))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
@@ -320,7 +367,7 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
                     .addPath(
                             new BezierLine(new Pose(35.500, 69.500), new Pose(50.975, 92.510))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(132))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(133))
                     .build();
 
             FACEBALL1 = follower
@@ -334,7 +381,7 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
             DRIVEINTOBALLS1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(39.572, 85.928), new Pose(24.000, 85.900))
+                            new BezierLine(new Pose(39.572, 85.928), new Pose(21.000, 85.900))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
@@ -342,7 +389,7 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
             SHOOTPATH2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(24.000, 85.900), new Pose(41.774, 93.712))
+                            new BezierLine(new Pose(21.000, 85.900), new Pose(41.774, 93.712))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(132))
                     .build();
@@ -358,7 +405,7 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
             DRIVEINTOBALLS3 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(3.602, 38.572), new Pose(21.500, 38.500))
+                            new BezierLine(new Pose(39.602, 38.572), new Pose(21.500, 38.500))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
@@ -366,7 +413,7 @@ public class BlueTwelveBallClassfied extends LinearOpMode {
             SHOOTPATH4 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(18.500, 38.500), new Pose(50.975, 92.510))
+                            new BezierLine(new Pose(21.500, 38.500), new Pose(50.975, 92.510))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(132))
                     .build();

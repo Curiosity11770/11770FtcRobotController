@@ -208,16 +208,16 @@ public class RedFarExtraThree extends LinearOpMode {
                             new BezierLine(
                                     new Pose(87.75, 15.04),
 
-                                    new Pose(130.92, 19.50)
+                                    new Pose(131.92, 15.50)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                     .build();
             FORWARD = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(130.92, 19.50),
+                                    new Pose(131.92, 15.50),
 
-                                    new Pose(132.92, 11.50)
+                                    new Pose(133.92, 10.50)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
@@ -225,7 +225,7 @@ public class RedFarExtraThree extends LinearOpMode {
 
             SHOOT2 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(132.92, 11.50),
+                                    new Pose(133.92, 10.50),
 
                                     new Pose(87.75, 15.04)
                             )

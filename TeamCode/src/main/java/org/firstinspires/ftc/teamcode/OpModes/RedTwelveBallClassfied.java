@@ -85,10 +85,10 @@ public class RedTwelveBallClassfied extends LinearOpMode {
                         pedroDriveOnPathChain(myPaths.DRIVEINTOBALLS2, 0.3, true),
                         spindexer.autoIntake()
                 ),
-                pedroDriveTimeout(myPaths.CLEARCLASSFIER, 1, true, 0.8),
+                pedroDriveTimeout(myPaths.CLEARCLASSFIER, 1, true, 0.2),
 
-                pedroDriveTimeout(myPaths.CLEARCLASSFIER2, 1, true, 0.8),
-                new SleepAction(0.5),
+                pedroDriveTimeout(myPaths.CLEARCLASSFIER2, 1, true, 0.5),
+                new SleepAction(0.3),
 
 
                 pedroDriveOnPathChain(myPaths.CLEARCLASSFIER3, 1, true),
@@ -282,7 +282,7 @@ public class RedTwelveBallClassfied extends LinearOpMode {
             FACEBALL2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(95.6, 97), new Pose(102.398, 64.072))
+                            new BezierLine(new Pose(95.6, 97), new Pose(106.398, 64.072))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(47), Math.toRadians(0))
                     .build();
@@ -290,7 +290,7 @@ public class RedTwelveBallClassfied extends LinearOpMode {
             DRIVEINTOBALLS2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(102.398, 64.072), new Pose(120, 64.072))
+                            new BezierLine(new Pose(106.398, 64.072), new Pose(120, 64.072))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
@@ -299,7 +299,7 @@ public class RedTwelveBallClassfied extends LinearOpMode {
                     .pathBuilder()
                     .addPath(
                             new BezierLine(new Pose(120, 64.072),
-                                    new Pose(120, 69.500))
+                                    new Pose(123, 69.500))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
@@ -307,7 +307,7 @@ public class RedTwelveBallClassfied extends LinearOpMode {
             CLEARCLASSFIER2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(120, 69.500),
+                            new BezierLine(new Pose(123, 69.500),
                                     new Pose(128, 69.500))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
@@ -333,7 +333,7 @@ public class RedTwelveBallClassfied extends LinearOpMode {
             FACEBALL1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(93.025, 92.510), new Pose(102.428, 85.928))
+                            new BezierLine(new Pose(93.025, 92.510), new Pose(105.428, 85.928))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(47), Math.toRadians(0))
                     .build();
@@ -341,7 +341,7 @@ public class RedTwelveBallClassfied extends LinearOpMode {
             DRIVEINTOBALLS1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(102.428, 85.928), new Pose(120, 85.900))
+                            new BezierLine(new Pose(105.428, 85.928), new Pose(120, 85.900))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
@@ -357,7 +357,7 @@ public class RedTwelveBallClassfied extends LinearOpMode {
             FACEBALL3 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(102.226, 93.712), new Pose(102.226, 38.572))
+                            new BezierLine(new Pose(102.226, 93.712), new Pose(105.226, 38.572))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(47), Math.toRadians(0))
                     .build();
@@ -365,7 +365,7 @@ public class RedTwelveBallClassfied extends LinearOpMode {
             DRIVEINTOBALLS3 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(102.226, 38.572), new Pose(120, 38.500))
+                            new BezierLine(new Pose(105.226, 38.572), new Pose(120, 38.500))
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
