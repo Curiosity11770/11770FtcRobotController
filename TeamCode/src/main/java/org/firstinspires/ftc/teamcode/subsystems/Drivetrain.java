@@ -69,6 +69,46 @@ public class Drivetrain {
         myOpMode.telemetry.addData(">", "Drivetrain Initialized");
     }
 
+    public void teleOp() {
+        pinpoint.update();
+        pose2D = pinpoint.getPosition();
+
+        myOpMode.telemetry.addData("X coordinate (IN)", pose2D.getX(DistanceUnit.INCH));
+        myOpMode.telemetry.addData("Y coordinate (IN)", pose2D.getY(DistanceUnit.INCH));
+        myOpMode.telemetry.addData("Heading angle (DEGREES)", pose2D.getHeading(AngleUnit.DEGREES));
+
+        double max;
+
+        double drive = -myOpMode.gamepad1.left_stick_y;
+        double turn = myOpMode.gamepad1.right_stick_x;
+        double strafe = -myOpMode.gamepad1.left_stick_x;
+
+        double denominator = Math.max(Math.abs(drive) + Math.abs(strafe) + Math.abs(turn), 2);
+
+        double frontLeftPower = (drive + turn - strafe) / denominator;
+        double frontRightPower = (drive - turn + strafe) / denominator;
+        double backLeftPower = (drive + turn + strafe) / denominator;
+        double backRightPower = (drive - turn - strafe) / denominator;
+
+        // Normalize the values so no wheel power exceeds 100%
+        // This ensures that the robot maintains the desired motion.
+        max = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
+        max = Math.max(max, Math.abs(backLeftPower));
+        max = Math.max(max, Math.abs(backRightPower));
+
+        if (max > 1.0) {
+            frontLeftPower /= max;
+            frontRightPower /= max;
+            backLeftPower /= max;
+            backRightPower /= max;
+        }
+
+        leftFrontDrive.setPower(frontLeftPower * 1.3);
+        rightFrontDrive.setPower(frontRightPower * 1.3);
+        leftBackDrive.setPower(backLeftPower * 1.3);
+        rightBackDrive.setPower(backRightPower * 1.3);
+    }
+
     public void resetEncoders() {
         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

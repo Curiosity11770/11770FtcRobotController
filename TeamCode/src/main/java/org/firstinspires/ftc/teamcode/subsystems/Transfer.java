@@ -17,11 +17,11 @@ public class Transfer {
     public DcMotor transferMotor = null;
 
     public enum TransferMode {
-        ON,
-        OFF,
+        OPEN,
+        CLOSE,
     }
 
-    public Transfer.TransferMode transferMode = Transfer.TransferMode.OFF;
+    public Transfer.TransferMode transferMode = Transfer.TransferMode.CLOSE;
 
     public Transfer(OpMode opmode) {
         myOpMode = opmode;
