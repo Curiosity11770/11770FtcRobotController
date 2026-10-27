@@ -69,5 +69,6 @@ public class Launcher {
             pollenLauncher.setVelocity(0);
             nectarLauncher.setVelocity(0);
         }
+
     }
 }

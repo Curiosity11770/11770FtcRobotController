@@ -2,8 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import androidx.annotation.NonNull;
 
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -52,25 +51,6 @@ public class Intake {
         update();
     }
 
-    public Action intakeOn() {
-        return new Action() {
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                intake.setPower(INTAKE_SPEED);
-                return false;
-            }
-        };
-    }
-
-    public Action intakeOff() {
-        return new Action() {
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                intake.setPower(0);
-                return false;
-            }
-        };
-    }
 }
 
 

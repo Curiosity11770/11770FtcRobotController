@@ -2,10 +2,6 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import androidx.annotation.NonNull;
 
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -121,36 +117,6 @@ public class Drivetrain {
         rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
-
-    public Action driveBack() {
-        return new Action() {
-            ElapsedTime timer = new ElapsedTime();
-            private boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                if (!initialized) {
-                    timer.reset();
-                    leftFrontDrive.setPower(0.3);
-                    rightFrontDrive.setPower(0.3);
-                    leftBackDrive.setPower(0.3);
-                    rightBackDrive.setPower(0.3);
-                    initialized = true;
-                }
-                pinpoint.update();
-                if (pinpoint.getPosX(DistanceUnit.INCH) < 40) {
-                    return true;
-                } else {
-                    leftFrontDrive.setPower(0);
-                    rightFrontDrive.setPower(0);
-                    leftBackDrive.setPower(0);
-                    rightBackDrive.setPower(0);
-                    return false;
-                }
-
-            }
-        };
     }
 
     public void turnCCW (double motorPower, double degrees){
