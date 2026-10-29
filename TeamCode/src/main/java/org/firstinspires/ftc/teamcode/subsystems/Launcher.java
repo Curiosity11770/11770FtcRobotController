@@ -1,14 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
-import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 
 public class Launcher {
     private OpMode myOpMode = null;   // gain access to methods in the calling OpMode.
@@ -19,6 +13,8 @@ public class Launcher {
     public double POLLEN_RPM = 3700;
     public double NECTAR_RPM = 3700;
     public static final double TICKS_PER_REVOLUTION = 28;
+
+    public static final double RPM_ACCEPTED_RANGE = 100;
     double POLLEN_TICKS_PER_SECOND = POLLEN_RPM / 60 * TICKS_PER_REVOLUTION;
     double NECTAR_TICKS_PER_SECOND = NECTAR_RPM / 60 * TICKS_PER_REVOLUTION;
 
@@ -58,5 +54,16 @@ public class Launcher {
             pollenLauncher.setVelocity(0);
             nectarLauncher.setVelocity(0);
         }
+    }
+
+    public boolean atVelocity() {
+        double actualPollenRPM = pollenLauncher.getVelocity() * 60 / TICKS_PER_REVOLUTION;
+        double actualNectarRPM = nectarLauncher.getVelocity() * 60 / TICKS_PER_REVOLUTION;
+
+        return launcherMode == LauncherMode.ON
+                        && POLLEN_RPM > 0
+                        && NECTAR_RPM > 0
+                        && Math.abs(actualPollenRPM - POLLEN_RPM) <= RPM_ACCEPTED_RANGE
+                        && Math.abs(actualNectarRPM - NECTAR_RPM) <= RPM_ACCEPTED_RANGE;
     }
 }

@@ -61,8 +61,12 @@ public class RobotHardware {
 
         if (myOpMode.gamepad1.right_trigger > 0.5) {
             transfer.transferMode = Transfer.TransferMode.ON;
-            transfer.gateMode = Transfer.GateMode.OPEN;
             launcher.launcherMode = Launcher.LauncherMode.ON;
+            if (launcher.atVelocity()) {
+                transfer.gateMode = Transfer.GateMode.OPEN;
+            } else {
+                transfer.gateMode = Transfer.GateMode.CLOSE;
+            }
         } else {
             transfer.gateMode = Transfer.GateMode.CLOSE;
         }
