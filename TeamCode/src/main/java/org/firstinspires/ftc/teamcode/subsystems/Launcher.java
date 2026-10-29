@@ -11,24 +11,16 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Launcher {
-    // motors: pollenLauncher, nectarLauncher
-    // servos: pollenGate, nectarGate
-
     private OpMode myOpMode = null;   // gain access to methods in the calling OpMode.
 
     public DcMotorEx pollenLauncher = null;
     public DcMotorEx nectarLauncher = null;
-    public AnalogInput turretEncoder = null;
 
-    public double FAR = 1;
-    public double CLOSE = 1;
-    public double FARRPM = 1;
-    public double CLOSERPM = 1;
-    public double measuredRPM;
-
-    public double revolutions_per_minute = 5000;
+    public double POLLEN_RPM = 3700;
+    public double NECTAR_RPM = 3700;
     public static final double TICKS_PER_REVOLUTION = 28;
-    double TICKS_PER_SECOND = revolutions_per_minute / 60 * TICKS_PER_REVOLUTION;
+    double POLLEN_TICKS_PER_SECOND = POLLEN_RPM / 60 * TICKS_PER_REVOLUTION;
+    double NECTAR_TICKS_PER_SECOND = NECTAR_RPM / 60 * TICKS_PER_REVOLUTION;
 
     public enum LauncherMode {
         ON,
@@ -43,32 +35,28 @@ public class Launcher {
     }
     public void init(){
         pollenLauncher = myOpMode.hardwareMap.get(DcMotorEx.class, "pollenLauncher");
-        pollenLauncher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        pollenLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        pollenLauncher.setDirection(DcMotor.Direction.REVERSE);
+        pollenLauncher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        pollenLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        pollenLauncher.setDirection(DcMotorEx.Direction.REVERSE);
 
         nectarLauncher = myOpMode.hardwareMap.get(DcMotorEx.class, "nectarLauncher");
-        nectarLauncher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        nectarLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        nectarLauncher.setDirection(DcMotor.Direction.REVERSE);
-
-        turretEncoder = myOpMode.hardwareMap.get(AnalogInput.class, "turretEncoder");
+        nectarLauncher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        nectarLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        nectarLauncher.setDirection(DcMotorEx.Direction.REVERSE);
 
         myOpMode.telemetry.addData(">", "Launcher Initialized");
-
-
     }
 
     public void update(){
-        TICKS_PER_SECOND = (revolutions_per_minute / 60) * TICKS_PER_REVOLUTION;
+        POLLEN_TICKS_PER_SECOND = (POLLEN_RPM / 60) * TICKS_PER_REVOLUTION;
+        NECTAR_TICKS_PER_SECOND = (NECTAR_RPM / 60) * TICKS_PER_REVOLUTION;
 
         if (launcherMode == LauncherMode.ON) {
-            pollenLauncher.setVelocity(TICKS_PER_SECOND);
-            nectarLauncher.setVelocity(TICKS_PER_SECOND);
-        } else if(launcherMode == LauncherMode.OFF) {
+            pollenLauncher.setVelocity(POLLEN_TICKS_PER_SECOND);
+            nectarLauncher.setVelocity(NECTAR_TICKS_PER_SECOND);
+        } else if (launcherMode == LauncherMode.OFF) {
             pollenLauncher.setVelocity(0);
             nectarLauncher.setVelocity(0);
         }
-
     }
 }

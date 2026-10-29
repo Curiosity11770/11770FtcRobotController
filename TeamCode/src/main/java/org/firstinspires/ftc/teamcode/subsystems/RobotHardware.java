@@ -28,12 +28,12 @@ public class RobotHardware {
     }
 
     public void init() {
-//        drivetrain = new Drivetrain(myOpMode);
+        //drivetrain = new Drivetrain(myOpMode);
         intake = new Intake(myOpMode);
         launcher = new Launcher(myOpMode);
         transfer = new Transfer(myOpMode);
 
-//        drivetrain.init();
+        //drivetrain.init();
         intake.init();
         launcher.init();
         transfer.init();
@@ -42,31 +42,56 @@ public class RobotHardware {
     }
 
     public void teleOp() {
-//        drivetrain.teleOp();
         intake.update();
         launcher.update();
         transfer.update();
 
-        //intake teleop
-        // b = REVERSE
-        // x = ON
-        if (myOpMode.gamepad1.b) {
-            intake.intakeMode = Intake.IntakeMode.OUT;
-        } else if (myOpMode.gamepad1.x) {
+        // Intake/Transfer Teleop
+        if (myOpMode.gamepad1.right_bumper) {
+            intake.intakePivotMode = Intake.IntakePivotMode.DOWN;
             intake.intakeMode = Intake.IntakeMode.IN;
+            transfer.transferMode = Transfer.TransferMode.ON;
+        } else if (myOpMode.gamepad1.left_bumper) {
+            intake.intakeMode = Intake.IntakeMode.OUT;
         } else {
+            intake.intakePivotMode = Intake.IntakePivotMode.UP;
             intake.intakeMode = Intake.IntakeMode.OFF;
+            transfer.transferMode = Transfer.TransferMode.OFF;
         }
 
-        // launcher teleop
-        // y = ON
-        // a = OFF
+        if (myOpMode.gamepad1.right_trigger > 0.5) {
+            transfer.transferMode = Transfer.TransferMode.ON;
+            transfer.gateMode = Transfer.GateMode.OPEN;
+            launcher.launcherMode = Launcher.LauncherMode.ON;
+        } else {
+            transfer.gateMode = Transfer.GateMode.CLOSE;
+        }
+
+        // Launcher Teleop
         if (myOpMode.gamepad1.y) {
             launcher.launcherMode = Launcher.LauncherMode.ON;
         } else if (myOpMode.gamepad1.a) {
             launcher.launcherMode = Launcher.LauncherMode.OFF;
         }
 
+        if (myOpMode.gamepad1.dpad_up) {
+            intake.flowerMode = Intake.FlowerMode.UP;
+        } else if (myOpMode.gamepad1.dpad_down) {
+            intake.flowerMode = Intake.FlowerMode.DOWN;
+        }
+
+        // RPM Test
+        if (myOpMode.gamepad2.dpad_up) {
+            launcher.POLLEN_RPM += 100;
+        } else if (myOpMode.gamepad2.dpad_down) {
+            launcher.POLLEN_RPM -= 100;
+        }
+
+        if (myOpMode.gamepad2.dpad_right) {
+            launcher.NECTAR_RPM += 100;
+        } else if (myOpMode.gamepad2.dpad_left) {
+            launcher.NECTAR_RPM -= 100;
+        }
     }
 
     public void update() {
@@ -75,12 +100,3 @@ public class RobotHardware {
         transfer.update();
     }
 }
-    /*public void code(){
-        print("Hello world!");
-
-        Artifacts = true;
-        Auto = works;
-        Fail = no;
-        Worlds = true;
-    }
-    */
