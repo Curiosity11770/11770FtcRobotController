@@ -47,6 +47,7 @@ public class TeleOp extends LinearOpMode {
 
         loopTime = new ElapsedTime();
 
+        follower.setPose(OpModeStorage.autonomousEndPose);
         follower.update();
 
         telemetry.addData("Status", "Waiting for Start");
@@ -61,13 +62,11 @@ public class TeleOp extends LinearOpMode {
             follower.update();
             robot.teleOp();
 
-            /*if (gamepad1.dpad_up) {
+            if (gamepad1.dpad_left) {
                 driveMode = DriveMode.ROBOT_CENTRIC;
-            } else if (gamepad1.dpad_left) {
-                driveMode = DriveMode.BLUE_FIELD_CENTRIC;
             } else if (gamepad1.dpad_right) {
-                driveMode = DriveMode.RED_FIELD_CENTRIC;
-            }*/
+                driveMode = DriveMode.BLUE_FIELD_CENTRIC;
+            }
 
             if (driveMode == DriveMode.ROBOT_CENTRIC) {
                 ManualDrive.driveOrHold(
@@ -79,14 +78,18 @@ public class TeleOp extends LinearOpMode {
                 follower.update();
             } else if (driveMode == DriveMode.BLUE_FIELD_CENTRIC) {
                 DrivePowers powers = ManualDrive.fieldCentric(
+                        gamepad1.left_stick_x,
                         -gamepad1.left_stick_y,
-                        -gamepad1.left_stick_x,
-                        gamepad1.right_stick_x,
+                        -gamepad1.right_stick_x,
                         follower.pose().heading()
                 );
                 ManualDrive.driveOrHold(follower, powers);
                 follower.update();
             } else if (driveMode == DriveMode.RED_FIELD_CENTRIC) {
+            }
+
+            if (gamepad1.left_bumper) {
+                follower.setPose(new Pose(follower.pose().x(), follower.pose().y(), 90));
             }
 
             /*if (gamepad1.right_bumper) {

@@ -4,6 +4,7 @@ import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.opModes.OpModeStorage;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.api.PoseFactory;
@@ -23,8 +24,8 @@ public class Auto extends OpMode {
     private Follower follower;
     private final PoseFactory p = PoseFactory.degrees();
 
-    private final Pose startPose = p.of(24, 24, 90);
-    private final Pose park = p.of(24, 40, 90);
+    private final Pose startPose = p.of(0, 0, 90);
+    private final Pose pose1 = p.of(-10, 8, 90);
 
     @Override
     public void init() {
@@ -37,7 +38,7 @@ public class Auto extends OpMode {
 
     @Override
     public void start() {
-        schedule(follow(follower, shoot()));
+        schedule(autoRoutine());
     }
 
     @Override
@@ -52,7 +53,24 @@ public class Auto extends OpMode {
         telemetry.update();
     }
 
-    private Path shoot() {
-        return line(startPose, park).linear(startPose, park);
+    private Command autoRoutine() {
+        return sequential(
+                follow(follower, leave())
+                // Add mechanism commands here.
+                //follow(follower, park())
+        );
+    }
+
+    private Path leave() {
+        return line(startPose, pose1).linear(startPose, pose1);
+    }
+
+    private Path park() {
+        return line(pose1, startPose).linear(pose1, startPose);
+    }
+
+    @Override
+    public void stop() {
+        OpModeStorage.autonomousEndPose = follower.pose();
     }
 }

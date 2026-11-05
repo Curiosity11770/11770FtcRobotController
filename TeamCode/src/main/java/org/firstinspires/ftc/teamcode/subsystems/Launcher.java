@@ -10,11 +10,11 @@ public class Launcher {
     public DcMotorEx pollenLauncher = null;
     public DcMotorEx nectarLauncher = null;
 
-    public double POLLEN_RPM = 3700;
+    public double POLLEN_RPM = 3620;
     public double NECTAR_RPM = 3700;
     public static final double TICKS_PER_REVOLUTION = 28;
 
-    public static final double RPM_ACCEPTED_RANGE = 100;
+    public static final double RPM_ACCEPTED_RANGE = 25;
     double POLLEN_TICKS_PER_SECOND = POLLEN_RPM / 60 * TICKS_PER_REVOLUTION;
     double NECTAR_TICKS_PER_SECOND = NECTAR_RPM / 60 * TICKS_PER_REVOLUTION;
 
@@ -56,14 +56,9 @@ public class Launcher {
         }
     }
 
-    public boolean atVelocity() {
-        double actualPollenRPM = pollenLauncher.getVelocity() * 60 / TICKS_PER_REVOLUTION;
-        double actualNectarRPM = nectarLauncher.getVelocity() * 60 / TICKS_PER_REVOLUTION;
+    public boolean atVelocity(DcMotorEx motor, double RPM) {
+        double actualRPM = motor.getVelocity() * 60 / TICKS_PER_REVOLUTION;
 
-        return launcherMode == LauncherMode.ON
-                        && POLLEN_RPM > 0
-                        && NECTAR_RPM > 0
-                        && Math.abs(actualPollenRPM - POLLEN_RPM) <= RPM_ACCEPTED_RANGE
-                        && Math.abs(actualNectarRPM - NECTAR_RPM) <= RPM_ACCEPTED_RANGE;
+        return launcherMode == LauncherMode.ON && Math.abs(actualRPM - RPM) <= RPM_ACCEPTED_RANGE;
     }
 }

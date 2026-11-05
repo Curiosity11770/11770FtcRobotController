@@ -29,7 +29,7 @@ public class Transfer {
 
     public static final double POLLEN_GATE_OPEN = 0.61;
     public static final double POLLEN_GATE_CLOSED = 0.5;
-    public static final double NECTAR_GATE_OPEN = 0.72;
+    public static final double NECTAR_GATE_OPEN = 0.70;
     public static final double NECTAR_GATE_CLOSED = 0.5;
 
     public Transfer.GateMode gateMode = Transfer.GateMode.CLOSE;

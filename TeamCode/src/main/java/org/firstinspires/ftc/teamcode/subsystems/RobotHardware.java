@@ -21,6 +21,10 @@ public class RobotHardware {
     public Launcher launcher;
     public Transfer transfer;
 
+    public ElapsedTime time;
+
+    public boolean gateOpen = false;
+
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public RobotHardware(LinearOpMode opmode) {
@@ -38,8 +42,11 @@ public class RobotHardware {
         launcher.init();
         transfer.init();
 
+        time = new ElapsedTime();
+
         myOpMode.telemetry.addData(">", "Hardware Initialized");
     }
+
 
     public void teleOp() {
         intake.update();
@@ -52,6 +59,7 @@ public class RobotHardware {
             intake.intakeMode = Intake.IntakeMode.IN;
             transfer.transferMode = Transfer.TransferMode.ON;
         } else if (myOpMode.gamepad1.left_bumper) {
+            intake.intakePivotMode = Intake.IntakePivotMode.DOWN;
             intake.intakeMode = Intake.IntakeMode.OUT;
         } else {
             intake.intakePivotMode = Intake.IntakePivotMode.UP;
@@ -61,14 +69,26 @@ public class RobotHardware {
 
         if (myOpMode.gamepad1.right_trigger > 0.5) {
             transfer.transferMode = Transfer.TransferMode.ON;
-            launcher.launcherMode = Launcher.LauncherMode.ON;
-            if (launcher.atVelocity()) {
+            transfer.gateMode = Transfer.GateMode.OPEN;
+            /*if (launcher.atVelocity(launcher.pollenLauncher, launcher.POLLEN_RPM)) {
                 transfer.gateMode = Transfer.GateMode.OPEN;
             } else {
                 transfer.gateMode = Transfer.GateMode.CLOSE;
-            }
+            }*/
+
+            /*if (gateOpen == false && time.milliseconds() > 100 && launcher.atVelocity(launcher.pollenLauncher, launcher.POLLEN_RPM)) {
+                transfer.gateMode = Transfer.GateMode.OPEN;
+                time.reset();
+                gateOpen = true;
+            } else if (time.milliseconds() > 75) {
+                transfer.gateMode = Transfer.GateMode.CLOSE;
+                time.reset();
+                gateOpen = false;
+            }*/
         } else {
+            //
             transfer.gateMode = Transfer.GateMode.CLOSE;
+            time.reset();
         }
 
         // Launcher Teleop
