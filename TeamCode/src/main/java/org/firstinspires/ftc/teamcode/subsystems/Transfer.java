@@ -23,7 +23,8 @@ public class Transfer {
     }
 
     public enum TransferMode {
-        ON,
+        IN,
+        OUT,
         OFF,
     }
 
@@ -57,8 +58,10 @@ public class Transfer {
             pollenGate.setPosition(POLLEN_GATE_OPEN);
         }
 
-        if (transferMode == TransferMode.ON) {
+        if (transferMode == TransferMode.IN) {
             transferMotor.setPower(TRANSFER_POWER);
+        } else if (transferMode == TransferMode.OUT) {
+            transferMotor.setPower(-TRANSFER_POWER);
         } else if (transferMode == TransferMode.OFF) {
             transferMotor.setPower(0);
         }

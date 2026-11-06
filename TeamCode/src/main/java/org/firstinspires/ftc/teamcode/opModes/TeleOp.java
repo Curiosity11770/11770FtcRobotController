@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes;
 
+import com.pedropathing.controllers.Controller;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -26,6 +27,16 @@ public class TeleOp extends LinearOpMode {
     public ElapsedTime loopTime;
     public int pipeline;
 
+    double kP = 0.01;
+    double kI = 0;
+    double kD = 0;
+
+    public static double targetX = 58;
+    public static double targetY = 51;
+
+    Controller headingController;
+    double headingOutput;
+
     enum DriveMode {
         ROBOT_CENTRIC,
         RED_FIELD_CENTRIC,
@@ -39,6 +50,8 @@ public class TeleOp extends LinearOpMode {
         robot = new RobotHardware(this);
         robot.init();
         follower = Constants.create(hardwareMap);
+        headingController = Controller.pid(kP, kI, kD);
+        headingOutput = 0;
 
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) {
@@ -62,6 +75,14 @@ public class TeleOp extends LinearOpMode {
             follower.update();
             robot.teleOp();
 
+            double turnPower = 0;
+            if (gamepad1.left_trigger > 0.5) {
+                double angle = Math.toDegrees(Math.atan2(targetY - follower.pose().y(), targetX - follower.pose().x()));
+                telemetry.addData("Angle target: ", angle);
+                turnPower = headingController.calculate(angle, angle - follower.pose().heading());
+            }
+            headingOutput = -gamepad1.right_stick_x - turnPower;
+
             if (gamepad1.dpad_left) {
                 driveMode = DriveMode.ROBOT_CENTRIC;
             } else if (gamepad1.dpad_right) {
@@ -73,23 +94,19 @@ public class TeleOp extends LinearOpMode {
                         follower,
                         -gamepad1.left_stick_y,
                         -gamepad1.left_stick_x,
-                        -gamepad1.right_stick_x
+                        headingOutput
                 );
                 follower.update();
             } else if (driveMode == DriveMode.BLUE_FIELD_CENTRIC) {
                 DrivePowers powers = ManualDrive.fieldCentric(
                         gamepad1.left_stick_x,
                         -gamepad1.left_stick_y,
-                        -gamepad1.right_stick_x,
+                        headingOutput,
                         follower.pose().heading()
                 );
                 ManualDrive.driveOrHold(follower, powers);
                 follower.update();
             } else if (driveMode == DriveMode.RED_FIELD_CENTRIC) {
-            }
-
-            if (gamepad1.left_bumper) {
-                follower.setPose(new Pose(follower.pose().x(), follower.pose().y(), 90));
             }
 
             /*if (gamepad1.right_bumper) {
@@ -102,6 +119,7 @@ public class TeleOp extends LinearOpMode {
 
             Pose robotPose = follower.pose();
             telemetry.addData("Drive Mode: ", driveMode);
+            telemetry.addData("Turn power: ", turnPower);
             telemetry.addData("pipeline", pipeline);
             telemetry.addData("Robot X", robotPose.x());
             telemetry.addData("Robot Y", robotPose.y());

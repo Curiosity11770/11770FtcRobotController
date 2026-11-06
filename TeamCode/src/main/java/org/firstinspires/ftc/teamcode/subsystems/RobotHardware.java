@@ -57,10 +57,11 @@ public class RobotHardware {
         if (myOpMode.gamepad1.right_bumper) {
             intake.intakePivotMode = Intake.IntakePivotMode.DOWN;
             intake.intakeMode = Intake.IntakeMode.IN;
-            transfer.transferMode = Transfer.TransferMode.ON;
+            transfer.transferMode = Transfer.TransferMode.IN;
         } else if (myOpMode.gamepad1.left_bumper) {
             intake.intakePivotMode = Intake.IntakePivotMode.DOWN;
             intake.intakeMode = Intake.IntakeMode.OUT;
+            transfer.transferMode = Transfer.TransferMode.OUT;
         } else {
             intake.intakePivotMode = Intake.IntakePivotMode.UP;
             intake.intakeMode = Intake.IntakeMode.OFF;
@@ -68,7 +69,7 @@ public class RobotHardware {
         }
 
         if (myOpMode.gamepad1.right_trigger > 0.5) {
-            transfer.transferMode = Transfer.TransferMode.ON;
+            transfer.transferMode = Transfer.TransferMode.IN;
             transfer.gateMode = Transfer.GateMode.OPEN;
             /*if (launcher.atVelocity(launcher.pollenLauncher, launcher.POLLEN_RPM)) {
                 transfer.gateMode = Transfer.GateMode.OPEN;
