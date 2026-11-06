@@ -78,10 +78,12 @@ public class TeleOp extends LinearOpMode {
             double turnPower = 0;
             if (gamepad1.left_trigger > 0.5) {
                 double angle = Math.atan2(targetY - follower.pose().y(), targetX - follower.pose().x());
+                angle = (angle + Math.toRadians(180)) % (Math.PI * 2);
                 telemetry.addData("Angle target: ", angle);
+                telemetry.addData("Robot heading radians: ", follower.pose().heading());
                 turnPower = headingController.calculate(angle, angle - follower.pose().heading());
             }
-            headingOutput = -gamepad1.right_stick_x + turnPower;
+            headingOutput = -gamepad1.right_stick_x + turnPower * 100;
 
             if (gamepad1.dpad_left) {
                 driveMode = DriveMode.ROBOT_CENTRIC;
