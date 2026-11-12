@@ -18,14 +18,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
-@Autonomous(name = "AutoPath", group = "Autonomous")
+@Autonomous(name = "Auto", group = "Autonomous")
 public class Auto extends LinearOpMode {
 
     private Follower follower;
     private final PoseFactory poseFactory = PoseFactory.degrees();
-
-    private final Pose startPose = poseFactory.of(0, 0, 90);
-    private final Pose pose1 = poseFactory.of(-10, 8, 90);
 
     private final Pose start = poseFactory.of(56, 8, 270);
     private final Pose path1 = poseFactory.of(9.4251, 8.0133, 180);
