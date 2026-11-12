@@ -75,6 +75,14 @@ public class TeleOp extends LinearOpMode {
             follower.update();
             robot.teleOp();
 
+            if (follower.pose().y() > 72) {
+                targetX = 58;
+                targetY = 90;
+            } else {
+                targetX = 58;
+                targetY = 51;
+            }
+
             double turnPower = 0;
             if (gamepad1.left_trigger > 0.5) {
                 double angle = Math.atan2(targetY - follower.pose().y(), targetX - follower.pose().x());
