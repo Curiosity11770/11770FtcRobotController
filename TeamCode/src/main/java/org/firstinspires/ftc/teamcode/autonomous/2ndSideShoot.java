@@ -1,0 +1,90 @@
+package org.firstinspires.ftc.teamcode;
+
+import static com.pedropathing.api.Paths.*;
+import com.pedropathing.api.Paths;
+
+import com.pedropathing.api.PoseFactory;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.math.Pose;
+import com.pedropathing.paths.Path;
+import com.pedropathing.ivy.Command;
+import com.pedropathing.ivy.Scheduler;
+import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.*;
+import static com.pedropathing.ivy.groups.Groups.sequential;
+import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+@Autonomous(name = "2ndSideShoot", group = "Autonomous")
+public class AutoPath extends LinearOpMode {
+
+    private Follower follower;
+
+    private final PoseFactory poseFactory = PoseFactory.degrees();
+
+    private final Pose start = poseFactory.of(8.9293, 132.4247, 0);
+    private final Pose leavetoshoot = poseFactory.of(59.2029, 132.3678, 90);
+    private final Pose leavetoshootControl1 = poseFactory.of(36.2437, 115.5028, 0);
+    private final Pose leaveshoot1Start = poseFactory.of(59.2029, 132.3678, 90);
+    private final Pose leaveshoot1 = poseFactory.of(46.5417, 115.6931, 90);
+    private final Pose leaveshoot1Control1 = poseFactory.of(65.3639, 112.8479, 0);
+    private final Pose intakeflowerStart = poseFactory.of(46.5417, 115.6931, 90);
+    private final Pose intakeflower = poseFactory.of(46.6066, 128.8585, 90);
+    private final Pose shoot2Start = poseFactory.of(46.6066, 128.8585, 90);
+    private final Pose shoot2 = poseFactory.of(60.0774, 132.5243, 90);
+    private final Pose shoot2Control1 = poseFactory.of(53.4645, 124.4425, 0);
+
+    // Autonomous routine
+    public Command autoRoutine() {
+        return sequential(
+            follow(follower, leavetoshoot()),
+            follow(follower, leaveshoot1()),
+            follow(follower, intakeflower()),
+            follow(follower, shoot2())
+        );
+    }
+
+    @Override
+    public void runOpMode() {
+        Scheduler.reset();
+        follower = Constants.create(hardwareMap);
+        follower.setPose(start);
+        follower.update();
+
+        waitForStart();
+        schedule(autoRoutine());
+
+        while (opModeIsActive()) {
+            follower.update();
+            Scheduler.execute();
+
+            telemetry.addData("x", follower.pose().x());
+            telemetry.addData("y", follower.pose().y());
+            telemetry.addData("heading", follower.pose().heading());
+
+            if (follower.currentPath() != null) {
+                telemetry.addData("Current path distance remaining", follower.distanceToEndpoint());
+                telemetry.addData("Path number", follower.pathIndex());
+            }
+
+            telemetry.update();
+        }
+    }
+
+    public Path leavetoshoot() {
+        return Paths.curve(start, leavetoshootControl1, leavetoshoot).linear(start, leavetoshoot);
+    }
+
+    public Path leaveshoot1() {
+        return Paths.curve(leaveshoot1Start, leaveshoot1Control1, leaveshoot1).linear(leaveshoot1Start, leaveshoot1);
+    }
+
+    public Path intakeflower() {
+        return Paths.line(intakeflowerStart, intakeflower).linear(intakeflowerStart, intakeflower);
+    }
+
+    public Path shoot2() {
+        return Paths.curve(shoot2Start, shoot2Control1, shoot2).linear(shoot2Start, shoot2);
+    }
+}
