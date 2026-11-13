@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 
+import com.pedropathing.ivy.Command;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -68,50 +69,31 @@ public class Launcher {
         return launcherMode == LauncherMode.ON && Math.abs(actualRPM - RPM) <= RPM_ACCEPTED_RANGE;
     }
 
-    public Action launcherOn(double rpm) {
-        return new Action() {
-            private boolean initialized = false;
-            double TICKS_PER_SECOND;
-            ElapsedTime timer = new ElapsedTime();
+    public Command launcherOn(double rpm) {
+        double ticksPerSecond = (rpm / 60) * TICKS_PER_REVOLUTION;
+        ElapsedTime timer = new ElapsedTime();
 
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                if (!initialized) {
-                    TICKS_PER_SECOND = (rpm / 60) * TICKS_PER_REVOLUTION;
-                    nectarLauncher.setVelocity(TICKS_PER_SECOND);
-                    pollenLauncher.setVelocity(TICKS_PER_SECOND);
-                    initialized = true;
+        return Command.build()
+                .setStart(() -> {
+                    nectarLauncher.setVelocity(ticksPerSecond);
+                    pollenLauncher.setVelocity(ticksPerSecond);
                     timer.reset();
-                }
-
-                double measuredPollenRPM = pollenLauncher.getVelocity() * 60 / TICKS_PER_REVOLUTION;
-                double measuredNectarRPM = nectarLauncher.getVelocity() * 60 / TICKS_PER_REVOLUTION;
-                myOpMode.telemetry.addData("pollen measured RPM", measuredPollenRPM);
-                myOpMode.telemetry.addData("pollen ticks per second", pollenLauncher.getVelocity());
-
-                myOpMode.telemetry.addData("nectar measured RPM", measuredNectarRPM);
-                myOpMode.telemetry.addData("nectar ticks per second", nectarLauncher.getVelocity());
-
-                myOpMode.telemetry.update();
-
-                return pollenLauncher.getVelocity() < TICKS_PER_SECOND && timer.seconds() < 2.5;
-            }
-        };
+                })
+                .setExecute(() -> {
+                    myOpMode.telemetry.addData("pollen measured RPM", pollenLauncher.getVelocity() * 60 / TICKS_PER_REVOLUTION);
+                    myOpMode.telemetry.addData("nectar measured RPM", nectarLauncher.getVelocity() * 60 / TICKS_PER_REVOLUTION);
+                })
+                // old: keep running while (velocity < target && time < 2.5)
+                .setDone(() -> pollenLauncher.getVelocity() >= ticksPerSecond || timer.seconds() >= 2.5);
     }
 
-    public Action launcherOff() {
-        return new Action() {
-            private boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                if (!initialized) {
+    public Command launcherOff() {
+        return Command.build()
+                .setStart(() -> {
                     nectarLauncher.setVelocity(0);
                     pollenLauncher.setVelocity(0);
-                    initialized = true;
-                }
-                return nectarLauncher.getVelocity() > 0 || pollenLauncher.getVelocity() > 0;
-            }
-        };
+                })
+                // old: keep running while (nectar > 0 || pollen > 0)
+                .setDone(() -> nectarLauncher.getVelocity() <= 0 && pollenLauncher.getVelocity() <= 0);
     }
 }

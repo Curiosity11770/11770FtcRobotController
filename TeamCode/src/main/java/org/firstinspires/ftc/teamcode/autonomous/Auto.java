@@ -17,6 +17,7 @@ import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.*;
+import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
@@ -27,6 +28,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.RobotHardware;
 
 @Autonomous(name = "Auto", group = "Autonomous")
 public class Auto extends LinearOpMode {
@@ -43,10 +45,14 @@ public class Auto extends LinearOpMode {
     private final Pose point2Control2 = poseFactory.of(7.6102, 106.9326, 0);
     private final Pose point2Control3 = poseFactory.of(61.8781, 103.8863, 0);
 
+    RobotHardware robot;
+
     // Autonomous routine
     public Command autoRoutine() {
         return sequential(
-                follow(follower, path1()),
+                parallel(follow(follower, path1()), robot.launcher.launcherOn(3700)),  // spin up while driving
+                waitMs(500),
+                robot.launcher.launcherOff(),
                 follow(follower, path2())
         );
     }
@@ -57,6 +63,8 @@ public class Auto extends LinearOpMode {
         follower = Constants.create(hardwareMap);
         follower.setPose(start);
         follower.update();
+
+        robot = new RobotHardware(this);
 
         waitForStart();
         schedule(autoRoutine());
@@ -81,26 +89,6 @@ public class Auto extends LinearOpMode {
 
             telemetry.update();
         }
-    }
-
-    private Action pedroDriveOnPathChain(PathChain targetPathChain, double maxPower, boolean holdPos) {
-        return new Action() {
-            private boolean initialized = false;
-            ElapsedTime pathTimer = new ElapsedTime();
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                if (!initialized) {
-                    initialized = true;
-                    pathTimer.reset();
-                    follower.followPath(targetPathChain, maxPower, holdPos);
-                }
-
-                follower.update();
-
-                return follower.isBusy();
-            }
-        };
     }
 
     public Path path1() {
