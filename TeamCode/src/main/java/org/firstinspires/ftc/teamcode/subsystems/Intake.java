@@ -82,6 +82,20 @@ public class Intake {
         update();
     }
 
+    public void on() {
+        intakePivotMode = IntakePivotMode.DOWN;
+        intakeMode = IntakeMode.IN;
+    }
+
+    public void reverse() {
+        intakePivotMode = IntakePivotMode.DOWN;
+        intakeMode = IntakeMode.OUT;
+    }
+
+    public void off() {
+        intakePivotMode = IntakePivotMode.UP;
+        intakeMode = IntakeMode.OFF;
+    }
 }
 
 
