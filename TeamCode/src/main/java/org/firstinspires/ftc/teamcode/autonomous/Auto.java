@@ -50,9 +50,9 @@ public class Auto extends LinearOpMode {
     // Autonomous routine
     public Command autoRoutine() {
         return sequential(
-                parallel(follow(follower, path1()), robot.launcher.launcherOn(3700)),  // spin up while driving
+                robot.launcher.launcherOn(3700),
+                follow(follower, path1()),  // spin up while driving
                 waitMs(500),
-                robot.launcher.launcherOff(),
                 follow(follower, path2())
         );
     }
