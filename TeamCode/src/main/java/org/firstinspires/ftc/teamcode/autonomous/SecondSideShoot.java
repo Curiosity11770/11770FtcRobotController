@@ -18,20 +18,19 @@ import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 @Autonomous(name = "SecondSideShoot", group = "Autonomous")
 public class SecondSideShoot extends LinearOpMode {
-
     private Follower follower;
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    private final Pose start = poseFactory.of(8.9293, 132.4247, 0);
+    private final Pose start = poseFactory.of(8.6901, 133.1367, 0);
     private final Pose leavetoshoot = poseFactory.of(59.2029, 132.3678, 90);
-    private final Pose leavetoshootControl1 = poseFactory.of(36.2437, 115.5028, 0);
+    private final Pose leavetoshootControl1 = poseFactory.of(55.4434, 108.245, 0);
     private final Pose leaveshoot1Start = poseFactory.of(59.2029, 132.3678, 90);
-    private final Pose leaveshoot1 = poseFactory.of(46.5417, 115.6931, 90);
-    private final Pose leaveshoot1Control1 = poseFactory.of(65.3639, 112.8479, 0);
-    private final Pose intakeflowerStart = poseFactory.of(46.5417, 115.6931, 90);
-    private final Pose intakeflower = poseFactory.of(46.6066, 128.8585, 90);
-    private final Pose shoot2Start = poseFactory.of(46.6066, 128.8585, 90);
+    private final Pose leaveshoot1 = poseFactory.of(46.7496, 117.8832, 90);
+    private final Pose leaveshoot1Control1 = poseFactory.of(64.3745, 115.9974, 0);
+    private final Pose intakeflowerStart = poseFactory.of(46.7496, 117.8832, 90);
+    private final Pose intakeflower = poseFactory.of(46.7442, 127.1787, 90);
+    private final Pose shoot2Start = poseFactory.of(46.7442, 127.1787, 90);
     private final Pose shoot2 = poseFactory.of(60.0774, 132.5243, 90);
     private final Pose shoot2Control1 = poseFactory.of(53.4645, 124.4425, 0);
 
