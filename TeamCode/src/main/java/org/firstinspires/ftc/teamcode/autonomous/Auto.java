@@ -50,16 +50,19 @@ public class Auto extends LinearOpMode {
 
     // Autonomous routine
     public Command autoRoutine() {
-        return sequential(
-                instant(() -> robot.launcher.launcherOn(3700)),
-                instant(() -> robot.transfer.on()),
-                follow(follower, path1()),  // spin up while driving
-                instant(() -> robot.transfer.off()),
-                waitMs(500),
-                follow(follower, path2()),
-                instant(() -> robot.intake.on()),
-                waitMs(500),
-                instant(() -> robot.intake.off())
+        return parallel(instant(() -> robot.update()),
+                sequential(
+                    instant(() -> robot.launcher.launcherOn()),
+                    instant(() -> robot.transfer.on()),
+                    waitMs(2000),
+                    follow(follower, path1()),  // spin up while driving
+                    instant(() -> robot.transfer.off()),
+                    waitMs(500),
+                    follow(follower, path2()),
+                    instant(() -> robot.intake.on()),
+                    waitMs(500),
+                    instant(() -> robot.intake.off())
+                )
         );
     }
 
@@ -71,16 +74,12 @@ public class Auto extends LinearOpMode {
         follower.update();
 
         robot = new RobotHardware(this);
+        robot.init();
 
         waitForStart();
         schedule(autoRoutine());
 
         while (opModeIsActive()) {
-
-            Actions.runBlocking(new SequentialAction(
-
-            ));
-
             follower.update();
             Scheduler.execute();
 

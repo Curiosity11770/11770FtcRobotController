@@ -69,9 +69,7 @@ public class Launcher {
         return launcherMode == LauncherMode.ON && Math.abs(actualRPM - RPM) <= RPM_ACCEPTED_RANGE;
     }
 
-    public void launcherOn(double rpm) {
-        POLLEN_RPM = rpm;
-        NECTAR_RPM = rpm;
+    public void launcherOn() {
         launcherMode = LauncherMode.ON;
     }
 
