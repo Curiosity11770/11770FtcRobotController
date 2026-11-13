@@ -49,9 +49,7 @@ public class RobotHardware {
 
 
     public void teleOp() {
-        intake.update();
-        launcher.update();
-        transfer.update();
+        update();
 
         // Intake/Transfer Teleop
         if (myOpMode.gamepad1.right_bumper) {
