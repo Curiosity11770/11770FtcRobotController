@@ -67,4 +67,14 @@ public class Transfer {
         }
     }
 
+    public void on() {
+        gateMode = GateMode.OPEN;
+        transferMode = TransferMode.IN;
+    }
+
+    // Stop feeding: gates closed, motor off
+    public void off() {
+        gateMode = GateMode.CLOSE;
+        transferMode = TransferMode.OFF;
+    }
 }

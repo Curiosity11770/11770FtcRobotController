@@ -18,6 +18,7 @@ import com.pedropathing.ivy.Scheduler;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.*;
 import static com.pedropathing.ivy.groups.Groups.parallel;
+import static com.pedropathing.ivy.groups.Groups.race;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
@@ -50,10 +51,15 @@ public class Auto extends LinearOpMode {
     // Autonomous routine
     public Command autoRoutine() {
         return sequential(
-                robot.launcher.launcherOn(3700),
+                instant(() -> robot.launcher.launcherOn(3700)),
+                instant(() -> robot.transfer.on()),
                 follow(follower, path1()),  // spin up while driving
+                instant(() -> robot.transfer.off()),
                 waitMs(500),
-                follow(follower, path2())
+                follow(follower, path2()),
+                instant(() -> robot.intake.on()),
+                waitMs(500),
+                instant(() -> robot.intake.off())
         );
     }
 

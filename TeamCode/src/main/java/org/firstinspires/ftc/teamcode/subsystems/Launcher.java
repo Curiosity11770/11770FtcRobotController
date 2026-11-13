@@ -69,31 +69,13 @@ public class Launcher {
         return launcherMode == LauncherMode.ON && Math.abs(actualRPM - RPM) <= RPM_ACCEPTED_RANGE;
     }
 
-    public Command launcherOn(double rpm) {
-        double ticksPerSecond = (rpm / 60) * TICKS_PER_REVOLUTION;
-        ElapsedTime timer = new ElapsedTime();
-
-        return Command.build()
-                .setStart(() -> {
-                    nectarLauncher.setVelocity(ticksPerSecond);
-                    pollenLauncher.setVelocity(ticksPerSecond);
-                    timer.reset();
-                })
-                .setExecute(() -> {
-                    myOpMode.telemetry.addData("pollen measured RPM", pollenLauncher.getVelocity() * 60 / TICKS_PER_REVOLUTION);
-                    myOpMode.telemetry.addData("nectar measured RPM", nectarLauncher.getVelocity() * 60 / TICKS_PER_REVOLUTION);
-                })
-                // old: keep running while (velocity < target && time < 2.5)
-                .setDone(() -> pollenLauncher.getVelocity() >= ticksPerSecond || timer.seconds() >= 2.5);
+    public void launcherOn(double rpm) {
+        POLLEN_RPM = rpm;
+        NECTAR_RPM = rpm;
+        launcherMode = LauncherMode.ON;
     }
 
-    public Command launcherOff() {
-        return Command.build()
-                .setStart(() -> {
-                    nectarLauncher.setVelocity(0);
-                    pollenLauncher.setVelocity(0);
-                })
-                // old: keep running while (nectar > 0 || pollen > 0)
-                .setDone(() -> nectarLauncher.getVelocity() <= 0 && pollenLauncher.getVelocity() <= 0);
+    public void launcherOff() {
+        launcherMode = LauncherMode.OFF;
     }
 }
