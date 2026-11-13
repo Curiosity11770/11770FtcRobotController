@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -60,5 +66,47 @@ public class Launcher {
         double actualRPM = motor.getVelocity() * 60 / TICKS_PER_REVOLUTION;
 
         return launcherMode == LauncherMode.ON && Math.abs(actualRPM - RPM) <= RPM_ACCEPTED_RANGE;
+    }
+
+    public Action launcherOn(double rpm) {
+        return new Action() {
+            private boolean initialized = false;
+            ElapsedTime timer = new ElapsedTime();
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    TICKS_PER_SECOND = (rpm / 60) * TICKS_PER_REVOLUTION;
+                    spin1.setVelocity(TICKS_PER_SECOND);
+                    spin2.setVelocity(TICKS_PER_SECOND);
+                    initialized = true;
+                    timer.reset();
+                }
+
+                double measuredRPM = spin1.getVelocity() * 60 / TICKS_PER_REVOLUTION;
+                myOpMode.telemetry.addData("measuredRPM2", measuredRPM);
+                myOpMode.telemetry.addData("ticks per second", spin1.getVelocity());
+
+                myOpMode.telemetry.update();
+
+                return spin1.getVelocity() < TICKS_PER_SECOND && timer.seconds() < 2.5;
+            }
+        };
+    }
+
+    public Action launcherOff() {
+        return new Action() {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    spin1.setVelocity(0);
+                    spin2.setVelocity(0);
+                    initialized = true;
+                }
+                return spin1.getVelocity() > 0;
+            }
+        };
     }
 }

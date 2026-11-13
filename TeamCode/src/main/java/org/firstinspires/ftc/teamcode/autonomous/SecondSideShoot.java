@@ -23,9 +23,9 @@ public class SecondSideShoot extends LinearOpMode {
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private final Pose start = poseFactory.of(8.6901, 133.1367, 0);
-    private final Pose leavetoshoot = poseFactory.of(59.2029, 132.3678, 90);
+    private final Pose leavetoshoot = poseFactory.of(59.2029, 130.3678, 90);
     private final Pose leavetoshootControl1 = poseFactory.of(55.4434, 108.245, 0);
-    private final Pose leaveshoot1Start = poseFactory.of(59.2029, 132.3678, 90);
+    private final Pose leaveshoot1Start = poseFactory.of(59.2029, 130.3678, 90);
     private final Pose leaveshoot1 = poseFactory.of(46.7496, 117.8832, 90);
     private final Pose leaveshoot1Control1 = poseFactory.of(64.3745, 115.9974, 0);
     private final Pose intakeflowerStart = poseFactory.of(46.7496, 117.8832, 90);
