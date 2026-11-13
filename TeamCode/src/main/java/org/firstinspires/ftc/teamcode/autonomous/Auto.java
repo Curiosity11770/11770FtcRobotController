@@ -83,26 +83,6 @@ public class Auto extends LinearOpMode {
         }
     }
 
-    private Action pedroDriveOnPathChain(PathChain targetPathChain, double maxPower, boolean holdPos) {
-        return new Action() {
-            private boolean initialized = false;
-            ElapsedTime pathTimer = new ElapsedTime();
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                if (!initialized) {
-                    initialized = true;
-                    pathTimer.reset();
-                    follower.followPath(targetPathChain, maxPower, holdPos);
-                }
-
-                follower.update();
-
-                return follower.isBusy();
-            }
-        };
-    }
-
     public Path path1() {
         return Paths.curve(start, path1Control1, path1).linear(start, path1);
     }
