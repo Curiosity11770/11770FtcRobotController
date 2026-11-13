@@ -71,25 +71,30 @@ public class Launcher {
     public Action launcherOn(double rpm) {
         return new Action() {
             private boolean initialized = false;
+            double TICKS_PER_SECOND;
             ElapsedTime timer = new ElapsedTime();
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
                     TICKS_PER_SECOND = (rpm / 60) * TICKS_PER_REVOLUTION;
-                    spin1.setVelocity(TICKS_PER_SECOND);
-                    spin2.setVelocity(TICKS_PER_SECOND);
+                    nectarLauncher.setVelocity(TICKS_PER_SECOND);
+                    pollenLauncher.setVelocity(TICKS_PER_SECOND);
                     initialized = true;
                     timer.reset();
                 }
 
-                double measuredRPM = spin1.getVelocity() * 60 / TICKS_PER_REVOLUTION;
-                myOpMode.telemetry.addData("measuredRPM2", measuredRPM);
-                myOpMode.telemetry.addData("ticks per second", spin1.getVelocity());
+                double measuredPollenRPM = pollenLauncher.getVelocity() * 60 / TICKS_PER_REVOLUTION;
+                double measuredNectarRPM = nectarLauncher.getVelocity() * 60 / TICKS_PER_REVOLUTION;
+                myOpMode.telemetry.addData("pollen measured RPM", measuredPollenRPM);
+                myOpMode.telemetry.addData("pollen ticks per second", pollenLauncher.getVelocity());
+
+                myOpMode.telemetry.addData("nectar measured RPM", measuredNectarRPM);
+                myOpMode.telemetry.addData("nectar ticks per second", nectarLauncher.getVelocity());
 
                 myOpMode.telemetry.update();
 
-                return spin1.getVelocity() < TICKS_PER_SECOND && timer.seconds() < 2.5;
+                return pollenLauncher.getVelocity() < TICKS_PER_SECOND && timer.seconds() < 2.5;
             }
         };
     }
@@ -101,11 +106,11 @@ public class Launcher {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    spin1.setVelocity(0);
-                    spin2.setVelocity(0);
+                    nectarLauncher.setVelocity(0);
+                    pollenLauncher.setVelocity(0);
                     initialized = true;
                 }
-                return spin1.getVelocity() > 0;
+                return nectarLauncher.getVelocity() > 0 || pollenLauncher.getVelocity() > 0;
             }
         };
     }

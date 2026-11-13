@@ -1,8 +1,14 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import static com.pedropathing.api.Paths.*;
-import com.pedropathing.api.Paths;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.ftc.Actions;
+
+import com.pedropathing.api.Paths;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
@@ -13,8 +19,12 @@ import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.*;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+
+import androidx.annotation.NonNull;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
@@ -52,6 +62,11 @@ public class Auto extends LinearOpMode {
         schedule(autoRoutine());
 
         while (opModeIsActive()) {
+
+            Actions.runBlocking(new SequentialAction(
+
+            ));
+
             follower.update();
             Scheduler.execute();
 
@@ -66,6 +81,26 @@ public class Auto extends LinearOpMode {
 
             telemetry.update();
         }
+    }
+
+    private Action pedroDriveOnPathChain(PathChain targetPathChain, double maxPower, boolean holdPos) {
+        return new Action() {
+            private boolean initialized = false;
+            ElapsedTime pathTimer = new ElapsedTime();
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    initialized = true;
+                    pathTimer.reset();
+                    follower.followPath(targetPathChain, maxPower, holdPos);
+                }
+
+                follower.update();
+
+                return follower.isBusy();
+            }
+        };
     }
 
     public Path path1() {
