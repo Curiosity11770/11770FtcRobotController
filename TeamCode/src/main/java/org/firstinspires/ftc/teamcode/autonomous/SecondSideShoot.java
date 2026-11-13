@@ -31,7 +31,7 @@ public class SecondSideShoot extends LinearOpMode {
     private final Pose intakeflowerStart = poseFactory.of(46.7496, 117.8832, 90);
     private final Pose intakeflower = poseFactory.of(46.7442, 127.1787, 90);
     private final Pose shoot2Start = poseFactory.of(46.7442, 127.1787, 90);
-    private final Pose shoot2 = poseFactory.of(60.0774, 132.5243, 90);
+    private final Pose shoot2 = poseFactory.of(60.0774, 132.5243, 0);
     private final Pose shoot2Control1 = poseFactory.of(53.4645, 124.4425, 0);
 
     // Autonomous routine
