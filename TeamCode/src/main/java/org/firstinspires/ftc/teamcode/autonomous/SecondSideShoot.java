@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.pedropathing.api.Paths;
-
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
@@ -9,38 +8,53 @@ import com.pedropathing.paths.Path;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.*;
+import static com.pedropathing.ivy.groups.Groups.parallel;
+import static com.pedropathing.ivy.groups.Groups.race;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+
+import androidx.annotation.NonNull;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.RobotHardware;
+
 
 @Autonomous(name = "SecondSideShoot", group = "Autonomous")
 public class SecondSideShoot extends LinearOpMode {
+
     private Follower follower;
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    private final Pose start = poseFactory.of(8.6901, 133.1367, 0);
-    private final Pose leavetoshoot = poseFactory.of(59.2029, 130.3678, 90);
-    private final Pose leavetoshootControl1 = poseFactory.of(55.4434, 108.245, 0);
-    private final Pose leaveshoot1Start = poseFactory.of(59.2029, 130.3678, 90);
-    private final Pose leaveshoot1 = poseFactory.of(46.7496, 117.8832, 90);
-    private final Pose leaveshoot1Control1 = poseFactory.of(64.3745, 115.9974, 0);
-    private final Pose intakeflowerStart = poseFactory.of(46.7496, 117.8832, 90);
-    private final Pose intakeflower = poseFactory.of(46.7442, 127.1787, 90);
-    private final Pose shoot2Start = poseFactory.of(46.7442, 127.1787, 90);
-    private final Pose shoot2 = poseFactory.of(60.0774, 132.5243, 0);
-    private final Pose shoot2Control1 = poseFactory.of(53.4645, 124.4425, 0);
+    private final Pose start = poseFactory.of(9.0074, 132.6871, 0);
+    private final Pose path1 = poseFactory.of(59.1328, 132.2827, 90);
+    private final Pose path1Control1 = poseFactory.of(58.32, 100.5059, 0);
+    private final Pose point2Start = poseFactory.of(59.1328, 132.2827, 90);
+    private final Pose point2 = poseFactory.of(11.5598, 116.7052, 0);
+    private final Pose point2Control1 = poseFactory.of(43.781, 112.1581, 0);
+
+    RobotHardware robot;
 
     // Autonomous routine
     public Command autoRoutine() {
         return sequential(
-            follow(follower, leavetoshoot()),
-            follow(follower, leaveshoot1()),
-            follow(follower, intakeflower()),
-            follow(follower, shoot2())
+                instant(() -> robot.transfer.on()),
+                instant(() -> robot.launcher.launcherOn()),
+                follow(follower, path1()),
+                // needs to wait longer
+                race(waitUntil(() ->
+                                robot.launcher.atVelocity(robot.launcher.pollenLauncher, robot.launcher.POLLEN_RPM)),
+                        waitMs(6000)
+                ),
+                instant(() -> robot.transfer.openGate()),
+                waitMs(1000),
+                instant(() -> robot.transfer.closeGate()),
+                follow(follower, path2())
         );
     }
 
@@ -50,6 +64,9 @@ public class SecondSideShoot extends LinearOpMode {
         follower = Constants.create(hardwareMap);
         follower.setPose(start);
         follower.update();
+
+        robot = new RobotHardware(this);
+        robot.init();
 
         waitForStart();
         schedule(autoRoutine());
@@ -71,19 +88,11 @@ public class SecondSideShoot extends LinearOpMode {
         }
     }
 
-    public Path leavetoshoot() {
-        return Paths.curve(start, leavetoshootControl1, leavetoshoot).linear(start, leavetoshoot);
+    public Path path1() {
+        return Paths.curve(start, path1Control1, path1).linear(start, path1);
     }
 
-    public Path leaveshoot1() {
-        return Paths.curve(leaveshoot1Start, leaveshoot1Control1, leaveshoot1).linear(leaveshoot1Start, leaveshoot1);
-    }
-
-    public Path intakeflower() {
-        return Paths.line(intakeflowerStart, intakeflower).linear(intakeflowerStart, intakeflower);
-    }
-
-    public Path shoot2() {
-        return Paths.curve(shoot2Start, shoot2Control1, shoot2).linear(shoot2Start, shoot2);
+    public Path path2() {
+        return Paths.curve(point2Start, point2Control1, point2).linear(point2Start, point2);
     }
 }

@@ -38,31 +38,43 @@ public class Auto extends LinearOpMode {
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private final Pose start = poseFactory.of(56, 8, 270);
-    private final Pose path1 = poseFactory.of(9.4251, 8.0133, 180);
-    private final Pose path1Control1 = poseFactory.of(49.5983, 21.5888, 0);
-    private final Pose point2Start = poseFactory.of(9.4251, 8.0133, 180);
+    private final Pose path1 = poseFactory.of(9.4251, 7.5956, 180);
+    private final Pose path1Control1 = poseFactory.of(58.788, 19.2913, 0);
+    private final Pose point2Start = poseFactory.of(9.4251, 7.5956, 180);
     private final Pose point2 = poseFactory.of(60.299, 133.1236, 90);
     private final Pose point2Control1 = poseFactory.of(38.8005, 114.5127, 0);
     private final Pose point2Control2 = poseFactory.of(7.6102, 106.9326, 0);
     private final Pose point2Control3 = poseFactory.of(61.8781, 103.8863, 0);
+    private final Pose point3Start = poseFactory.of(60.299, 133.1236, 90);
+    private final Pose point3 = poseFactory.of(10.0883, 111.4704, 0);
+    private final Pose point3Control1 = poseFactory.of(51.1949, 106.9622, 0);
 
     RobotHardware robot;
 
     // Autonomous routine
     public Command autoRoutine() {
-        return parallel(instant(() -> robot.update()),
-                sequential(
-                    instant(() -> robot.launcher.launcherOn()),
-                    instant(() -> robot.transfer.on()),
-                    waitMs(2000),
-                    follow(follower, path1()),  // spin up while driving
-                    instant(() -> robot.transfer.off()),
-                    waitMs(500),
-                    follow(follower, path2()),
-                    instant(() -> robot.intake.on()),
-                    waitMs(500),
-                    instant(() -> robot.intake.off())
-                )
+        return sequential(
+                instant(() -> robot.transfer.on()),
+                instant(() -> robot.launcher.launcherOn()),
+                // needs to wait longer
+                race(waitUntil(() ->
+                        robot.launcher.atVelocity(robot.launcher.pollenLauncher, robot.launcher.POLLEN_RPM)),
+                        waitMs(6000)
+                ),
+                waitMs(1000),
+                instant(() -> robot.transfer.openGate()),
+                waitMs(1000),
+                instant(() -> robot.transfer.closeGate()),
+                instant(() -> robot.intake.on()),
+                follow(follower, path1()),
+                waitMs(500),
+                instant(() -> robot.intake.off()),
+                waitMs(500),
+                follow(follower, path2()),
+                instant(() -> robot.transfer.openGate()),
+                waitMs(1000),
+                instant(() -> robot.transfer.closeGate()),
+                follow(follower, path3())
         );
     }
 
@@ -81,6 +93,7 @@ public class Auto extends LinearOpMode {
 
         while (opModeIsActive()) {
             follower.update();
+            robot.update();
             Scheduler.execute();
 
             telemetry.addData("x", follower.pose().x());
@@ -102,5 +115,9 @@ public class Auto extends LinearOpMode {
 
     public Path path2() {
         return Paths.curve(point2Start, point2Control1, point2Control2, point2Control3, point2).linear(point2Start, point2);
+    }
+
+    public Path path3() {
+        return Paths.curve(point3Start, point3Control1, point3).linear(point3Start, point3);
     }
 }

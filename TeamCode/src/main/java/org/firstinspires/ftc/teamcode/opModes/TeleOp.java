@@ -60,7 +60,17 @@ public class TeleOp extends LinearOpMode {
 
         loopTime = new ElapsedTime();
 
-        follower.setPose(OpModeStorage.autonomousEndPose);
+        telemetry.addData("Side", "Right");
+        if (gamepad1.dpad_left) {
+            follower.setPose(OpModeStorage.autonomousEndPose);
+            telemetry.addData("Side", "Right");
+            telemetry.update();
+        } else if (gamepad1.dpad_right) {
+            follower.setPose(OpModeStorage.autonomousSecondEndPose);
+            telemetry.addData("Side", "Left");
+            telemetry.update();
+        }
+
         follower.update();
 
         telemetry.addData("Status", "Waiting for Start");

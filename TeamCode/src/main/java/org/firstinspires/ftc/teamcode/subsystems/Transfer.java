@@ -77,4 +77,12 @@ public class Transfer {
         gateMode = GateMode.CLOSE;
         transferMode = TransferMode.OFF;
     }
+
+    public void openGate() {
+        gateMode = GateMode.OPEN;
+    }
+
+    public void closeGate() {
+        gateMode = GateMode.CLOSE;
+    }
 }
